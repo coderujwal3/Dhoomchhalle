@@ -146,3 +146,19 @@
 html {
     scroll-behavior: smooth;
 }
+
+/* .scrollbar::-webkit-scrollbar-track-piece {
+    background-color: red;
+} */
+
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}

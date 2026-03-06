@@ -16,7 +16,7 @@ app.use(express.json())
 
 
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "../client/index.html")
+    res.sendFile("E:/Programming/DHOOMCHHALLE/client/index.html")
 })
 
 // /**

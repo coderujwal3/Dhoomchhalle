@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -96,7 +97,8 @@
     h4,
     h5,
     h6 {
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Dancing Script';
+        font-weight: 600;
     }
 
     p {
@@ -147,9 +149,18 @@ html {
     scroll-behavior: smooth;
 }
 
-/* .scrollbar::-webkit-scrollbar-track-piece {
-    background-color: red;
-} */
+::-webkit-scrollbar {
+    background-color: rgb(61, 61, 61);
+    width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    /* background-color: rgb(254, 0, 0); */
+    background: linear-gradient(120deg, #F59E0B 30%, #f5690b 90%);
+    border-radius: 10px;
+    border-width: 5px;
+    border-color: black;
+}
 
 html.lenis {
     height: auto;

@@ -48,7 +48,7 @@ const HeroSection = () => {
     <section
       ref={ref}
       id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden font-['Roboto',sans-serif]"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background */}
       <motion.div className="absolute inset-0" style={{ y: imgY }}>
@@ -101,7 +101,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.4 }}
-          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-primary-foreground mb-6 leading-tight font-['Roboto',sans-serif]"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white/85 mb-6 leading-tight"
         >
           Explore the Spiritual <br />
           <span className="text-gradient-saffron">Heart of India</span>

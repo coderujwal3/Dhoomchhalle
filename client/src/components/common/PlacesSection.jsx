@@ -101,11 +101,11 @@ const PlacesSection = () => {
               Discover
             </p>
 
-            <h2 className="text-3xl md:text-5xl font-bold text-amber-600 mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
               Tourist Places
             </h2>
 
-            <div className="w-20 h-1 bg-primary rounded-full mx-auto mb-4" />
+            <div className="w-20 h-1 bg-orange-500/80 rounded-full mx-auto mb-4" />
 
             <p className="text-muted-foreground max-w-xl mx-auto">
               From ancient temples to sacred ghats and historic forts — explore
@@ -163,7 +163,7 @@ const PlacesSection = () => {
                 layout
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="group bg-card rounded-lg overflow-hidden shadow-card"
+                className="shadow bg-white/60 rounded-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
               >
                 <div className="relative h-52 overflow-hidden">
                   <motion.img
@@ -182,7 +182,7 @@ const PlacesSection = () => {
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-xl font-semibold mb-2">{place.name}</h3>
+                  <h3 className="text-xl font-semibold font-sans text-red-800 mb-2">{place.name}</h3>
 
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {place.description}

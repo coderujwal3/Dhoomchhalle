@@ -242,25 +242,21 @@ server/
 └── server.js
 ```
 
-
-## Install dependencies-
-### Frontend
-```
-cd client
-npm i react-router-dom axios tailwindcss '@tailwindcss/vite' react-hot-toast
-```
-### Backend
-```
-cd server
-npm i express mongoose dotenv bcryptjs jsonwebtoken cors morgan express-validator nodemon
-```
-
 ## Run Website
+- Clone Repo
+```
+git clone https://github.com/coderujwal3/Dhoomchhalle.git
+cd Dhoomchhalle
+```
+- for frontend
 ```
 cd client
+npm install
 npm run dev
 ```
+- for backend
 ```
 cd server
+npm install
 npm run dev
 ```

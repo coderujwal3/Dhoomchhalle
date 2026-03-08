@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import heroImage from "../../assets/hero-varanasi.jpg";
-import { MapPin, Utensils, Bus, Users, Sparkles } from "lucide-react";
+import { MapPin, Utensils, Bus, Users } from "lucide-react";
 // import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import ShinyText from "../common/ShinyText";
 
@@ -78,9 +78,8 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 backdrop-blur-sm mb-6"
+          className="sm:inline-flex hidden items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 backdrop-blur-sm mb-6"
         >
-          {/* <Sparkles size={14} className="text-orange-400" /> */}
           <span className="text-xs md:text-sm tracking-widest uppercase text-primary-foreground">
             <ShinyText
               text="✨ Welcome to Dhoomchhalle"

@@ -3,6 +3,7 @@ import Navbar from "../components/common/Navbar";
 import HeroSection from "../components/common/HeroSection";
 import PlacesSection from "../components/common/PlacesSection";
 import FoodSection from "../components/common/FoodSection";
+import TransportSection from "../components/common/TransportSection";
 
 const Home = () => {
   return (
@@ -12,6 +13,7 @@ const Home = () => {
         <HeroSection />
         <PlacesSection />
         <FoodSection />
+        <TransportSection />
       </div>
     </>
   );

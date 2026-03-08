@@ -14,7 +14,7 @@ Planning to give some facilities regarding the travel (currently planned only fo
 - best hostels according to their choice and budget
 - Public transport timings (buses and trains timings)
 
-## Tech Stack: => MERN for website (I will build app later on with React Native (because it is good for both android and iphones))
+## Tech Stack: => MERN for website (I will build app later on with React Native (because it is good for both android and iphones)) with tailwindcss, Lenis Scrolling & GSAP animation + Spline 3D elements + lottiefiles (for 2D animated icons and all) for bes t interacting user experience.
 
 ## 🚀 DHOOMCHHALLE – Core System Design
 🧠 Core Modules
@@ -260,3 +260,6 @@ cd server
 npm install
 npm run dev
 ```
+
+## Website landing page
+<img width="1919" height="1023" alt="image" src="https://github.com/user-attachments/assets/3ffceb01-ce87-42c2-be89-135eaf327dac" />

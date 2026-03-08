@@ -123,11 +123,11 @@ const PlacesSection = () => {
                 placeholder="Search places..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-4 py-2.5 pl-10 rounded-full border border-border bg-card text-foreground text-sm"
+                className="w-full px-4 py-2.5 pl-10 rounded-full border border-gray-400 bg-gray-300/40 outline-none text-foreground text-sm"
               />
 
               <MapPin
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600"
                 size={16}
               />
             </div>
@@ -141,8 +141,8 @@ const PlacesSection = () => {
                   whileTap={{ scale: 0.95 }}
                   className={`px-4 py-2 rounded-full text-sm font-medium ${
                     filter === cat
-                      ? "bg-amber-300 text-orange-600 hover:bg-primary-hover font-bold shadow-warm"
-                      : "bg-card text-muted-foreground hover:bg-muted"
+                      ? "bg-amber-300 text-red-800 hover:bg-primary-hover font-bold shadow-warm"
+                      : "bg-white text hover:bg-gray-200/40"
                   }`}
                 >
                   {cat}
@@ -163,7 +163,7 @@ const PlacesSection = () => {
                 layout
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="shadow bg-white/60 rounded-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+                className="shadow-lg bg-white/60 rounded-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
               >
                 <div className="relative h-52 overflow-hidden">
                   <motion.img
@@ -182,7 +182,9 @@ const PlacesSection = () => {
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-xl font-semibold font-sans text-red-800 mb-2">{place.name}</h3>
+                  <h3 className="text-xl font-semibold font-sans text-red-800 mb-2">
+                    {place.name}
+                  </h3>
 
                   <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {place.description}

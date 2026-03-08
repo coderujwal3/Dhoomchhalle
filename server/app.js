@@ -14,11 +14,6 @@ app.use(express.json())
 // const accountRouter = require("./routes/account.routes")
 // const TransactionRoutes = require('./routes/transaction.routes')
 
-
-app.get("/", (req, res) => {
-    res.sendFile("E:/Programming/DHOOMCHHALLE/client/index.html")
-})
-
 // /**
 //  * - Use api routes
 //  */

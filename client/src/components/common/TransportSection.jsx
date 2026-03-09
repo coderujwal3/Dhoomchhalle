@@ -95,7 +95,7 @@ const TransportSection = () => {
                   y: -4,
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="bg-amber-50/50 border-3 border-red-800 shadow-gray-800 shadow-[0px_2px_6px_gray-200] rounded-lg p-6 hover:shadow-gray-600 hover:shadow-lg hover:border-2 transition-shadow duration-300"
+                className="bg-amber-50/50 border-3 border-red-800 shadow-amber-500/30 shadow-[0px_2px_8px_amber] rounded-lg p-6 hover:shadow-orange-600/50 hover:shadow-lg hover:border-2 transition-shadow duration-300"
               >
                 <div className="flex items-start gap-4">
                   <motion.div
@@ -144,7 +144,7 @@ const TransportSection = () => {
         </div>
 
         <ScrollReveal delay={0.2}>
-          <motion.div className="bg-amber-50/50 border-3 border-red-800 shadow-gray-800 shadow-[2px_2px_6px_gray-200] hover:shadow-lg hover:shadow-gray-600 hover:border-2 transition-shadow duration-300 rounded-lg p-6 md:p-8">
+          <motion.div className="bg-amber-50/50 border-3 border-red-800 shadow-amber-500/30 shadow-[0px_2px_8px_amber] hover:shadow-lg hover:shadow-orange-600/50 hover:border-2 transition-shadow duration-300 rounded-lg p-6 md:p-8">
             <div className="flex items-center gap-3 mb-4">
               <motion.div
                 animate={{ rotate: [0, 5, -5, 0] }}

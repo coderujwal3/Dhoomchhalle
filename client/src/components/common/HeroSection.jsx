@@ -102,8 +102,13 @@ const HeroSection = () => {
           transition={{ duration: 0.9, delay: 0.4 }}
           className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white/85 mb-6 leading-tight"
         >
-          Explore the Spiritual <br />
-          <span className="text-gradient-saffron">Heart of India</span>
+          <span className="text-shadow-[-2px_-2px_0px_#F59E0B]">
+            Explore the Spiritual
+          </span>
+          <br />
+          <span className="text-gradient-saffron">
+            Heart of India
+          </span>
         </motion.h1>
 
         <motion.p

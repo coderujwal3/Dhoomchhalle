@@ -263,4 +263,7 @@ npm run dev
 ```
 
 ## Website landing page
-<img width="1919" height="1023" alt="image" src="https://github.com/user-attachments/assets/3ffceb01-ce87-42c2-be89-135eaf327dac" />
+<img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/64dbee39-b5a6-40bd-8546-4c5ebd34f9bf" />
+
+## Mobile Landing page
+<img height="840" alt="image" src="https://github.com/user-attachments/assets/91ff65d4-779f-4fbc-976e-cb024a530834" />

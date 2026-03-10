@@ -94,7 +94,9 @@ const PlacesSection = () => {
       id="places"
       className="py-20 md:py-28 bg-orange-100/30 relative overflow-hidden"
     >
-      <div className="container mx-auto px-4 relative">
+      <div className="absolute top-20 left-[50%] translate-x-[-50%] w-82 h-32 rounded-full bg-linear-to-r from-orange-500/50 to-orange-200/50 blur-[60px]" />
+      <div className="absolute z-[-1] bottom-90 left-80 w-72 h-72 rounded-full bg-linear-to-r from-orange-500/70 to-orange-200/80 blur-[30px]" />
+      <div className="container mx-auto z-10 px-4 relative">
         <ScrollReveal>
           <div className="text-center mb-12">
             <p className="text-sm tracking-[0.2em] uppercase text-orange-500 mb-2">
@@ -107,7 +109,7 @@ const PlacesSection = () => {
 
             <div className="w-20 h-1 bg-orange-500/80 rounded-full mx-auto mb-4" />
 
-            <p className="text-muted-foreground max-w-xl mx-auto">
+            <p className="text-gray-600 max-w-xl mx-auto">
               From ancient temples to sacred ghats and historic forts — explore
               the timeless landmarks of Varanasi.
             </p>

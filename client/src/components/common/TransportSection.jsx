@@ -68,7 +68,7 @@ const TransportSection = () => {
       id="transport"
       className="py-20 md:py-28 bg-orange-100/30 relative overflow-hidden"
     >
-      {/* <div className="absolute -top-20 left-1/2 w-96 h-96 rounded-full bg-accent/5 blur-3xl -translate-x-1/2 /> */}
+      <div className="absolute top-20 left-[50%] translate-x-[-50%] w-82 h-32 rounded-full bg-linear-to-r from-orange-500/50 to-orange-200/50 blur-[60px]" />
 
       <div className="container mx-auto px-4 relative">
         <ScrollReveal>

@@ -1,9 +1,13 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
+let lenis = null;
+
+export const getLenis = () => lenis;
+
 const SmoothScroll = ({ children }) => {
   useEffect(() => {
-    const lenis = new Lenis({
+    lenis = new Lenis({
       duration: 2,
       smoothWheel: true,
       smoothTouch: false,
@@ -20,6 +24,7 @@ const SmoothScroll = ({ children }) => {
 
     return () => {
       lenis.destroy();
+      lenis = null;
     };
   }, []);
 

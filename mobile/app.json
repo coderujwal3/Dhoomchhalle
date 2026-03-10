@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "dhoomchhalle",
-    "slug": "dhoomchhalle",
+    "name": "DHOOMCHHALLE",
+    "slug": "DHOOMCHHALLE",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/dhoomchhalle.png",
@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/dhoomchhalle.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.dhoomchhalle"
     },
     "web": {
       "output": "static",

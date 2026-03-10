@@ -89,11 +89,11 @@ const styles = StyleSheet.create({
   },
 
   buttons: {
-    display:"flex",
+    display: "flex",
     flexDirection: "row",
     marginTop: 20,
     gap: 10,
-    flexWrap:"wrap",
+    flexWrap: "wrap",
     justifyContent: "center",
   },
 

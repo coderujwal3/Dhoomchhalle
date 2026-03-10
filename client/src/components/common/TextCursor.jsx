@@ -93,7 +93,7 @@ const TextCursor = ({
   return (
     <div
       ref={containerRef}
-      className="h-screen w-screen text-white fixed top-0 left-0 z-9999 pointer-events-none"
+      className="h-screen w-screen text-white/80 fixed top-0 left-0 z-9999 pointer-events-none"
     >
       <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
         <AnimatePresence>

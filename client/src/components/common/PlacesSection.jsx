@@ -92,7 +92,7 @@ const PlacesSection = () => {
   return (
     <section
       id="places"
-      className="py-20 md:py-28 bg-background relative overflow-hidden"
+      className="py-20 md:py-28 bg-orange-100/30 relative overflow-hidden"
     >
       <div className="container mx-auto px-4 relative">
         <ScrollReveal>

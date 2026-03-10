@@ -1,5 +1,11 @@
 import { Tabs } from "expo-router";
-import { HomeIcon, HotelIcon, BusIcon, MapIcon, Clock } from "lucide-react-native";
+import {
+  HomeIcon,
+  HotelIcon,
+  BusIcon,
+  MapIcon,
+  Clock,
+} from "lucide-react-native";
 
 export default function TabLayout() {
   return (

@@ -172,6 +172,7 @@ export default function PlacesSection() {
         <MapPinIcon
           size={22}
           color="#6a7282"
+          style={{ marginLeft: 10 }}
         />
         <TextInput
           placeholder="Search places..."

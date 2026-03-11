@@ -6,7 +6,6 @@ import FoodSection from "../components/common/FoodSection";
 import TransportSection from "../components/common/TransportSection";
 import GuidesSection from "../components/common/GuidesSection";
 import Footer from "../components/common/Footer";
-import ScrollVelocity from "../components/common/ScrollVelocity";
 import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 
 const Home = () => {
@@ -30,11 +29,6 @@ const Home = () => {
         <HeroSection />
         <PlacesSection />
         <FoodSection />
-        <ScrollVelocity
-          texts={["Explore Varanasi,", "Your Travel Companion,"]}
-          velocity={100}
-          className="custom-scroll-text"
-        />
         <TransportSection />
         <GuidesSection />
         <Footer />

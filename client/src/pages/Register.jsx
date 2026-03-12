@@ -1,32 +1,35 @@
 import React, { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();             // using navigate to direct navigate to /login after successful registration
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(name, email, phone, password);
     setName("");
     setEmail("");
     setPhone("");
     setPassword("");
-    
+
     try {
       const res = await axios.post("http://localhost:3000/api/auth/register", {
         name,
         email,
-        password,
         phone,
+        password,
       });
       localStorage.setItem("token", res.data.token);
-      setMessage("Registered Successfully, Kindly Login to continue...");
+      toast.success("Registration Successful");
+      navigate("/login");
     } catch (error) {
-      setMessage(error.response.data.message);
+      console.log(error);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -77,8 +80,6 @@ function Register() {
         <button className="w-full p-2 bg-[#007bff] text-white border-none" type="submit">
           Register
         </button>
-
-        <p>{message}</p>
       </form>
     </div>
   );

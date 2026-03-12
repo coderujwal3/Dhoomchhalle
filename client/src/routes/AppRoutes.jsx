@@ -10,6 +10,7 @@ import Register from "../pages/Register";
 // import Timings from "../pages/Timings";
 // import Profile from "../pages/Profile";
 // import AdminDashboard from "../pages/AdminDashboard";
+import NotFound from "../pages/NotFound";
 
 // Layout
 import MainLayout from "../layouts/MainLayout";

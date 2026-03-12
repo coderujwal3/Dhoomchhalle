@@ -1,18 +1,8 @@
 import React from "react";
-import TextCursor from "./components/common/TextCursor";
-import Home from "./pages/Home";
 import "./index.css";
-import SmoothScroll from "./components/common/SmoothScroll";
-
+import AppRoutes from "./routes/AppRoutes";
 function App() {
-  return (
-    <SmoothScroll>
-      <TextCursor />
-      <div>
-        <Home />
-      </div>
-    </SmoothScroll>
-  );
+  return <AppRoutes />;
 }
 
 export default App;

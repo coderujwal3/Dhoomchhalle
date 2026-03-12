@@ -1,25 +1,25 @@
+require('dotenv').config()
 const express = require('express')
 const cookieParser = require('cookie-parser')
-// const seedSystemBalance = require('../src/seeders/systemuser.seed')
+// const seedVaranasiData = require('./seed/Varanasi.seed')
+const cors = require('cors');
 
 const app = express();
 
 app.use(cookieParser())
 app.use(express.json())
+app.use(cors());
 
 // /**
 //  * - Routes
 //  */
-// const authRouter = require('./routes/auth.route')
-// const accountRouter = require("./routes/account.routes")
-// const TransactionRoutes = require('./routes/transaction.routes')
+const userRoutes = require('./modules/user/user.routes')
 
 // /**
 //  * - Use api routes
 //  */
-// app.use('/api/auth', authRouter)
-// app.use('/api/accounts', accountRouter)
-// app.use('/api/transactions', TransactionRoutes)
+app.use("/api/auth", userRoutes);
+
 
 // seedSystemBalance();
 

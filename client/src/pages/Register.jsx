@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function Register() {
-  const navigate = useNavigate();             // using navigate to direct navigate to /login after successful registration
+  const navigate = useNavigate(); // using navigate to direct navigate to /login after successful registration
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -25,11 +25,24 @@ function Register() {
         password,
       });
       localStorage.setItem("token", res.data.token);
-      toast.success("Registration Successful");
+      toast.success("Registered Successfully", {
+        duration: 4000,
+        position: "top-right",
+
+        icon: "👏",
+        iconTheme: {
+          primary: "#0a0",
+          secondary: "#fff",
+        },
+        ariaProps: {
+          role: "status",
+          "aria-live": "polite",
+        },
+      });
       navigate("/login");
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error);
     }
   };
 
@@ -77,10 +90,14 @@ function Register() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="w-full p-2 bg-[#007bff] text-white border-none" type="submit">
+        <button
+          className="w-full p-2 bg-[#007bff] text-white border-none"
+          type="submit"
+        >
           Register
         </button>
       </form>
+      <Toaster />
     </div>
   );
 }

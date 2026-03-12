@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
+// const location = useLocation();
+// console.log(location.state?.message);
 function Register() {
-
-  const location = useLocation();
-  console.log(location.state?.message);
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(email, password);
@@ -24,7 +24,7 @@ function Register() {
       });
       localStorage.setItem("token", res.data.token);
       setMessage("Logged In Successfully");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       setMessage(error);
     }

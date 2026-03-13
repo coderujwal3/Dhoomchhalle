@@ -11,19 +11,19 @@ const navLinks = [
   { label: "Transport", id: "transport", type: "scroll", bg: "transparent" },
   { label: "Guides", id: "guides", type: "scroll", bg: "transparent" },
 
-  {
-    label: "Register",
-    path: "/register",
-    type: "route",
-    bg: "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center",
-  },
+  // {
+  //   label: "Register",
+  //   path: "/register",
+  //   type: "route",
+  //   bg: "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center",
+  // },
 
-  {
-    label: "Login",
-    path: "/login",
-    type: "route",
-    bg: "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center",
-  },
+  // {
+  //   label: "Login",
+  //   path: "/login",
+  //   type: "route",
+  //   bg: "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center",
+  // },
 ];
 
 const scrollToSection = (id) => {

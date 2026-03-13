@@ -9,11 +9,9 @@ function Register() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email, password);
     setEmail("");
     setPassword("");
     
@@ -23,7 +21,6 @@ function Register() {
         password,
       });
       localStorage.setItem("token", res.data.token);
-      setMessage("Logged In Successfully");
       navigate("/");
     } catch (error) {
       setMessage(error);
@@ -62,8 +59,6 @@ function Register() {
         >
           Register
         </button>
-
-        <p>{message}</p>
       </form>
     </div>
   );

@@ -22,7 +22,7 @@ const AppRoutes = () => {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 4000);
   }, []);
   if (loading) {
     return (
@@ -49,9 +49,9 @@ const AppRoutes = () => {
         </Route>
 
         {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} />
 
-        <Route path="/register" element={<Register />} />
+        <Route path="/register" element={<Register />} /> */}
 
         {/* User Routes */}
         {/* <Route path="/profile" element={<Profile />} /> */}

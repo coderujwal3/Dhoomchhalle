@@ -25,20 +25,7 @@ function Register() {
         password,
       });
       localStorage.setItem("token", res.data.token);
-      toast.success("Registered Successfully", {
-        duration: 4000,
-        position: "top-right",
-
-        icon: "👏",
-        iconTheme: {
-          primary: "#0a0",
-          secondary: "#fff",
-        },
-        ariaProps: {
-          role: "status",
-          "aria-live": "polite",
-        },
-      });
+      toast.success("Registered Successfully");
       navigate("/login");
     } catch (error) {
       console.log(error);

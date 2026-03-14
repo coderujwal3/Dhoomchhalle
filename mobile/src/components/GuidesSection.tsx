@@ -1,95 +1,341 @@
-import { Phone, MessageCircle, Star, Globe } from "lucide-react";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import ScrollReveal from "./ScrollReveal";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  StyleSheet,
+} from "react-native";
+import { Phone, MessageCircle, Star, Globe } from "lucide-react-native";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 const guides = [
-  { name: "Rajesh Pandey", languages: ["Hindi", "English", "Japanese"], experience: "15+ years", phone: "+919876543210", rating: 4.9, specialty: "Temple tours & spiritual walks" },
-  { name: "Amit Sharma", languages: ["Hindi", "English", "French"], experience: "10+ years", phone: "+919876543211", rating: 4.8, specialty: "Heritage & photography tours" },
-  { name: "Priya Singh", languages: ["Hindi", "English", "German"], experience: "8+ years", phone: "+919876543212", rating: 4.7, specialty: "Food walks & cultural immersion" },
+  {
+    name: "Rajesh Pandey",
+    languages: ["Hindi", "English", "Japanese"],
+    experience: "15+ years",
+    phone: "+918528938966",
+    rating: 4.9,
+    specialty: "Temple tours & spiritual walks",
+  },
+  {
+    name: "Amit Sharma",
+    languages: ["Hindi", "English", "French"],
+    experience: "10+ years",
+    phone: "+918528938966",
+    rating: 4.8,
+    specialty: "Heritage & photography tours",
+  },
+  {
+    name: "Priya Singh",
+    languages: ["Hindi", "English", "German"],
+    experience: "8+ years",
+    phone: "+918528938966",
+    rating: 4.7,
+    specialty: "Food walks & cultural immersion",
+  },
 ];
 
 const GuidesSection = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Thank you for your inquiry! A guide will contact you shortly.");
+  const handleSubmit = () => {
+    if (!formData.name || !formData.email || !formData.message) {
+      Alert.alert(
+        "Missing Fields",
+        "Please fill out all the fields before submitting.",
+      );
+      return;
+    }
+    Alert.alert(
+      "Success!",
+      "Thank you for your inquiry! A guide will contact you shortly.",
+    );
     setFormData({ name: "", email: "", message: "" });
   };
 
   return (
-    <section id="guides" className="py-20 md:py-28 bg-gradient-warm relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-60 h-60 rounded-full bg-gold/8 blur-3xl" />
+    <View style={styles.container}>
+      <Animated.View entering={FadeInDown}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.subHeading}>CONNECT</Text>
+          <Text style={styles.heading}>Verified Tourist Guides</Text>
+          <View style={styles.divider} />
+          <Text style={styles.description}>
+            Explore Varanasi with experienced, verified local guides who bring
+            the city's stories to life.
+          </Text>
+        </View>
+      </Animated.View>
 
-      <div className="container mx-auto px-4 relative">
-        <ScrollReveal>
-          <div className="text-center mb-12">
-            <p className="font-sans text-sm tracking-[0.2em] uppercase text-primary mb-2">Connect</p>
-            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4">Verified Tourist Guides</h2>
-            <div className="w-20 h-1 bg-primary rounded-full mx-auto mb-4" />
-            <p className="font-sans text-muted-foreground max-w-xl mx-auto">
-              Explore Varanasi with experienced, verified local guides who bring the city's stories to life.
-            </p>
-          </div>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {guides.map((guide, i) => (
-            <ScrollReveal key={guide.name} delay={i * 0.12}>
-              <motion.div
-                whileHover={{ y: -6 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="bg-card rounded-lg p-6 shadow-card hover:shadow-warm transition-shadow duration-300"
-              >
-                <div className="flex items-center gap-1 text-gold mb-3">
-                  <Star size={14} fill="currentColor" />
-                  <span className="font-sans text-sm font-semibold text-foreground">{guide.rating}</span>
-                  <span className="text-muted-foreground text-xs ml-1">· {guide.experience}</span>
-                </div>
-                <h3 className="font-display text-xl font-semibold text-foreground mb-1">{guide.name}</h3>
-                <p className="font-sans text-sm text-primary mb-3">{guide.specialty}</p>
-                <div className="flex items-center gap-2 mb-4">
-                  <Globe size={14} className="text-muted-foreground" />
-                  <span className="font-sans text-sm text-muted-foreground">{guide.languages.join(", ")}</span>
-                </div>
-                <div className="flex gap-2">
-                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href={`tel:${guide.phone}`} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-sans font-medium transition-colors">
-                    <Phone size={14} /> Call
-                  </motion.a>
-                  <motion.a whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href={`https://wa.me/${guide.phone.replace("+", "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full bg-accent text-accent-foreground text-sm font-sans font-medium transition-colors">
-                    <MessageCircle size={14} /> WhatsApp
-                  </motion.a>
-                </div>
-              </motion.div>
-            </ScrollReveal>
-          ))}
-        </div>
-
-        <ScrollReveal delay={0.2}>
-          <motion.div
-            initial={{ scale: 0.95 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="max-w-lg mx-auto bg-card rounded-lg p-6 md:p-8 shadow-card"
+      <View style={styles.guidesList}>
+        {guides.map((guide, i) => (
+          <Animated.View
+            key={guide.name}
+            entering={FadeInUp.delay(i * 150)}
+            style={styles.guideCard}
           >
-            <h3 className="font-display text-2xl font-semibold text-foreground mb-2 text-center">Book a Guide</h3>
-            <p className="font-sans text-sm text-muted-foreground text-center mb-6">Send an inquiry and we'll match you with the perfect guide.</p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input type="text" placeholder="Your Name" required maxLength={100} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow" />
-              <input type="email" placeholder="Email Address" required maxLength={255} value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-shadow" />
-              <textarea placeholder="Tell us about your travel plans..." required maxLength={1000} rows={4} value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground font-sans text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none transition-shadow" />
-              <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full py-3 rounded-full bg-primary text-primary-foreground font-sans font-semibold text-sm shadow-warm transition-colors">
-                Send Inquiry
-              </motion.button>
-            </form>
-          </motion.div>
-        </ScrollReveal>
-      </div>
-    </section>
+            <View style={styles.ratingRow}>
+              <Star size={18} color="#f59e0b" fill="#f59e0b" />
+              <Text style={styles.ratingText}>{guide.rating}</Text>
+              <Text style={styles.experienceText}> · {guide.experience}</Text>
+            </View>
+            <Text style={styles.guideName}>{guide.name}</Text>
+            <Text style={styles.guideSpecialty}>{guide.specialty}</Text>
+
+            <View style={styles.languageRow}>
+              <Globe size={14} color="#4b5563" />
+              <Text style={styles.languageText}>
+                {guide.languages.join(", ")}
+              </Text>
+            </View>
+
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={styles.callButton}
+                onPress={() => Linking.openURL(`tel:${guide.phone}`)}
+              >
+                <Phone size={14} color="#fff" />
+                <Text style={styles.buttonText}>Call</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.waButton}
+                onPress={() =>
+                  Linking.openURL(
+                    `https://wa.me/${guide.phone.replace("+", "")}`,
+                  )
+                }
+              >
+                <MessageCircle size={14} color="#fff" />
+                <Text style={styles.buttonText}>WhatsApp</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        ))}
+      </View>
+
+      <Animated.View
+        entering={FadeInUp.delay(500)}
+        style={styles.formContainer}
+      >
+        <Text style={styles.formTitle}>Book a Guide</Text>
+        <Text style={styles.formSubtitle}>
+          Send an inquiry and we'll match you with the perfect guide.
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Your Name"
+          maxLength={100}
+          value={formData.name}
+          onChangeText={(text) => setFormData({ ...formData, name: text })}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address"
+          keyboardType="email-address"
+          maxLength={255}
+          value={formData.email}
+          onChangeText={(text) => setFormData({ ...formData, email: text })}
+        />
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          placeholder="Tell us about your travel plans..."
+          maxLength={1000}
+          multiline
+          numberOfLines={4}
+          value={formData.message}
+          onChangeText={(text) => setFormData({ ...formData, message: text })}
+        />
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>Send Inquiry</Text>
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: "#fffaf0",
+  },
+  headerContainer: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  subHeading: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#f59e0b",
+    letterSpacing: 2,
+    marginBottom: 8,
+  },
+  heading: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#000",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  divider: {
+    width: 80,
+    height: 4,
+    backgroundColor: "rgba(234, 88, 12, 0.6)",
+    borderRadius: 2,
+    marginBottom: 16,
+  },
+  description: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  guidesList: {
+    gap: 16,
+    marginBottom: 32,
+  },
+  guideCard: {
+    backgroundColor: "#fff7ed",
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#fed7aa",
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  ratingText: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginLeft: 4,
+    color: "#333",
+  },
+  experienceText: {
+    fontSize: 12,
+    color: "#6b7280",
+  },
+  guideName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#991b1b",
+    marginBottom: 4,
+  },
+  guideSpecialty: {
+    fontSize: 14,
+    color: "#b45309",
+    marginBottom: 12,
+  },
+  languageRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  languageText: {
+    fontSize: 14,
+    color: "#4b5563",
+    marginLeft: 6,
+  },
+  actionButtons: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  callButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(249, 115, 22, 0.8)",
+    paddingVertical: 10,
+    borderRadius: 20,
+    gap: 6,
+  },
+  waButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#38bdf8",
+    paddingVertical: 10,
+    borderRadius: 20,
+    gap: 6,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  formContainer: {
+    backgroundColor: "#fff7ed",
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#fed7aa",
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  formTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#991b1b",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  formSubtitle: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "rgba(153, 27, 27, 0.3)",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: "#000",
+    marginBottom: 12,
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  submitButton: {
+    backgroundColor: "#fb923c",
+    paddingVertical: 14,
+    borderRadius: 24,
+    alignItems: "center",
+    marginTop: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  submitButtonText: {
+    color: "#9a3412",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
 
 export default GuidesSection;

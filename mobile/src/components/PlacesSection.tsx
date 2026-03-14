@@ -5,21 +5,13 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  FlatList,
   StyleSheet,
-  Linking,
 } from "react-native";
 
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import PlaceCard from "./ui/PlaceCard";
 
-import { Clock, IndianRupee, MapPinIcon, ExternalLink } from "lucide-react-native";
+import { MapPinIcon } from "lucide-react-native";
 
 const kashiImg = require("../../assets/kashi-vishwanath.jpg");
 const dashasImg = require("../../assets/dashashwamedh-ghat.jpg");
@@ -109,48 +101,6 @@ export default function PlacesSection() {
     return matchCategory && matchSearch;
   });
 
-  const renderPlace = ({ item, index }: { item: Place; index: number }) => {
-    const scale = useSharedValue(1);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scale.value }],
-    }));
-
-    return (
-      <Animated.View entering={FadeInUp.delay(index * 120)}>
-        <Animated.View style={[styles.card, animatedStyle]}>
-          <Image source={item.image} style={styles.image} />
-
-          <View style={styles.cardContent}>
-            <Text style={styles.title}>{item.name}</Text>
-
-            <Text style={styles.desc}>{item.description}</Text>
-
-            <View style={styles.row}>
-              <Clock size={14} color="#ff8c00" />
-              <Text style={styles.info}>{item.hours}</Text>
-            </View>
-
-            <View style={styles.row}>
-              <IndianRupee size={14} color="#ff8c00" />
-              <Text style={styles.info}>{item.fee}</Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => Linking.openURL(item.mapUrl)}
-              onPressIn={() => (scale.value = withSpring(0.95))}
-              onPressOut={() => (scale.value = withSpring(1))}
-            >
-              <ExternalLink size={16} color="#fff" />
-              <Text style={styles.buttonText}>Get Directions</Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      </Animated.View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <Animated.Text entering={FadeInDown} style={styles.heading}>
@@ -166,14 +116,10 @@ export default function PlacesSection() {
           backgroundColor: "#f3f3f3",
           padding: 3,
           borderRadius: 12,
-          flex:1,
+          flex: 1,
         }}
       >
-        <MapPinIcon
-          size={22}
-          color="#6a7282"
-          style={{ marginLeft: 10 }}
-        />
+        <MapPinIcon size={22} color="#6a7282" style={{ marginLeft: 10 }} />
         <TextInput
           placeholder="Search places..."
           value={search}
@@ -194,17 +140,11 @@ export default function PlacesSection() {
         ))}
       </View>
 
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item, index }) => (
-          <PlaceCard item={item} index={index} />
-        )}
-        initialNumToRender={4}
-        windowSize={5}
-        removeClippedSubviews={true}
-        contentContainerStyle={{ paddingBottom: 80 }}
-      />
+      <View style={styles.listContainer}>
+        {filtered.map((item, index) => (
+          <PlaceCard key={item.name} item={item} index={index} />
+        ))}
+      </View>
     </View>
   );
 }
@@ -250,6 +190,10 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: 12,
     color: "#333",
+  },
+
+  listContainer: {
+    paddingBottom: 80,
   },
 
   card: {

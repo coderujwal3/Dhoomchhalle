@@ -3,8 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Pages
 import Home from "../pages/Home";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
+// import Login from "../pages/Login";
+// import Register from "../pages/Register";
 // import Hotels from "../pages/Hotels";
 // import Transport from "../pages/Transport";
 // import RoutePlanner from "../pages/RoutePlanner";

@@ -1,9 +1,19 @@
-import { View, Text } from "react-native";
+import { ScrollView, StyleSheet } from "react-native"
+import { enableScreens } from "react-native-screens";
+import HotelCard from "@/src/components/HotelCard";
 
-export default function Home() {
+enableScreens(true);
+export default function Hotels() {
   return (
-    <View>
-      <Text>Dhoomchhalle Hotels Page</Text>
-    </View>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <HotelCard />
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+});

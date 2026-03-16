@@ -6,11 +6,6 @@ import {
   MapIcon,
   Clock,
 } from "lucide-react-native";
-import Home from "@/app/(tabs)/home";
-import Hotels from "@/app/(tabs)/hotels";
-import Transport from "@/app/(tabs)/transport";
-import Routes from "@/app/(tabs)/routes";
-import Timings from "@/app/(tabs)/timings";
 
 
 export default function TabLayout() {
@@ -35,9 +30,9 @@ export default function TabLayout() {
         name="hotels"
         options={{
           title: "Hotels",
-          tabBarIcon(props) {
-            return <HotelIcon {...props} />;
-          },
+          tabBarIcon: ({ color, size }) => (
+            <HotelIcon color={color} size={size} />
+          ),
         }}
       />
 

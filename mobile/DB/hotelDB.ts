@@ -71,7 +71,7 @@ export const hotels: Hotel[] = [
     },
 
     images: {
-      cover: "/images/hotels/ganges-view.jpg",
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhxh0TX7M6BH9acVkn4XYsbyfA_T-7m8PSAA&s",
       gallery: [
         "/images/hotels/ganges-view-1.jpg",
         "/images/hotels/ganges-view-2.jpg"
@@ -117,7 +117,7 @@ export const hotels: Hotel[] = [
     },
 
     images: {
-      cover: "/images/hotels/backpackers.jpg",
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqEY8rAvpPcORAgLvWDXGwQmbfsyu5RfyuxA&s",
       gallery: [
         "/images/hotels/backpackers-1.jpg",
         "/images/hotels/backpackers-2.jpg"
@@ -162,7 +162,51 @@ export const hotels: Hotel[] = [
     },
 
     images: {
-      cover: "/images/hotels/temple-heritage.jpg",
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYt1stS8WU26K3oVWMVHm9w3sEDbijp8t6Z5UFPDiLpjch-_OB1jEjhOQ&s",
+      gallery: [
+        "/images/hotels/temple-heritage-1.jpg",
+        "/images/hotels/temple-heritage-2.jpg"
+      ]
+    },
+
+    checkIn: "12:00 PM",
+    checkOut: "11:00 AM"
+  },
+  {
+    id: "hotel_4",
+    name: "Hotel Gandu",
+    category: "budget",
+
+    location: "Halala",
+    address: "Halala, Varanasi, Uttar Pradesh",
+
+    coordinates: {
+      latitude: 25.3087,
+      longitude: 83.0066
+    },
+
+    pricePerNight: 150,
+
+    rating: 4.99,
+    totalReviews: 1789,
+
+    phone: "+91 817364746",
+
+    amenities: [
+      "Free WiFi",
+      "AC Rooms",
+      "Room Service",
+      "Parking",
+    ],
+
+    distanceFromLandmark: {
+      kashiVishwanathTemple: "700 m",
+      dashashwamedhGhat: "400 m",
+      varanasiJunction: "4 km"
+    },
+
+    images: {
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KVdMjn7Kgnclogd0Ycj-ZviT1Y7Lo8FJ4-ochc3WgkTfrx3RpinWRIA&s",
       gallery: [
         "/images/hotels/temple-heritage-1.jpg",
         "/images/hotels/temple-heritage-2.jpg"

@@ -107,7 +107,7 @@ const HeroSection = () => {
           </span>
           <br />
           <span className="text-gradient-saffron">
-            Heart of India
+            Soul of India
           </span>
         </motion.h1>
 

@@ -4,7 +4,7 @@
     "slug": "DHOOMCHHALLE",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/dhoomchhalle.png",
+    "icon": "./assets/dhmLogo.png",
     "scheme": "dhoomchhalle",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,9 +14,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/dhoomchhalle.png",
-        "backgroundImage": "./assets/dhoomchhalle.png",
-        "monochromeImage": "./assets/dhoomchhalle.png"
+        "foregroundImage": "./assets/dhmLogo.png",
+        "backgroundImage": "./assets/dhmLogo.png",
+        "monochromeImage": "./assets/dhmLogo.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -24,7 +24,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/dhmLogo.png"
     },
     "plugins": [
       "expo-router",

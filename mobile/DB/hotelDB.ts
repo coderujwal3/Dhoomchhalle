@@ -11,6 +11,8 @@ export interface Hotel {
     longitude: number;
   };
 
+  mapUrl: string;
+  
   pricePerNight: number;
 
   rating: number;
@@ -64,6 +66,8 @@ export const hotels: Hotel[] = [
       "24h Reception"
     ],
 
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
+
     distanceFromLandmark: {
       kashiVishwanathTemple: "500 m",
       dashashwamedhGhat: "150 m",
@@ -99,6 +103,8 @@ export const hotels: Hotel[] = [
 
     rating: 4.6,
     totalReviews: 210,
+
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
 
     phone: "+91 9123456780",
 
@@ -143,6 +149,8 @@ export const hotels: Hotel[] = [
 
     pricePerNight: 1200,
 
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
+
     rating: 4.1,
     totalReviews: 178,
 
@@ -174,16 +182,202 @@ export const hotels: Hotel[] = [
   },
   {
     id: "hotel_4",
-    name: "Hotel Gandu",
+    name: "Hotel Demo",
     category: "budget",
 
-    location: "Halala",
-    address: "Halala, Varanasi, Uttar Pradesh",
+    location: "Nearest Location",
+    address: "Nearest Location, Varanasi, Uttar Pradesh",
 
     coordinates: {
       latitude: 25.3087,
       longitude: 83.0066
     },
+
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
+
+    pricePerNight: 150,
+
+    rating: 4.99,
+    totalReviews: 1789,
+
+    phone: "+91 817364746",
+
+    amenities: [
+      "Free WiFi",
+      "AC Rooms",
+      "Room Service",
+      "Parking",
+    ],
+
+    distanceFromLandmark: {
+      kashiVishwanathTemple: "700 m",
+      dashashwamedhGhat: "400 m",
+      varanasiJunction: "4 km"
+    },
+
+    images: {
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KVdMjn7Kgnclogd0Ycj-ZviT1Y7Lo8FJ4-ochc3WgkTfrx3RpinWRIA&s",
+      gallery: [
+        "/images/hotels/temple-heritage-1.jpg",
+        "/images/hotels/temple-heritage-2.jpg"
+      ]
+    },
+
+    checkIn: "12:00 PM",
+    checkOut: "11:00 AM"
+  },
+  {
+    id: "hotel_8",
+    name: "Hotel Demo",
+    category: "budget",
+
+    location: "Nearest Location",
+    address: "Nearest Location, Varanasi, Uttar Pradesh",
+
+    coordinates: {
+      latitude: 25.3087,
+      longitude: 83.0066
+    },
+
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
+
+    pricePerNight: 150,
+
+    rating: 4.99,
+    totalReviews: 1789,
+
+    phone: "+91 817364746",
+
+    amenities: [
+      "Free WiFi",
+      "AC Rooms",
+      "Room Service",
+      "Parking",
+    ],
+
+    distanceFromLandmark: {
+      kashiVishwanathTemple: "700 m",
+      dashashwamedhGhat: "400 m",
+      varanasiJunction: "4 km"
+    },
+
+    images: {
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KVdMjn7Kgnclogd0Ycj-ZviT1Y7Lo8FJ4-ochc3WgkTfrx3RpinWRIA&s",
+      gallery: [
+        "/images/hotels/temple-heritage-1.jpg",
+        "/images/hotels/temple-heritage-2.jpg"
+      ]
+    },
+
+    checkIn: "12:00 PM",
+    checkOut: "11:00 AM"
+  },
+  {
+    id: "hotel_5",
+    name: "Hotel Demo",
+    category: "budget",
+
+    location: "Nearest Location",
+    address: "Nearest Location, Varanasi, Uttar Pradesh",
+
+    coordinates: {
+      latitude: 25.3087,
+      longitude: 83.0066
+    },
+
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
+
+    pricePerNight: 150,
+
+    rating: 4.99,
+    totalReviews: 1789,
+
+    phone: "+91 817364746",
+
+    amenities: [
+      "Free WiFi",
+      "AC Rooms",
+      "Room Service",
+      "Parking",
+    ],
+
+    distanceFromLandmark: {
+      kashiVishwanathTemple: "700 m",
+      dashashwamedhGhat: "400 m",
+      varanasiJunction: "4 km"
+    },
+
+    images: {
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KVdMjn7Kgnclogd0Ycj-ZviT1Y7Lo8FJ4-ochc3WgkTfrx3RpinWRIA&s",
+      gallery: [
+        "/images/hotels/temple-heritage-1.jpg",
+        "/images/hotels/temple-heritage-2.jpg"
+      ]
+    },
+
+    checkIn: "12:00 PM",
+    checkOut: "11:00 AM"
+  },
+  {
+    id: "hotel_6",
+    name: "Hotel Demo",
+    category: "budget",
+
+    location: "Nearest Location",
+    address: "Nearest Location, Varanasi, Uttar Pradesh",
+
+    coordinates: {
+      latitude: 25.3087,
+      longitude: 83.0066
+    },
+
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
+
+    pricePerNight: 150,
+
+    rating: 4.99,
+    totalReviews: 1789,
+
+    phone: "+91 817364746",
+
+    amenities: [
+      "Free WiFi",
+      "AC Rooms",
+      "Room Service",
+      "Parking",
+    ],
+
+    distanceFromLandmark: {
+      kashiVishwanathTemple: "700 m",
+      dashashwamedhGhat: "400 m",
+      varanasiJunction: "4 km"
+    },
+
+    images: {
+      cover: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9KVdMjn7Kgnclogd0Ycj-ZviT1Y7Lo8FJ4-ochc3WgkTfrx3RpinWRIA&s",
+      gallery: [
+        "/images/hotels/temple-heritage-1.jpg",
+        "/images/hotels/temple-heritage-2.jpg"
+      ]
+    },
+
+    checkIn: "12:00 PM",
+    checkOut: "11:00 AM"
+  },
+  {
+    id: "hotel_9",
+    name: "Hotel Demo",
+    category: "budget",
+
+    location: "Nearest Location",
+    address: "Nearest Location, Varanasi, Uttar Pradesh",
+
+    coordinates: {
+      latitude: 25.3087,
+      longitude: 83.0066
+    },
+
+    mapUrl: "https://maps.app.goo.gl/MdSPxqFLE9UJK9dc9",
 
     pricePerNight: 150,
 

@@ -27,14 +27,18 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     width: "100%",
-    
+    flex: 1,
     backgroundColor: "#fff",
   },
   contentContainer: {
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
   },
   hotelCard: {
+    height: 120,
     width: "100%",
+    flexDirection: "column",
+    justifyContent: "space-evenly",
   },
 });

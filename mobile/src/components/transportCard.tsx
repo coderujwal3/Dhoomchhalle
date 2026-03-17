@@ -27,16 +27,13 @@ export default function transportCard({ style }: TransportCardProps) {
   const [userLocation, setUserLocation] = useState("");
   const [destination, setDestination] = useState("");
   const [peoples, setPeoples] = useState(0);
-
   const [distance, setDistance] = useState(0);
 
   const calculateDistance = (userLocation: any, destination: any) => {
     if (userLocation && destination) {
-        setDistance(24.7);
-        setUserLocation("");
-        setDestination("");
-    }
-      return 10;
+      setDistance(24.7);
+      setUserLocation("");
+      setDestination("");
     }
     return 0;
   };
@@ -65,37 +62,54 @@ export default function transportCard({ style }: TransportCardProps) {
           onChangeText={(text) => setPeoples(Number(text) || 0)}
           maxLength={3}
         />
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.button}
           onPress={() => calculateDistance(userLocation, destination)}
         >
           <Text style={styles.buttonText}>Calculate Fare</Text>
         </TouchableOpacity>
-        <Text>Total Distance: {distance} km</Text>
-        <Text>
-          Bus Fare: ₹
-          {distance *
-            peoples *
-            (transportBased.find((t) => t.id === "bus")?.Fare || 0)}
-        </Text>
-        <Text>
-          Auto Rikshaw Fare: ₹
-          {distance *
-            peoples *
-            (transportBased.find((t) => t.id === "auto")?.Fare || 0)}
-        </Text>
-        <Text>
-          E-Rikshaw Fare: ₹
-          {distance *
-            peoples *
-            (transportBased.find((t) => t.id === "erickshaw")?.Fare || 0)}
-        </Text>
-        <Text>
-          Taxi Fare: ₹
-          {distance *
-            peoples *
-            (transportBased.find((t) => t.id === "taxi")?.Fare || 0)}
-        </Text>
+
+        <View>
+          <Text style={{ marginBottom: 3 }}>
+            Total Distance: {distance.toFixed(2)} km
+          </Text>
+          <Text style={{ marginBottom: 3 }}>
+            Bus Fare: ₹
+            {(
+              distance *
+              peoples *
+              (transportBased.find((t) => t.id === "bus")?.Fare || 0)
+            ).toFixed(2)}
+            ;
+          </Text>
+          <Text style={{ marginBottom: 3 }}>
+            Auto Rikshaw Fare: ₹
+            {(
+              distance *
+              peoples *
+              (transportBased.find((t) => t.id === "auto")?.Fare || 0)
+            ).toFixed(2)}
+            ;
+          </Text>
+          <Text style={{ marginBottom: 3 }}>
+            E-Rikshaw Fare: ₹
+            {(
+              distance *
+              peoples *
+              (transportBased.find((t) => t.id === "erickshaw")?.Fare || 0)
+            ).toFixed(2)}
+            ;
+          </Text>
+          <Text style={{ marginBottom: 3 }}>
+            Taxi Fare: ₹
+            {(
+              distance *
+              peoples *
+              (transportBased.find((t) => t.id === "taxi")?.Fare || 0)
+            ).toFixed(2)}
+            ;
+          </Text>
+        </View>
       </View>
       {transports?.map((transport: any) => (
         <Animated.View
@@ -103,7 +117,7 @@ export default function transportCard({ style }: TransportCardProps) {
           entering={FadeInUp}
           style={[styles.card, style]}
         >
-          <Text style={{ fontSize: 18 }}>{transport.name}</Text>
+          <Text style={styles.Drivename}>{transport.name}</Text>
           <Text>Price: ₹{transport.baseFare}</Text>
           <Text>Type: {transport.type}</Text>
         </Animated.View>
@@ -114,19 +128,20 @@ export default function transportCard({ style }: TransportCardProps) {
 
 const styles = StyleSheet.create({
   container: {
-    width: 320,
+    width: "100%",
     flex: 1,
     backgroundColor: "#fff",
     gap: 20,
     justifyContent: "center",
     alignItems: "center",
+    flexWrap: "wrap",
   },
   card: {
     marginTop: 10,
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
-    width: "100%",
+    width: 350,
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
   },
   name: {
@@ -157,5 +172,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  Drivename: {
+    fontSize: AppStyles.fontSize.medium,
+    fontWeight: "bold",
+    color: AppStyles.color.hotelName,
   },
 });

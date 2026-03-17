@@ -12,7 +12,7 @@ export default function Hotels() {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={true}
     >
-      <LinearGradient colors={["#F97316", "#fab505"]}>
+      <LinearGradient colors={["#f97316", "#fab505"]}>
         <Animated.View entering={FadeInDown}>
           <HotelCard style={styles.hotelCard} />
         </Animated.View>

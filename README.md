@@ -275,7 +275,7 @@ npm run dev
 - expo bundler
 - typescript
 
-#@ download packages
+## download packages
 ```
 cd mobile
 npm install

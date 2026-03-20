@@ -1,6 +1,6 @@
 import { Car, Ship, Zap, Shield } from "lucide-react";
 import { easeInOut, motion } from "framer-motion";
-import ScrollReveal from "./ScrollReveal";
+import ScrollReveal from "./ui/ScrollReveal";
 
 const transports = [
   {

@@ -1,6 +1,6 @@
 import { Clock, IndianRupee, MapPin, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
-import ScrollReveal from "./ScrollReveal";
+import ScrollReveal from "./ui/ScrollReveal";
 import { useState } from "react";
 
 import kashiImg from "../../assets/kashi-vishwanath.jpg";

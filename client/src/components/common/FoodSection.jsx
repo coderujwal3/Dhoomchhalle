@@ -1,6 +1,6 @@
 import { Star, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
-import ScrollReveal from "./ScrollReveal";
+import ScrollReveal from "./ui/ScrollReveal";
 
 import kachoriImg from "../../assets/kachori-sabzi.jpg";
 import paanImg from "../../assets/banarasi-paan.jpg";

@@ -53,7 +53,7 @@ const Footer = () => (
             Varanasi, Uttar Pradesh, India
           </p>
           <p className="font-sans text-sm text-gray-100/80">
-            info@dhoomchalle.com
+            dhoomchalle@gmail.com
           </p>
         </motion.div>
       </div>

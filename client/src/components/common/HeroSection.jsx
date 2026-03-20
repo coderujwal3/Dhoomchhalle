@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import heroImage from "../../assets/hero-varanasi.jpg";
 import { MapPin, Utensils, Bus, Users } from "lucide-react";
 // import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import ShinyText from "../common/ShinyText";
+import ShinyText from "./ui/ShinyText";
 
 const FloatingParticle = ({ delay, x, y, size }) => (
   <motion.div
@@ -106,9 +106,7 @@ const HeroSection = () => {
             Explore the Spiritual
           </span>
           <br />
-          <span className="text-gradient-saffron">
-            Soul of India
-          </span>
+          <span className="text-gradient-saffron">Soul of India</span>
         </motion.h1>
 
         <motion.p

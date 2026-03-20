@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
-import SmoothScroll from "../components/common/SmoothScroll";
-import TextCursor from "../components/common/TextCursor";
+import SmoothScroll from "../components/common/ui/SmoothScroll";
+import TextCursor from "../components/common/ui/TextCursor";
 
 const MainLayout = () => {
   return (

@@ -1,10 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import SmoothScroll from "../components/common/ui/SmoothScroll";
 import TextCursor from "../components/common/ui/TextCursor";
 
 const MainLayout = () => {
+  const { pathname } = useLocation();
+  const showCursorEffect = pathname === "/";
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Navbar */}
@@ -13,7 +16,7 @@ const MainLayout = () => {
       {/* Page Content */}
       <main className="grow">
         <SmoothScroll>
-          <TextCursor />
+          {showCursorEffect ? <TextCursor /> : null}
           <Outlet />
         </SmoothScroll>
       </main>

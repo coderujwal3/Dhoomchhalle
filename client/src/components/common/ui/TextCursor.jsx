@@ -11,15 +11,17 @@ const TextCursor = ({
   maxPoints = 5,
 }) => {
   const [trail, setTrail] = useState([]);
+  const [isEnabled, setIsEnabled] = useState(false);
   const containerRef = useRef(null);
-  const lastMoveTimeRef = useRef(Date.now());
+  const lastMoveTimeRef = useRef(0);
   const idCounter = useRef(0);
+  const lastPointRef = useRef(null);
+  const pendingMouseRef = useRef(null);
+  const rafRef = useRef(0);
+  const isEnabledRef = useRef(false);
 
-  const handleMouseMove = (e) => {
+  const appendTrailFromMouse = (mouseX, mouseY) => {
     if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
 
     const createRandomData = () =>
       randomFloat
@@ -32,63 +34,110 @@ const TextCursor = ({
 
     setTrail((prev) => {
       const newTrail = [...prev];
+      const last = lastPointRef.current;
 
-      if (newTrail.length === 0) {
-        newTrail.push({
+      if (!last) {
+        const firstPoint = {
           id: idCounter.current++,
           x: mouseX,
           y: mouseY,
           angle: 0,
           ...createRandomData(),
-        });
+        };
+        newTrail.push(firstPoint);
+        lastPointRef.current = firstPoint;
       } else {
-        const last = newTrail[newTrail.length - 1];
         const dx = mouseX - last.x;
         const dy = mouseY - last.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
         if (distance >= spacing) {
-          let rawAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+          const rawAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
           const computedAngle = followMouseDirection ? rawAngle : 0;
           const steps = Math.floor(distance / spacing);
 
           for (let i = 1; i <= steps; i++) {
             const t = (spacing * i) / distance;
-            const newX = last.x + dx * t;
-            const newY = last.y + dy * t;
-
-            newTrail.push({
+            const newPoint = {
               id: idCounter.current++,
-              x: newX,
-              y: newY,
+              x: last.x + dx * t,
+              y: last.y + dy * t,
               angle: computedAngle,
               ...createRandomData(),
-            });
+            };
+            newTrail.push(newPoint);
+            lastPointRef.current = newPoint;
           }
         }
       }
 
-      return newTrail.length > maxPoints
-        ? newTrail.slice(newTrail.length - maxPoints)
-        : newTrail;
+      const trimmed =
+        newTrail.length > maxPoints
+          ? newTrail.slice(newTrail.length - maxPoints)
+          : newTrail;
+      if (trimmed.length > 0) {
+        lastPointRef.current = trimmed[trimmed.length - 1];
+      }
+      return trimmed;
     });
 
     lastMoveTimeRef.current = Date.now();
   };
 
+  const handleMouseMove = (e) => {
+    if (!isEnabledRef.current || !containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    pendingMouseRef.current = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = 0;
+      if (!pendingMouseRef.current) return;
+      appendTrailFromMouse(pendingMouseRef.current.x, pendingMouseRef.current.y);
+      pendingMouseRef.current = null;
+    });
+  };
+
   useEffect(() => {
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    isEnabledRef.current = !isTouchDevice && !prefersReducedMotion;
+    setIsEnabled(isEnabledRef.current);
+    if (!isEnabledRef.current) {
+      return undefined;
+    }
+
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (Date.now() - lastMoveTimeRef.current > 100) {
-        setTrail((prev) => (prev.length > 0 ? prev.slice(1) : prev));
+        setTrail((prev) => {
+          if (prev.length === 0) return prev;
+          const next = prev.slice(1);
+          lastPointRef.current = next.length > 0 ? next[next.length - 1] : null;
+          return next;
+        });
       }
-    }, removalInterval);
+    }, Math.max(removalInterval, 80));
     return () => clearInterval(interval);
   }, [removalInterval]);
+
+  if (!isEnabled) {
+    return null;
+  }
 
   return (
     <div

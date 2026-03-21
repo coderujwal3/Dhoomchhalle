@@ -8,21 +8,23 @@ export const getLenis = () => lenis;
 const SmoothScroll = ({ children }) => {
   useEffect(() => {
     lenis = new Lenis({
-      duration: 2,
+      duration: 1.2,
       smoothWheel: true,
       smoothTouch: false,
       wheelMultiplier: 1,
       allowNestedScroll: true,
     });
 
+    let rafId = 0;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf)
+      rafId = requestAnimationFrame(raf);
     }
 
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
+      cancelAnimationFrame(rafId);
       lenis.destroy();
       lenis = null;
     };

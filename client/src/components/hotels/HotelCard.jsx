@@ -1,6 +1,6 @@
 import React from "react";
 import {motion} from "framer-motion";
-import hotels from "../../DB/hotelDB";
+import { Link } from "react-router-dom";
 import {
   StarIcon,
   CornerDownRightIcon,
@@ -8,7 +8,7 @@ import {
   PhoneCallIcon,
 } from "lucide-react";
 
-const HotelCard = () => {
+const HotelCard = ({ hotels = [] }) => {
   return (
     <section className="py-20 md:py-28 bg-orange-100/30 relative overflow-hidden">
       {/* Background decoration */}
@@ -71,7 +71,7 @@ const HotelCard = () => {
               </div>
 
               {/* Content Container */}
-              <div className="p-6 flex flex-col flex-grow">
+              <div className="p-6 flex flex-col grow">
                 <h3 className="font-display text-2xl font-bold text-red-800 mb-3 line-clamp-1">
                   {hotel.name}
                 </h3>
@@ -97,7 +97,7 @@ const HotelCard = () => {
                 </div>
 
                 {/* Amenities */}
-                <div className="mb-6 space-y-2.5 flex-grow">
+                <div className="mb-6 space-y-2.5 grow">
                   {hotel.amenities?.slice(0, 3).map((amenity) => (
                     <div
                       key={amenity}
@@ -119,6 +119,15 @@ const HotelCard = () => {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row items-center gap-3 pt-5 border-t border-orange-100">
+                  <Link to={`/hotels/${hotel.id}`} className="w-full sm:flex-1">
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-medium transition-colors shadow-md"
+                    >
+                      View Details
+                    </motion.button>
+                  </Link>
                   <a
                     href={hotel.mapUrl || "#"}
                     target="_blank"

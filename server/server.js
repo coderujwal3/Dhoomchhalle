@@ -1,10 +1,18 @@
 const app = require('./app');
-
-
 const connectToDB = require('./config/db');
-connectToDB();
+const { seedHotelsIfEmpty } = require('./modules/hotel/hotel.seed');
 
-const port = 3000
-app.listen(port, () => {
-    console.log(`Server is running at ${port}`);
-})
+async function startServer() {
+    await connectToDB();
+    await seedHotelsIfEmpty();
+
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+        console.log(`Server is running at ${port}`);
+    });
+}
+
+startServer().catch((error) => {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+});

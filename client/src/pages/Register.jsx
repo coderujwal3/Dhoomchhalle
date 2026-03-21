@@ -56,7 +56,7 @@ function Register() {
   };
 
   return (
-    <section className="min-h-screen relative overflow-hidden bg-gradient-to-br from-neutral-950 via-zinc-900 to-neutral-800 px-4 py-20">
+    <section className="min-h-screen relative overflow-hidden bg-linear-to-br from-neutral-950 via-zinc-900 to-neutral-800 px-4 py-20">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.2),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(217,70,239,0.2),transparent_40%)]" />
 

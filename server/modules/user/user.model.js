@@ -30,7 +30,15 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ["traveller", "admin", "verifier"],
             default: "traveller"
-        }
+        },
+        resetPasswordToken: {
+            type: String,
+            select: false
+        },
+        resetPasswordExpires: {
+            type: Date,
+            select: false
+        },
     },
     { timestamps: true }
 );

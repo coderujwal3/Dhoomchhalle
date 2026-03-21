@@ -12,6 +12,9 @@ const hotelSchema = new mongoose.Schema(
             required: true,
             index: true
         },
+        address: {
+            type: String,
+        },
         category: {
             type: String,
             enum: ["budget", "mid", "luxury", "hostel"],
@@ -22,6 +25,10 @@ const hotelSchema = new mongoose.Schema(
             required: true
         },
         contactNumber: String,
+        websiteUrl: String,
+        mapUrl: String,
+        checkIn: String,
+        checkOut: String,
         description: String,
         amenities: [String],
         photos: [String],

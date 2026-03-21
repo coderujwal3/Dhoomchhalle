@@ -1,44 +1,49 @@
 const nodemailer = require('nodemailer');
-/**
- * Check for required environment variables before creating the transporter. This ensures that we catch configuration issues early and avoid runtime errors when trying to send emails.
- */
-if (!process.env.EMAIL_USER || !process.env.CLIENT_ID || !process.env.CLIENT_SECRET || !process.env.REFRESH_TOKEN || !process.env.ACCESS_TOKEN) {
-    throw new Error("Email credentials are missing in environment variables");
-}
+let transporter = null;
+let warnedEmailConfig = false;
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL_USER,
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: process.env.REFRESH_TOKEN,
-        accessToken: process.env.ACCESS_TOKEN,
-    },
-});
-
-// Verify the connection configuration
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('Error connecting to email server:', error);
-    } else {
-        console.log('Email server is ready to send messages');
+function getTransporter() {
+    if (transporter) return transporter;
+    if (!process.env.EMAIL_USER || !process.env.CLIENT_ID || !process.env.CLIENT_SECRET || !process.env.REFRESH_TOKEN || !process.env.ACCESS_TOKEN) {
+        if (!warnedEmailConfig) {
+            console.warn("Email credentials are missing. Email notifications are disabled.");
+            warnedEmailConfig = true;
+        }
+        return null;
     }
-});
+
+    transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            type: 'OAuth2',
+            user: process.env.EMAIL_USER,
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN,
+            accessToken: process.env.ACCESS_TOKEN,
+        },
+    });
+
+    return transporter;
+}
 
 // Function to send email
 const sendEmail = async (to, subject, text, html) => {
     try {
-        const info = await transporter.sendMail({
+        const emailTransporter = getTransporter();
+        if (!emailTransporter) return false;
+
+        await emailTransporter.sendMail({
             from: `"Dhoomchhalle" <${process.env.EMAIL_USER}>`, // sender address
             to, // list of receivers
             subject, // Subject line
             text, // plain text body
             html, // html body
         });
+        return true;
     } catch (error) {
         console.error('Error sending email:', error);
+        return false;
     }
 };
 
@@ -51,4 +56,12 @@ async function sendRegistrationEmail(userEmail, name) {
     await sendEmail(userEmail, subject, text, html);
 }
 
-module.exports = { sendRegistrationEmail }
+async function sendPasswordResetEmail(userEmail, name, resetLink) {
+    const subject = "Reset your Dhoomchhalle password";
+    const text = `Hello ${name},\n\nWe received a request to reset your password.\nUse this link to reset it:\n${resetLink}\n\nThis link will expire in 15 minutes.\nIf you did not request this, please ignore this message.`;
+    const html = `<p>Hello ${name},</p><p>We received a request to reset your password.</p><p><a href="${resetLink}" target="_blank" rel="noopener noreferrer">Reset Password</a></p><p>This link will expire in <strong>15 minutes</strong>.</p><p>If you did not request this, please ignore this message.</p>`;
+
+    await sendEmail(userEmail, subject, text, html);
+}
+
+module.exports = { sendRegistrationEmail, sendPasswordResetEmail }

@@ -267,3 +267,23 @@ npm run dev
 
 ## Mobile Landing page
 <img height="840" alt="image" src="https://github.com/user-attachments/assets/91ff65d4-779f-4fbc-976e-cb024a530834" />
+
+# App Dev requirements
+- Android Studio
+- Emulators (`pixel 5`,`pixel 7 pro`,`pixel tablet`)
+- React-Native
+- expo bundler
+- typescript
+
+## download packages
+```
+cd mobile
+npm install
+```
+
+## Start app in emulator
+```
+npm run android    -     (for android - you can run using expo command - expo start --android)
+npm run ios        -     (for ios - you can run using expo command - expo start --ios)
+npm run tablet     -     (for tablet - you can run using expo command - expo start --tablet)
+```

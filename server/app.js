@@ -7,11 +7,10 @@ const app = express();
 
 app.use(cookieParser())
 app.use(express.json())
-// app.use(cors({
-//   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-//   credentials: true
-// }));
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  credentials: true
+}));
 
 const userRoutes = require('./modules/user/user.routes')
 const hotelRoutes = require('./modules/hotel/hotel.routes')
@@ -23,7 +22,7 @@ app.get("/health", (req, res) => {
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/hotels", hotelRoutes);
 
-// Backward compatibility for existing clients still calling legacy routes.
+// Backward compatibility for existing clients
 app.use("/api/auth", userRoutes);
 
 module.exports = app

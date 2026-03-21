@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Pages
 import Home from "../pages/Home";
-// import Login from "../pages/Login";
-// import Register from "../pages/Register";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 import Hotels from "../pages/Hotels";
+import HotelDetails from "../pages/HotelDetails";
 // import Transport from "../pages/Transport";
 // import RoutePlanner from "../pages/RoutePlanner";
 // import Timings from "../pages/Timings";
@@ -21,6 +23,7 @@ import NotFound from "../pages/NotFound";
 
 // Layout
 import MainLayout from "../layouts/MainLayout";
+import GuestOnlyRoute from "../components/auth/GuestOnlyRoute";
 
 const AppRoutes = () => {
   // const [loading, setLoading] = useState(true);
@@ -50,6 +53,7 @@ const AppRoutes = () => {
           <Route path="/" element={<Home />} />
 
           <Route path="/hotels" element={<Hotels />} />
+          <Route path="/hotels/:id" element={<HotelDetails />} />
 
           {/* <Route path="/transport" element={<Transport />} /> */}
 
@@ -59,9 +63,38 @@ const AppRoutes = () => {
         </Route>
 
         {/* Auth Routes */}
-        {/* <Route path="/login" element={<Login />} />
-
-        <Route path="/register" element={<Register />} /> */}
+        <Route
+          path="/login"
+          element={(
+            <GuestOnlyRoute>
+              <Login />
+            </GuestOnlyRoute>
+          )}
+        />
+        <Route
+          path="/register"
+          element={(
+            <GuestOnlyRoute>
+              <Register />
+            </GuestOnlyRoute>
+          )}
+        />
+        <Route
+          path="/reset-password/:token"
+          element={(
+            <GuestOnlyRoute>
+              <ResetPassword />
+            </GuestOnlyRoute>
+          )}
+        />
+        <Route
+          path="/forgot-password"
+          element={(
+            <GuestOnlyRoute>
+              <ForgotPassword />
+            </GuestOnlyRoute>
+          )}
+        />
 
         {/* User Routes */}
         {/* <Route path="/profile" element={<Profile />} /> */}

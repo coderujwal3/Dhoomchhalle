@@ -1,91 +1,197 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Lock, Mail, Phone, Sparkles, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { register as registerUser } from "../services/auth.service";
+
+const strongPasswordRule =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,64}$/;
 
 function Register() {
-  const navigate = useNavigate(); // using navigate to direct navigate to /login after successful registration
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const passwordIsStrong = strongPasswordRule.test(password);
+  const phoneIsValid = /^\d{10}$/.test(phone);
+  const passwordsMatch = password.length > 0 && password === confirmPassword;
+  const canSubmit = useMemo(() => {
+    return (
+      name.trim().length >= 2 &&
+      email.trim().includes("@") &&
+      phoneIsValid &&
+      passwordIsStrong &&
+      passwordsMatch &&
+      !isSubmitting
+    );
+  }, [name, email, phoneIsValid, passwordIsStrong, passwordsMatch, isSubmitting]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setName("");
-    setEmail("");
-    setPhone("");
-    setPassword("");
+    if (!canSubmit) return;
 
     try {
-      const res = await axios.post("http://localhost:3000/api/auth/register", {
-        name,
-        email,
+      setIsSubmitting(true);
+      const res = await registerUser({
+        name: name.trim(),
+        email: email.trim(),
         phone,
         password,
+        confirmPassword,
       });
-      localStorage.setItem("token", res.data.token);
-      toast.success("Registered Successfully");
+      localStorage.setItem("token", res.data?.token);
+      toast.success(res.message || "Registered successfully");
       navigate("/login");
     } catch (error) {
-      console.log(error);
-      toast.error(error);
+      toast.error(error?.response?.data?.message || "Registration failed");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-14">
-      <form
-        onSubmit={handleSubmit}
-        className="w-75 p-8 border rounded-xl border-gray-300 bg-gray-100 shadow-gray-200 shadow-md"
-      >
-        <h2>Register in Dhoomchhalle</h2>
+    <section className="min-h-screen relative overflow-hidden bg-gradient-to-br from-neutral-950 via-zinc-900 to-neutral-800 px-4 py-20">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.2),transparent_45%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(217,70,239,0.2),transparent_40%)]" />
 
-        <input
-          className="w-full p-2 mt-2 mb-2"
-          required
-          type="text"
-          placeholder="Enter Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+      <div className="relative max-w-md mx-auto rounded-2xl border border-white/10 bg-white/10 backdrop-blur-xl p-7 sm:p-8 shadow-2xl">
+        <div className="mb-6">
+          <p className="inline-flex items-center gap-2 text-xs tracking-widest uppercase text-orange-300">
+            <Sparkles size={14} />
+            Join Dhoomchhalle
+          </p>
+          <h1 className="text-3xl font-bold text-white mt-2">Create your account</h1>
+          <p className="text-sm text-zinc-300 mt-1">Plan stays, routes, and experiences in one place.</p>
+        </div>
 
-        <input
-          className="w-full p-2 mt-2 mb-2"
-          type="email"
-          required
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="block">
+            <span className="text-sm text-zinc-200">Full name</span>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+              <User size={16} className="text-zinc-300" />
+              <input
+                className="w-full py-3 bg-transparent text-white outline-none placeholder:text-zinc-400"
+                required
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          </label>
 
-        <input
-          className="w-full p-2 mt-2 mb-2"
-          required
-          type="number"
-          placeholder="Enter Your Phone Number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+          <label className="block">
+            <span className="text-sm text-zinc-200">Email</span>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+              <Mail size={16} className="text-zinc-300" />
+              <input
+                className="w-full py-3 bg-transparent text-white outline-none placeholder:text-zinc-400"
+                required
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          </label>
 
-        <input
-          className="w-full p-2 mt-2 mb-2"
-          required
-          type="password"
-          placeholder="Enter Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <label className="block">
+            <span className="text-sm text-zinc-200">Phone number</span>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+              <Phone size={16} className="text-zinc-300" />
+              <input
+                className="w-full py-3 bg-transparent text-white outline-none placeholder:text-zinc-400"
+                required
+                type="tel"
+                inputMode="numeric"
+                pattern="\d{10}"
+                maxLength={10}
+                placeholder="10-digit mobile number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              />
+            </div>
+            <p className="text-xs mt-1 text-zinc-300">Only 10 digits, country code is added automatically.</p>
+          </label>
 
-        <button
-          className="w-full p-2 bg-[#007bff] text-white border-none"
-          type="submit"
-        >
-          Register
-        </button>
-      </form>
+          <label className="block">
+            <span className="text-sm text-zinc-200">Password</span>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+              <Lock size={16} className="text-zinc-300" />
+              <input
+                className="w-full py-3 bg-transparent text-white outline-none placeholder:text-zinc-400"
+                required
+                minLength={8}
+                type={showPassword ? "text" : "password"}
+                placeholder="Create a strong password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="text-zinc-200 hover:text-white transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            <p className={`text-xs mt-1 ${password && !passwordIsStrong ? "text-red-300" : "text-zinc-300"}`}>
+              Use 8+ chars with uppercase, lowercase, number, and special character.
+            </p>
+          </label>
+
+          <label className="block">
+            <span className="text-sm text-zinc-200">Confirm password</span>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+              <Lock size={16} className="text-zinc-300" />
+              <input
+                className="w-full py-3 bg-transparent text-white outline-none placeholder:text-zinc-400"
+                required
+                minLength={8}
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Re-enter your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                className="text-zinc-200 hover:text-white transition-colors"
+                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            <p className={`text-xs mt-1 ${confirmPassword && !passwordsMatch ? "text-red-300" : "text-zinc-300"}`}>
+              {confirmPassword && !passwordsMatch ? "Passwords do not match." : "Both passwords must match."}
+            </p>
+          </label>
+
+          <button
+            className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400/60 text-white font-semibold transition-colors"
+            type="submit"
+            disabled={!canSubmit}
+          >
+            {isSubmitting ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        <p className="text-sm text-zinc-300 mt-5 text-center">
+          Already have an account?{" "}
+          <Link to="/login" className="text-orange-300 hover:text-orange-200 underline">
+            Login here
+          </Link>
+        </p>
+      </div>
       <Toaster />
-    </div>
+    </section>
   );
 }
 

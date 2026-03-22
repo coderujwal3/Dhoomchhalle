@@ -1,3 +1,4 @@
+require("dns").setDefaultResultOrder("ipv4first");
 const app = require('./app');
 const connectToDB = require('./config/db');
 const { seedHotelsIfEmpty } = require('./modules/hotel/hotel.seed');

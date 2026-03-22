@@ -3,7 +3,6 @@ import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import SmoothScroll from "../components/common/ui/SmoothScroll";
 import TextCursor from "../components/common/ui/TextCursor";
-import { Analytics } from "@vercel/analytics/next"
 
 const MainLayout = () => {
   const { pathname } = useLocation();
@@ -11,8 +10,6 @@ const MainLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Analytics */}
-      <Analytics />
 
       {/* Navbar */}
       <Navbar />

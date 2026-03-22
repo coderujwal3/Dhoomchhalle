@@ -1,15 +1,15 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-const GuestOnlyRoute = ({ children }) => {
+const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
   const location = useLocation();
 
-  if (token) {
-    return <Navigate to="/dashboard" replace state={{ from: location.pathname }} />;
+  if (!token) {
+    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
   return children;
 };
 
-export default GuestOnlyRoute;
+export default ProtectedRoute;

@@ -27,6 +27,32 @@ User Module-
 - Timings Module (Bus/Train)
 - Admin Panel (VERY IMPORTANT)
 
+## Authentication, session & user dashboard - (recent update)
+
+### User dashboard
+- Logged-in users can open **`/dashboard`** (protected route; requires a valid session).
+- The dashboard loads profile data from **`GET /api/v1/auth/me`** (name, email, phone, role, member since).
+- Quick links to browse hotels and return home; **Log out** calls **`POST /api/v1/auth/logout`** and clears the client-side token.
+
+### Why tokens alone are not enough (admin / DB access)
+- JWTs are **stateless**: if an account is **removed from MongoDB** (e.g. admin or moderation action), the old JWT can still verify until it expires.
+- **Fix:** `auth.middleware` verifies the JWT, then **loads the user from the database**. If **`findById` returns nothing** → **`401`** with a clear message (token is “valid” cryptically, but the user no longer exists).
+- On that response, the server can also **clear the httpOnly `token` cookie** so the browser does not keep sending a dead session.
+
+### Token blacklisting (logout)
+- On **logout**, the current token is stored in a **`tokenBlacklist`** MongoDB collection so it cannot be reused.
+- Entries use a **TTL index** on `createdAt` so blacklist documents expire automatically after a short window (aligned with token lifetime).
+
+### Auto logout & client behaviour
+- The **axios client** attaches **`Authorization: Bearer …`** from `localStorage` (and sends cookies with `credentials`).
+- On **`401`** (expired/invalid/blacklisted token, or user deleted in DB), the client **removes the token** from `localStorage`.
+- **Protected areas** (e.g. **`/dashboard`**): user is sent to **`/login`** so they cannot stay on a gated screen without a session.
+- **Public pages** (e.g. **Home `/`**, hotels): the user **stays on the page** after a failed session check; the navbar is updated via a **`dhoom-auth-changed`** event so “logged in” UI does not linger incorrectly.
+- Failed **login/register** attempts are **not** treated as a global logout (those `401`s are ignored for the redirect logic).
+
+### Session check on app load
+- If a token exists, the app may call **`GET /auth/me`** once on startup to align the session with the server; invalid sessions are cleared without forcing public visitors off the landing page.
+
 ## 📊 ER DIAGRAM (Level 1 – Logical View)
 ```
 USER
@@ -126,6 +152,9 @@ client/
 │   │   └── icons/
 │   │
 │   ├── components/
+│   │   ├── auth/
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   └── GuestOnlyRoute.jsx
 │   │   ├── common/
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── Footer.jsx
@@ -145,6 +174,7 @@ client/
 │   ├── pages/
 │   │   ├── Home.jsx
 │   │   ├── Hotels.jsx
+│   │   ├── UserDashboard.jsx
 │   │   ├── Transport.jsx
 │   │   ├── RoutePlanner.jsx
 │   │   ├── Timings.jsx
@@ -194,7 +224,8 @@ server/
 │   │   ├── user.controller.js
 │   │   ├── user.routes.js
 │   │   ├── user.service.js
-│   │   └── user.validation.js
+│   │   ├── user.validation.js
+│   │   └── tokenBlacklist.model.js
 │   │
 │   ├── hotel/
 │   │   ├── hotel.model.js
@@ -264,6 +295,8 @@ npm run dev
 
 ## Website landing page
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/64dbee39-b5a6-40bd-8546-4c5ebd34f9bf" />
+
+## User Dashboard
 
 ## Mobile Landing page
 <img height="840" alt="image" src="https://github.com/user-attachments/assets/91ff65d4-779f-4fbc-976e-cb024a530834" />

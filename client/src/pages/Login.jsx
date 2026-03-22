@@ -27,7 +27,7 @@ function Login() {
       });
       localStorage.setItem("token", res.data?.token);
       toast.success(res.message || "Logged in successfully");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Login failed");
     } finally {

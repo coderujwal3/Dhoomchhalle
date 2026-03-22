@@ -112,6 +112,26 @@ async function userLoginController(req, res) {
 }
 
 /**
+ * GET /auth/me — requires authMiddleware (JWT valid + user exists in DB)
+ */
+async function getMeController(req, res) {
+    const user = req.user;
+    return res.status(200).json({
+        status: "success",
+        data: {
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                role: user.role,
+                createdAt: user.createdAt,
+            },
+        },
+    });
+}
+
+/**
 * - user logout controller
 * - POST api/auth/logout 
 */
@@ -214,6 +234,7 @@ module.exports = {
     userRegisterController,
     userLoginController,
     userLogoutController,
+    getMeController,
     forgotPasswordController,
     resetPasswordController,
 };

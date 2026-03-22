@@ -1,5 +1,10 @@
 import apiClient from "../lib/apiClient";
 
+export async function getSession() {
+  const response = await apiClient.get("/auth/me");
+  return response.data;
+}
+
 export async function login(payload) {
   const response = await apiClient.post("/auth/login", payload);
   return response.data;

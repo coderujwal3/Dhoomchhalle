@@ -8,10 +8,14 @@ const app = express();
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN,
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  // origin: "http://localhost:5173",
   credentials: true
 }));
 
+/**
+ * Routes for modules - user, hotels, transport, timings
+ */
 const userRoutes = require('./modules/user/user.routes')
 const hotelRoutes = require('./modules/hotel/hotel.routes')
 

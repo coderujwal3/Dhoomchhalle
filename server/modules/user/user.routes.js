@@ -10,7 +10,9 @@ const {
 } = require("./user.validation");
 const { validateRequest } = require("../../middlewares/validate.middleware");
 const { authLoginLimiter, forgotPasswordLimiter } = require("../../middlewares/rateLimit.middleware");
+const { authMiddleware } = require("../../middlewares/auth.middleware");
 
+router.get("/me", authMiddleware, userController.getMeController);
 router.post("/register", registerValidation, validateRequest, userController.userRegisterController);
 router.post("/login", authLoginLimiter, loginValidation, validateRequest, userController.userLoginController);
 router.post("/logout", userController.userLogoutController);

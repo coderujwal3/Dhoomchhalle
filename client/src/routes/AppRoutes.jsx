@@ -8,6 +8,7 @@ import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 import Hotels from "../pages/Hotels";
 import HotelDetails from "../pages/HotelDetails";
+import UserDashboard from "../pages/UserDashboard";
 // import Transport from "../pages/Transport";
 // import RoutePlanner from "../pages/RoutePlanner";
 // import Timings from "../pages/Timings";
@@ -24,6 +25,7 @@ import NotFound from "../pages/NotFound";
 // Layout
 import MainLayout from "../layouts/MainLayout";
 import GuestOnlyRoute from "../components/auth/GuestOnlyRoute";
+import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 const AppRoutes = () => {
   // const [loading, setLoading] = useState(true);
@@ -47,13 +49,20 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
-        <Route path="*" element={<NotFound />} />
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
 
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:id" element={<HotelDetails />} />
+
+          <Route
+            path="/dashboard"
+            element={(
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            )}
+          />
 
           {/* <Route path="/transport" element={<Transport />} /> */}
 
@@ -101,6 +110,8 @@ const AppRoutes = () => {
 
         {/* Admin Routes */}
         {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

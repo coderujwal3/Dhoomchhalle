@@ -47,7 +47,7 @@ function Register() {
       });
       localStorage.setItem("token", res.data?.token);
       toast.success(res.message || "Registered successfully");
-      navigate("/login");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Registration failed");
     } finally {

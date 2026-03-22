@@ -1,50 +1,68 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLenis } from "./ui/SmoothScroll";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { logout as logoutRequest } from "../../services/auth.service";
 
-const navLinks = [
-  { label: "Home", id: "home", type: "scroll", bg: "transparent" },
-  { label: "Places", id: "places", type: "scroll", bg: "transparent" },
-  { label: "Food", id: "food", type: "scroll", bg: "transparent" },
-  { label: "Transport", id: "transport", type: "scroll", bg: "transparent" },
-  { label: "Guides", id: "guides", type: "scroll", bg: "transparent" },
-
-  {
-    label: "Register",
-    path: "/register",
-    type: "route",
-    bg: "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center",
-  },
-
-  {
-    label: "Login",
-    path: "/login",
-    type: "route",
-    bg: "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center",
-  },
+const scrollLinks = [
+  { label: "Home", id: "home" },
+  { label: "Places", id: "places" },
+  { label: "Food", id: "food" },
+  { label: "Transport", id: "transport" },
+  { label: "Guides", id: "guides" },
 ];
+
+const routeBtnClass =
+  "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center";
 
 const scrollToSection = (id) => {
   const lenis = getLenis();
   const el = document.getElementById(id);
+  if (!el) return;
   lenis.scrollTo(el, {
     offset: -80,
     duration: 1.5,
-    easing: (t) => 1 - Math.pow(1 - t, 3), // easeOutCubic
+    easing: (t) => 1 - Math.pow(1 - t, 3),
   });
 };
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [authTick, setAuthTick] = useState(0);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const onAuthChanged = () => setAuthTick((t) => t + 1);
+    window.addEventListener("dhoom-auth-changed", onAuthChanged);
+    return () => window.removeEventListener("dhoom-auth-changed", onAuthChanged);
+  }, []);
+
+  const isAuthed = useMemo(
+    () => Boolean(typeof window !== "undefined" && localStorage.getItem("token")),
+    [location.pathname, authTick],
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const navTextClass = scrolled ? "text-gray-800" : "text-black-500/80";
+
+  const handleLogout = async () => {
+    try {
+      await logoutRequest();
+    } catch {
+      // Clear client session even if API fails
+    }
+    localStorage.removeItem("token");
+    setIsOpen(false);
+    navigate("/");
+  };
 
   return (
     <motion.nav
@@ -66,40 +84,88 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link, i) =>
-            link.type === "route" ? (
+          {scrollLinks.map((link, i) => (
+            <motion.a
+              key={link.id}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
+              className={`font-sans text-lg font-medium transition-colors cursor-pointer relative group ${navTextClass}`}
+              href={`#${link.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToSection(link.id);
+              }}
+            >
+              {link.label}
+            </motion.a>
+          ))}
+
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * scrollLinks.length + 0.8, duration: 0.6 }}
+          >
+            <Link
+              to="/hotels"
+              className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+            >
+              Hotels
+            </Link>
+          </motion.div>
+
+          {isAuthed ? (
+            <>
               <motion.div
-                key={link.label}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
+                transition={{ delay: 0.1 * (scrollLinks.length + 1) + 0.8, duration: 0.6 }}
               >
                 <Link
-                  to={link.path}
-                  className={`font-sans text-lg ${link.bg} font-medium transition-colors cursor-pointer relative group ${
-                    scrolled ? "text-gray-900" : "text-white/80"
-                  }`}
+                  to="/dashboard"
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
                 >
-                  {link.label}
+                  Dashboard
                 </Link>
               </motion.div>
-            ) : (
-              <motion.a
-                key={link.id}
+              <motion.button
+                type="button"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
-                className={`font-sans text-lg ${link.bg} font-medium transition-colors cursor-pointer relative group ${
-                  scrolled ? "text-gray-900" : "text-white/80"
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollToSection(link.id);
-                }}
+                transition={{ delay: 0.1 * (scrollLinks.length + 2) + 0.8, duration: 0.6 }}
+                onClick={handleLogout}
+                className={`font-sans text-lg font-medium transition-colors cursor-pointer ${navTextClass} border border-white/30 rounded-md px-3 py-1.5 hover:bg-white/10`}
               >
-                {link.label}
-              </motion.a>
-            ),
+                Log out
+              </motion.button>
+            </>
+          ) : (
+            <>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * (scrollLinks.length + 1) + 0.8, duration: 0.6 }}
+              >
+                <Link
+                  to="/register"
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+                >
+                  Register
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * (scrollLinks.length + 2) + 0.8, duration: 0.6 }}
+              >
+                <Link
+                  to="/login"
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+                >
+                  Login
+                </Link>
+              </motion.div>
+            </>
           )}
         </div>
 
@@ -122,38 +188,91 @@ const Navbar = () => {
             className="md:hidden bg-background/98 backdrop-blur-md border-t border-border overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
-              {navLinks.map((link, i) =>
-                link.type === "route" ? (
+              {scrollLinks.map((link, i) => (
+                <motion.a
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.id);
+                    setIsOpen(false);
+                  }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors"
+                >
+                  {link.label}
+                </motion.a>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: scrollLinks.length * 0.05 }}
+              >
+                <Link
+                  to="/hotels"
+                  onClick={() => setIsOpen(false)}
+                  className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                >
+                  Hotels
+                </Link>
+              </motion.div>
+              {isAuthed ? (
+                <>
                   <motion.div
-                    key={link.label}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    transition={{ delay: (scrollLinks.length + 1) * 0.05 }}
                   >
                     <Link
-                      to={link.path}
+                      to="/dashboard"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-white py-2 hover:text-orange-600/60 transition-colors"
+                      className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
                     >
-                      {link.label}
+                      Dashboard
                     </Link>
                   </motion.div>
-                ) : (
-                  <motion.a
-                    key={link.id}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      scrollToSection(link.id);
-                      setIsOpen(false);
-                    }}
+                  <motion.button
+                    type="button"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="font-sans text-base font-medium text-white py-2 hover:text-orange-600/60 transition-colors"
+                    transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
+                    onClick={handleLogout}
+                    className="font-sans text-base font-medium text-left text-foreground py-2 hover:text-orange-600/60 transition-colors"
                   >
-                    {link.label}
-                  </motion.a>
-                ),
+                    Log out
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (scrollLinks.length + 1) * 0.05 }}
+                  >
+                    <Link
+                      to="/register"
+                      onClick={() => setIsOpen(false)}
+                      className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                    >
+                      Register
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
+                  >
+                    <Link
+                      to="/login"
+                      onClick={() => setIsOpen(false)}
+                      className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                    >
+                      Login
+                    </Link>
+                  </motion.div>
+                </>
               )}
             </div>
           </motion.div>

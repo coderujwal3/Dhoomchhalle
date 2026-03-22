@@ -1,4 +1,5 @@
 import React from "react";
+/** Public landing page (no auth required). */
 import HeroSection from "../components/common/HeroSection";
 import PlacesSection from "../components/common/PlacesSection";
 import FoodSection from "../components/common/FoodSection";

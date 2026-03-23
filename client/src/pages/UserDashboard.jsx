@@ -16,6 +16,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { getSession, logout } from "../services/auth.service";
 
+import QRCode from "react-qr-code";
+
 function formatDate(iso) {
   if (!iso) return "—";
   try {
@@ -70,7 +72,7 @@ function UserDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-background via-muted/20 to-muted/40 pt-20 md:pt-24 pb-16">
+    <div className="min-h-screen bg-linear-to-r from-orange-200/50 via-orange-100/20 to-orange-400/30 pt-20 md:pt-24 pb-16">
       <div className="container mx-auto px-4 max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -86,7 +88,8 @@ function UserDashboard() {
             Dashboard
           </h1>
           <p className="text-muted-foreground mt-2 max-w-xl">
-            Manage your Dhoomchhalle account and jump back into planning your journey.
+            Manage your Dhoomchhalle account and jump back into planning your
+            journey.
           </p>
         </motion.div>
 
@@ -95,60 +98,113 @@ function UserDashboard() {
             Loading your profile…
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-3">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="md:col-span-2 rounded-2xl border border-border bg-card shadow-sm overflow-hidden"
-            >
-              <div className="bg-linear-to-r from-orange-500/15 via-amber-500/10 to-transparent px-6 py-4 border-b border-border flex items-center gap-3">
-                <div className="rounded-xl bg-primary/15 p-2.5 text-primary">
-                  <LayoutDashboard size={22} />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row justify-start items-center gap-8 flex-wrap md:flex-nowrap">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="md:w-[50%] w-full rounded-2xl border border-border bg-card shadow-sm overflow-hidden"
+              >
+                <div className="bg-linear-to-r from-orange-500/15 via-amber-500/10 to-transparent px-6 py-4 border-b border-border flex items-center gap-3">
+                  <div className="rounded-xl bg-primary/15 p-2.5 text-primary">
+                    <LayoutDashboard size={22} />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-foreground">Profile</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Signed in traveller
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="font-semibold text-foreground">Profile</h2>
-                  <p className="text-sm text-muted-foreground">Signed in traveller</p>
-                </div>
-              </div>
-              <ul className="divide-y divide-border">
-                <li className="flex items-start gap-3 px-6 py-4">
-                  <User className="text-muted-foreground shrink-0 mt-0.5" size={18} />
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Name</p>
-                    <p className="font-medium text-foreground">{user?.name ?? "—"}</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 px-6 py-4">
-                  <Mail className="text-muted-foreground shrink-0 mt-0.5" size={18} />
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Email</p>
-                    <p className="font-medium text-foreground break-all">{user?.email ?? "—"}</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 px-6 py-4">
-                  <Phone className="text-muted-foreground shrink-0 mt-0.5" size={18} />
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Phone</p>
-                    <p className="font-medium text-foreground">{user?.phone ?? "—"}</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 px-6 py-4">
-                  <Shield className="text-muted-foreground shrink-0 mt-0.5" size={18} />
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Role</p>
-                    <p className="font-medium text-foreground capitalize">{user?.role ?? "—"}</p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-3 px-6 py-4">
-                  <Calendar className="text-muted-foreground shrink-0 mt-0.5" size={18} />
-                  <div>
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Member since</p>
-                    <p className="font-medium text-foreground">{formatDate(user?.createdAt)}</p>
-                  </div>
-                </li>
-              </ul>
-            </motion.div>
+                <ul className="divide-y divide-border">
+                  <li className="flex items-start gap-3 px-6 py-4">
+                    <User
+                      className="text-muted-foreground shrink-0 mt-0.5"
+                      size={18}
+                    />
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Name
+                      </p>
+                      <p className="font-medium text-foreground">
+                        {user?.name ?? "—"}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 px-6 py-4">
+                    <Mail
+                      className="text-muted-foreground shrink-0 mt-0.5"
+                      size={18}
+                    />
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Email
+                      </p>
+                      <p className="font-medium text-foreground break-all">
+                        {user?.email ?? "—"}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 px-6 py-4">
+                    <Phone
+                      className="text-muted-foreground shrink-0 mt-0.5"
+                      size={18}
+                    />
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Phone
+                      </p>
+                      <p className="font-medium text-foreground">
+                        {user?.phone ?? "—"}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 px-6 py-4">
+                    <Shield
+                      className="text-muted-foreground shrink-0 mt-0.5"
+                      size={18}
+                    />
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Role
+                      </p>
+                      <p className="font-medium text-foreground capitalize">
+                        {user?.role ?? "—"}
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3 px-6 py-4">
+                    <Calendar
+                      className="text-muted-foreground shrink-0 mt-0.5"
+                      size={18}
+                    />
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Member since
+                      </p>
+                      <p className="font-medium text-foreground">
+                        {formatDate(user?.createdAt)}
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="flex flex-row justify-center items-center shadow-lg shadow-gray-800 rounded-lg md:w-[40%] w-full overflow-hidden"
+              >
+                <QRCode
+                  size={256}
+                  style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                  value={"https://dhoomchhalle.vercel.app"}
+                  viewBox={`0 0 256 256`}
+                />
+              </motion.div>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -156,8 +212,10 @@ function UserDashboard() {
               transition={{ delay: 0.1 }}
               className="flex flex-col gap-4"
             >
-              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-                <h3 className="font-semibold text-foreground mb-3">Quick links</h3>
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-sm w-full">
+                <h3 className="font-semibold text-foreground mb-3">
+                  Quick links
+                </h3>
                 <div className="flex flex-col gap-2">
                   <Link
                     to="/hotels"

@@ -16,7 +16,6 @@ import UserDashboard from "../pages/UserDashboard";
 // import AdminDashboard from "../pages/AdminDashboard";
 import NotFound from "../pages/NotFound";
 
-
 /**
  * Loader
  */
@@ -42,10 +41,6 @@ const AppRoutes = () => {
   //   );
   // }
 
-
-
-
-
   return (
     <BrowserRouter>
       <Routes>
@@ -57,11 +52,11 @@ const AppRoutes = () => {
 
           <Route
             path="/dashboard"
-            element={(
+            element={
               <ProtectedRoute>
                 <UserDashboard />
               </ProtectedRoute>
-            )}
+            }
           />
 
           {/* <Route path="/transport" element={<Transport />} /> */}
@@ -74,35 +69,35 @@ const AppRoutes = () => {
         {/* Auth Routes */}
         <Route
           path="/login"
-          element={(
+          element={
             <GuestOnlyRoute>
               <Login />
             </GuestOnlyRoute>
-          )}
+          }
         />
         <Route
           path="/register"
-          element={(
+          element={
             <GuestOnlyRoute>
               <Register />
             </GuestOnlyRoute>
-          )}
+          }
         />
         <Route
           path="/reset-password/:token"
-          element={(
+          element={
             <GuestOnlyRoute>
               <ResetPassword />
             </GuestOnlyRoute>
-          )}
+          }
         />
         <Route
           path="/forgot-password"
-          element={(
+          element={
             <GuestOnlyRoute>
               <ForgotPassword />
             </GuestOnlyRoute>
-          )}
+          }
         />
 
         {/* User Routes */}

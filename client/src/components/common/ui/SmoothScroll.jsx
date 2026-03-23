@@ -8,7 +8,7 @@ export const getLenis = () => lenis;
 const SmoothScroll = ({ children }) => {
   useEffect(() => {
     lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.6,
       smoothWheel: true,
       smoothTouch: false,
       wheelMultiplier: 1,

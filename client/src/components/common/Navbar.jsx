@@ -222,7 +222,7 @@ const Navbar = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors"
+                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors"
                 >
                   {link.label}
                 </motion.a>
@@ -235,7 +235,7 @@ const Navbar = () => {
                 <Link
                   to="/hotels"
                   onClick={() => setIsOpen(false)}
-                  className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
+                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
                 >
                   Hotels
                 </Link>
@@ -250,7 +250,7 @@ const Navbar = () => {
                     <Link
                       to="/dashboard"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
                     >
                       Dashboard
                     </Link>
@@ -261,7 +261,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
                     onClick={handleLogout}
-                    className="font-sans text-base font-medium text-left text-white/80 py-2 hover:text-orange-600/60 transition-colors"
+                    className="font-sans text-base font-medium text-left text-gray-900 py-2 hover:text-orange-600/60 transition-colors"
                   >
                     Log out
                   </motion.button>
@@ -276,7 +276,7 @@ const Navbar = () => {
                     <Link
                       to="/register"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
                     >
                       Register
                     </Link>
@@ -289,7 +289,7 @@ const Navbar = () => {
                     <Link
                       to="/login"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
                     >
                       Login
                     </Link>

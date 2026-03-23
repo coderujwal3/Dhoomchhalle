@@ -14,7 +14,7 @@ const scrollLinks = [
 ];
 
 const routeBtnClass =
-  "bg-linear-to-r from-red-800/30 to-red-600/30 p-2 rounded-md text-center";
+  "bg-linear-to-t from-red-800/40 via-red-600/20 to-red-500/40 p-2 rounded-md text-center";
 
 const scrollToSection = (id) => {
   const lenis = getLenis();
@@ -51,7 +51,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navTextClass = scrolled ? "text-gray-800" : "text-black-500/80";
+  const navTextClass = scrolled ? "text-gray-900/90" : "text-white/80";
 
   const handleLogout = async () => {
     try {
@@ -78,10 +78,16 @@ const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
         <Link
           to="/"
-          className="font-display flex flex-row justify-center items-center gap-4.5 text-2xl md:text-4xl font-extrabold bg-linear-20 from-amber-900 to-amber-700 bg-clip-text text-transparent"
+          className="font-display flex flex-row justify-center items-center gap-3 md:gap-4.5 text-2xl md:text-4xl font-extrabold bg-linear-20 from-amber-900 to-amber-700 bg-clip-text text-transparent"
         >
-          <img src="/DhoomLogo(1).png" alt="Dhoomchhalle logo" className="w-12 object-cover scale-120" />
-          <p>Dhoomchhalle</p>
+          <img
+            src="/DhoomLogo(1).png"
+            alt="Dhoomchhalle logo"
+            className="md:w-12 w-10 object-cover md:scale-110"
+          />
+          <p className="font-['Dancing_Script'] md:text-4xl text-3xl">
+            Dhoomchhalle
+          </p>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -216,7 +222,7 @@ const Navbar = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors"
+                  className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors"
                 >
                   {link.label}
                 </motion.a>
@@ -229,7 +235,7 @@ const Navbar = () => {
                 <Link
                   to="/hotels"
                   onClick={() => setIsOpen(false)}
-                  className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                  className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
                 >
                   Hotels
                 </Link>
@@ -244,7 +250,7 @@ const Navbar = () => {
                     <Link
                       to="/dashboard"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
                     >
                       Dashboard
                     </Link>
@@ -255,7 +261,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
                     onClick={handleLogout}
-                    className="font-sans text-base font-medium text-left text-foreground py-2 hover:text-orange-600/60 transition-colors"
+                    className="font-sans text-base font-medium text-left text-white/80 py-2 hover:text-orange-600/60 transition-colors"
                   >
                     Log out
                   </motion.button>
@@ -270,7 +276,7 @@ const Navbar = () => {
                     <Link
                       to="/register"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
                     >
                       Register
                     </Link>
@@ -283,7 +289,7 @@ const Navbar = () => {
                     <Link
                       to="/login"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-foreground py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium text-white/80 py-2 hover:text-orange-600/60 transition-colors block"
                     >
                       Login
                     </Link>

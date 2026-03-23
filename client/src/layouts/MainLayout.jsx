@@ -4,6 +4,7 @@ import Footer from "../components/common/Footer";
 import SmoothScroll from "../components/common/ui/SmoothScroll";
 import TextCursor from "../components/common/ui/TextCursor";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 const MainLayout = () => {
   const { pathname } = useLocation();
@@ -14,6 +15,7 @@ const MainLayout = () => {
 
       {/* Speed Insight Vercel */}
       <SpeedInsights />
+      <Analytics />
 
       {/* Navbar */}
       <Navbar />

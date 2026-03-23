@@ -58,14 +58,14 @@ async function authSystemUserMiddleware(req, res, next) {
 
     try {
         const decoded_token = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const user = await userModel.findById(decoded_token.userId).select("+systemUser");
+        const user = await userModel.findById(decoded_token.userId).select("+role");
         if (!user) {
             res.clearCookie("token", { httpOnly: true, sameSite: "lax", path: "/" });
             return res.status(401).json({
                 message: "User no longer exists",
             });
         }
-        if (!user.systemUser) {
+        if (!user.role.includes("admin")) {
             return res.status(403).json({
                 message: "Forbidden Access, Unauthorized User"
             })

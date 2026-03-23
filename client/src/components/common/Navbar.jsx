@@ -78,9 +78,10 @@ const Navbar = () => {
       <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
         <Link
           to="/"
-          className="font-display text-2xl md:text-4xl font-extrabold bg-linear-20 from-amber-900 to-amber-700 bg-clip-text text-transparent"
+          className="font-display flex flex-row justify-center items-center gap-4.5 text-2xl md:text-4xl font-extrabold bg-linear-20 from-amber-900 to-amber-700 bg-clip-text text-transparent"
         >
-          Dhoomchalle
+          <img src="/DhoomLogo(1).png" alt="Dhoomchhalle logo" className="w-12 object-cover scale-120" />
+          <p>Dhoomchhalle</p>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
@@ -104,7 +105,10 @@ const Navbar = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * scrollLinks.length + 0.8, duration: 0.6 }}
+            transition={{
+              delay: 0.1 * scrollLinks.length + 0.8,
+              duration: 0.6,
+            }}
           >
             <Link
               to="/hotels"
@@ -119,7 +123,10 @@ const Navbar = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * (scrollLinks.length + 1) + 0.8, duration: 0.6 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  duration: 0.6,
+                }}
               >
                 <Link
                   to="/dashboard"
@@ -132,7 +139,10 @@ const Navbar = () => {
                 type="button"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * (scrollLinks.length + 2) + 0.8, duration: 0.6 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 2) + 0.8,
+                  duration: 0.6,
+                }}
                 onClick={handleLogout}
                 className={`font-sans text-lg font-medium transition-colors cursor-pointer ${navTextClass} border border-white/30 rounded-md px-3 py-1.5 hover:bg-white/10`}
               >
@@ -144,7 +154,10 @@ const Navbar = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * (scrollLinks.length + 1) + 0.8, duration: 0.6 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  duration: 0.6,
+                }}
               >
                 <Link
                   to="/register"
@@ -156,7 +169,10 @@ const Navbar = () => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * (scrollLinks.length + 2) + 0.8, duration: 0.6 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 2) + 0.8,
+                  duration: 0.6,
+                }}
               >
                 <Link
                   to="/login"

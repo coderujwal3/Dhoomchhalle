@@ -94,7 +94,7 @@ function UserDashboard() {
         </motion.div>
 
         {loading ? (
-          <div className="relative rounded-2xl flex items-center justify-center bg-red-500/30 backdrop-blur-sm p-10 text-center text-white/70 text-4xl font-extrabold tracking-tighter">
+          <div className="relative rounded-2xl flex items-center justify-center bg-red-500/30 backdrop-blur-sm p-10 text-center text-white/70 text-4xl font-extrabold tracking-widest">
             Loading your Data...
           </div>
         ) : (
@@ -195,15 +195,15 @@ function UserDashboard() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="flex flex-col justify-center items-center md:w-[40%] w-full overflow-hidden"
+                className="relative flex flex-col justify-center shadow-[6px_6px_10px_rgba(0,0,0,0.5),-4px_-4px_6px_rgba(0,0,0,0.5)] rounded-lg items-center md:w-[40%] w-full overflow-hidden"
               >
-                <p className="text-center text-lg font-semibold gap-2 text-gray-600">
+                <p className="absolute bottom-0 right-0 text-center text-lg bg-white/95 p-3 rounded-xl font-semibold gap-2 text-gray-600">
                   Scan to view profile
                 </p>
                 <QRCode
                   size={256}
                   style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                  className="shadow-lg shadow-gray-800 rounded-lg"
+                  className="rounded-lg"
                   value={`https://dhoomchhalle.vercel.app/user/${user?._id}`}
                   viewBox={`0 0 256 256`}
                 />

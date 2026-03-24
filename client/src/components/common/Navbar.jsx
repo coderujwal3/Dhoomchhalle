@@ -51,7 +51,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const navTextClass = scrolled ? "text-gray-900/90" : "text-white/80";
+  const navTextClass = scrolled ? "text-gray-900" : "text-black/80";
 
   const handleLogout = async () => {
     try {

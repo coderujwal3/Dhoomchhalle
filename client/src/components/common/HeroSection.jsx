@@ -78,16 +78,16 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="sm:inline-flex hidden items-center gap-2 px-4 py-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 backdrop-blur-sm mb-6"
+          className="sm:inline-flex hidden items-center gap-2 px-4 py-1.5 rounded-full border-2 border-orange-800 bg-amber-600/10 shadow-[0px_0px_10px_black]/30 mb-6"
         >
-          <span className="text-xs md:text-sm tracking-widest uppercase text-primary-foreground">
+          <span className="text-xs md:text-sm tracking-widest uppercase">
             <ShinyText
               text="✨ Welcome to Dhoomchhalle"
-              speed={2}
+              speed={3}
               delay={0}
-              color="#FFF0DC"
-              shineColor="#F59E0B"
-              spread={120}
+              color="#FFF"
+              shineColor="#F59E0A"
+              spread={80}
               direction="left"
               yoyo={false}
               pauseOnHover={false}

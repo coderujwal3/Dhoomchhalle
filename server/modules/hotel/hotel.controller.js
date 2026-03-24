@@ -5,7 +5,7 @@ async function getHotelsController(req, res) {
   try {
     const hotels = await Hotel.find({})
       .select("name location category pricePerNight amenities avgRating contactNumber photos")
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1 })    // to get latest data on top
       .lean();
 
     return res.status(200).json({

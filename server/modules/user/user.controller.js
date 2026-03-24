@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const userModel = require('./user.model')
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -230,6 +231,40 @@ async function resetPasswordController(req, res) {
     }
 }
 
+
+/**
+ * - Get users by their id for /user/:id api
+ */
+async function getUserByIdController(req, res) {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        status: "failed",
+        message: "Invalid user id",
+      });
+    }
+
+    const user = await userModel.findById(id).lean();
+    if (!user) {
+      return res.status(404).json({
+        status: "failed",
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "failed",
+      message: "Unable to fetch User details",
+    });
+  }
+}
+
 module.exports = {
     userRegisterController,
     userLoginController,
@@ -237,4 +272,5 @@ module.exports = {
     getMeController,
     forgotPasswordController,
     resetPasswordController,
+    getUserByIdController,
 };

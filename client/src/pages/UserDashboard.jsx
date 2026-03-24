@@ -94,8 +94,8 @@ function UserDashboard() {
         </motion.div>
 
         {loading ? (
-          <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm p-10 text-center text-muted-foreground">
-            Loading your profile…
+          <div className="relative rounded-2xl flex items-center justify-center bg-red-500/30 backdrop-blur-sm p-10 text-center text-white/70 text-4xl font-extrabold tracking-tighter">
+            Loading your Data...
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -111,7 +111,7 @@ function UserDashboard() {
                     <LayoutDashboard size={22} />
                   </div>
                   <div>
-                    <h2 className="font-semibold text-foreground">Profile</h2>
+                    <h2 className="font-semibold text-foreground">Dashboard</h2>
                     <p className="text-sm text-muted-foreground">
                       Signed in traveller
                     </p>
@@ -195,12 +195,16 @@ function UserDashboard() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="flex flex-row justify-center items-center shadow-lg shadow-gray-800 rounded-lg md:w-[40%] w-full overflow-hidden"
+                className="flex flex-col justify-center items-center md:w-[40%] w-full overflow-hidden"
               >
+                <p className="text-center text-lg font-semibold gap-2 text-gray-600">
+                  Scan to view profile
+                </p>
                 <QRCode
                   size={256}
                   style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                  value={"https://dhoomchhalle.vercel.app"}
+                  className="shadow-lg shadow-gray-800 rounded-lg"
+                  value={`https://dhoomchhalle.vercel.app/user/${user?._id}`}
                   viewBox={`0 0 256 256`}
                 />
               </motion.div>
@@ -243,6 +247,15 @@ function UserDashboard() {
                 <LogOut size={18} />
                 {loggingOut ? "Logging out…" : "Log out"}
               </button>
+              <Link
+                to={user ? `/user/${user._id}` : "/user"}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-red-800/90 to-red-700/90 text-white px-4 py-3 text-sm font-semibold shadow-md hover:opacity-95 disabled:opacity-60 transition-opacity"
+              >
+                <button type="button" className="flex flex-row gap-3">
+                  <User size={18} />
+                  Profile
+                </button>
+              </Link>
             </motion.div>
           </div>
         )}

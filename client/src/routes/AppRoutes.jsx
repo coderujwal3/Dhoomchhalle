@@ -9,6 +9,7 @@ import ResetPassword from "../pages/ResetPassword";
 import Hotels from "../pages/Hotels";
 import HotelDetails from "../pages/HotelDetails";
 import UserDashboard from "../pages/UserDashboard";
+import UserProfile from "../pages/UserProfile";
 // import Transport from "../pages/Transport";
 // import RoutePlanner from "../pages/RoutePlanner";
 // import Timings from "../pages/Timings";
@@ -49,6 +50,8 @@ const AppRoutes = () => {
 
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:id" element={<HotelDetails />} />
+
+          <Route path="/user/:id" element={<UserProfile />} />
 
           <Route
             path="/dashboard"

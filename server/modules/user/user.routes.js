@@ -12,7 +12,15 @@ const { validateRequest } = require("../../middlewares/validate.middleware");
 const { authLoginLimiter, forgotPasswordLimiter } = require("../../middlewares/rateLimit.middleware");
 const { authMiddleware } = require("../../middlewares/auth.middleware");
 
+/**
+ * GET requests for /me and for /user/:id controller
+ */
 router.get("/me", authMiddleware, userController.getMeController);
+router.get("/user/:id", userController.getUserByIdController);
+
+/**
+ * POST validation requests
+ */
 router.post("/register", registerValidation, validateRequest, userController.userRegisterController);
 router.post("/login", authLoginLimiter, loginValidation, validateRequest, userController.userLoginController);
 router.post("/logout", userController.userLogoutController);

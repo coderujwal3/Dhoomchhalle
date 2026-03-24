@@ -26,6 +26,7 @@ import NotFound from "../pages/NotFound";
 import MainLayout from "../layouts/MainLayout";
 import GuestOnlyRoute from "../components/auth/GuestOnlyRoute";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
+import ScrollToTop from "../utils/ScrollToTop";
 
 const AppRoutes = () => {
   // const [loading, setLoading] = useState(true);
@@ -44,6 +45,11 @@ const AppRoutes = () => {
 
   return (
     <BrowserRouter>
+      {/* On opening any next page, the view section move to top of the page, because vercel creates an SPA issue
+      - When navigating between routes, the scroll position is preserved instead of resetting to top */}
+      <ScrollToTop />
+
+      {/* All routes of page */}
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />

@@ -11,19 +11,6 @@ const UserProfile = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
 
-  function formatDate(iso) {
-    if (!iso) return "—";
-    try {
-      return new Date(iso).toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      return "—";
-    }
-  }
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -42,7 +29,7 @@ const UserProfile = () => {
 
   if (!user)
     return (
-      <p className="relative rounded-2xl h-screen flex items-center justify-center bg-red-500/30 backdrop-blur-sm p-10 text-center text-white/70 text-9xl font-extrabold tracking-tighter">
+      <p className="relative rounded-2xl h-screen flex items-center justify-center bg-red-500/30 backdrop-blur-sm p-10 text-center text-white/70 md:text-9xl text-5xl font-extrabold tracking-tighter">
         Loading user...
       </p>
     );
@@ -68,6 +55,8 @@ const UserProfile = () => {
             journey.
           </p>
         </motion.div>
+
+        {/* Profile Card */}
         <div className="flex flex-col justify-start items-start gap-8 flex-wrap md:flex-nowrap">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -85,7 +74,7 @@ const UserProfile = () => {
                 height={80}
                 width={80}
                 alt="user-profile-image"
-                className="rounded-full border-2 border-black/50 shadow-[6px_6px_6px_gray]"
+                className="rounded-full border-3 border-red-900/70 shadow-[6px_6px_6px_gray]"
               />
             </motion.div>
 
@@ -94,7 +83,11 @@ const UserProfile = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.8 }}
             >
-              <p>
+              <p className="flex flex-row gap-1 pl-1 justify-start items-center">
+                <User
+                  size={28}
+                  className="shadow-2xl shadow-gray-500 text-red-800"
+                />
                 <strong className="text-3xl text-red-800 font-bold">
                   {user.name}
                 </strong>
@@ -107,21 +100,27 @@ const UserProfile = () => {
                   <p className="font-semibold text-center text-gray-600 text-xl">
                     12
                   </p>
-                  <p className="text-gray-600 font-semibold">Feedbacks</p>
+                  <p className="text-gray-600 text-center font-semibold">
+                    Feedbacks
+                  </p>
                 </div>
 
                 <div>
                   <p className="font-semibold text-center text-gray-600 text-xl">
                     45
                   </p>
-                  <p className="text-gray-600 font-semibold">Traveled places</p>
+                  <p className="text-gray-600 text-center font-semibold">
+                    Traveled places
+                  </p>
                 </div>
 
                 <div>
                   <p className="font-semibold text-center text-gray-600 text-xl">
                     16
                   </p>
-                  <p className="text-gray-600 font-semibold">Days stayed</p>
+                  <p className="text-gray-600 text-center font-semibold">
+                    Days stayed
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -136,7 +135,9 @@ const UserProfile = () => {
               className="w-full rounded-2xl shadow-md overflow-hidden p-5"
             >
               <div className="w-1/9 border-b-2 border-b-red-400">
-                <h1 className="text-xl font-bold tracking-widest text-red-800">Bio Section</h1>
+                <h1 className="text-xl font-bold tracking-widest text-red-800">
+                  Bio Section
+                </h1>
               </div>
               <p className="text-gray-600 font-semibold mt-4">
                 If you change the way you look at things, the things you look
@@ -166,11 +167,11 @@ const UserProfile = () => {
 
           {/* Feedback notices */}
           <div className="p-3 pt-5 shadow-md rounded-2xl">
-            <div className="group relative w-[15%] cursor-pointer">
-              <h1 className="text-xl font-bold text-red-900 font-sans">
+            <div className="group relative w-full md:w-[16%] cursor-pointer">
+              <h1 className="text-[22px] font-bold text-red-900 font-sans">
                 My Feedbacks
               </h1>
-              <div className="absolute w-0 group-hover:w-full border border-b-2 border-b-red-400 transition-all duration-300"></div>
+              <div className="absolute w-[55%] md:w-0 group-hover:w-full border border-b-2 border-b-red-400 transition-all duration-300"></div>
             </div>
             <div className="flex flex-col justify-start items-center gap-8 flex-wrap md:flex-nowrap">
               <motion.div

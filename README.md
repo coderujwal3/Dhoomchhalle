@@ -299,6 +299,9 @@ npm run dev
 ## User Dashboard - (for now it look something like this)
 <img width="1752" height="782" alt="image" src="https://github.com/user-attachments/assets/78b23d07-76b6-48fb-89aa-e1d099c3b1d0" />
 
+## User Profile Section - (demo look)
+<img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/054d5cf8-5ac1-49a7-846a-eeba39b5821f" />
+
 
 ## Mobile Landing page
 <img height="840" alt="image" src="https://github.com/user-attachments/assets/91ff65d4-779f-4fbc-976e-cb024a530834" />

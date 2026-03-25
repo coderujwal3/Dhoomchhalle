@@ -62,6 +62,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     setIsOpen(false);
     navigate("/");
+    window.dispatchEvent(new Event("dhoom-auth-changed"));
   };
 
   return (

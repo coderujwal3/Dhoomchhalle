@@ -15,7 +15,7 @@ Planning to give some facilities regarding the travel (currently planned only fo
 - Public transport timings (buses and trains timings)
 
 ## Tech Stack:
-- => MERN for website (I will build app later on with React Native (because it is good for both android and iphones)); with tailwindcss, Lenis Scrolling + Spline 3D elements + lottiefiles (for 2D animated icons and all) + framer motion (clean and beautiful animation) for best interacting user experience.
+- => MERN for website (I will build app later on with React Native (because it is good for both android and iphones)); with tailwindcss, Lenis Scrolling, lottiefiles (for 2D animated icons), framer motion (clean and beautiful animation) for best interacting user experience.
 
 ## 🚀 DHOOMCHHALLE – Core System Design
 🧠 Core Modules

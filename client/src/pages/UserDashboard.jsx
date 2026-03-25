@@ -251,7 +251,7 @@ function UserDashboard() {
                 to={user ? `/user/${user._id}` : "/user"}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-red-800/90 to-red-700/90 text-white px-4 py-3 text-sm font-semibold shadow-md hover:opacity-95 disabled:opacity-60 transition-opacity"
               >
-                <button type="button" className="flex flex-row gap-3">
+                <button type="button" className="flex flex-row gap-3 cursor-pointer">
                   <User size={18} />
                   Profile
                 </button>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import "./index.css";
 import AppRoutes from "./routes/AppRoutes";
 import { getSession } from "./services/auth.service";
@@ -9,7 +9,11 @@ function App() {
     getSession().catch(() => {});
   }, []);
   
-  return <AppRoutes />;
+  return (
+    <>
+        <AppRoutes />
+    </>
+  );
 }
 
 export default App;

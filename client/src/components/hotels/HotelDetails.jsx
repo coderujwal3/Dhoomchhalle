@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
-import { getHotelById } from "../services/hotel.service";
-import fallbackHotels from "../DB/hotelDB.json";
+import { getHotelById } from "../../services/hotel.service";
+import fallbackHotels from "../../DB/hotelDB.json";
 
 function normalizeFallbackHotel(hotel) {
   return {
@@ -109,7 +109,8 @@ const HotelDetails = () => {
           <img
             src={hotel.photos[0]}
             alt={hotel.name}
-            className="w-full h-[360px] object-cover"
+            loading="lazy"
+            className="w-full h-90 object-cover"
           />
           <div className="p-6 md:p-8 space-y-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

@@ -171,6 +171,7 @@ const PlacesSection = () => {
                   <motion.img
                     src={place.image}
                     alt={place.name}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.5 }}

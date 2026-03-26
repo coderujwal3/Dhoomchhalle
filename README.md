@@ -33,6 +33,18 @@ User Module-
 - Logged-in users can open **`/dashboard`** (protected route; requires a valid session).
 - The dashboard loads profile data from **`GET /api/v1/auth/me`** (name, email, phone, role, member since).
 - Quick links to browse hotels and return home; **Log out** calls **`POST /api/v1/auth/logout`** and clears the client-side token.
+- Dashboard tabs are backed by dedicated APIs (profile, favourites, reviews, transport logs) and load lazily when a tab is opened.
+
+### Features built today (what + 1-line working)
+- **User Profile page (`/profile/:id`)**: fetches public user info + profile info in parallel and renders a rich profile UI (falls back to safe defaults if profile isn’t found).
+- **Profile settings (bio/location/stats/preferences)**: dashboard calls **`PUT /api/v1/profile/:id`** (upsert) to create/update a single profile document per user.
+- **Saved Hotels (Favourites)**: dashboard uses **`POST /api/v1/favourites`** and **`GET /api/v1/favourites/me`** so users can save/unsave hotels and see them with populated hotel fields.
+- **My Reviews (create/list/delete)**: dashboard uses **`POST /api/v1/reviews`**, **`GET /api/v1/reviews/me`**, **`DELETE /api/v1/reviews/:id`** to manage reviews (ownership enforced server-side).
+- **Transport History logs**: dashboard uses **`POST /api/v1/transport-logs`** and **`GET /api/v1/transport-logs/me`** to store and display per-user travel fare records.
+- **Issue reports (transport/hotel)**: backend provides **`POST /api/v1/reports`** and **`GET /api/v1/reports/me`** to let users submit and view their own reports.
+- **Avatar upload (Cloudinary)**: dashboard uploads `FormData(avatar)` to **`PATCH /api/v1/auth/me/avatar`** which stores the image on Cloudinary via multer storage and saves the URL on the user.
+- **Change password (in-session)**: dashboard uses **`POST /api/v1/auth/change-password`** and then clears local token to force re-login with the new password.
+- **Forgot/Reset password flow**: client uses **`POST /api/v1/auth/forgot-password`** to send a reset link and **`POST /api/v1/auth/reset-password/:token`** to set a new password securely.
 
 ### Why tokens alone are not enough (admin / DB access)
 - JWTs are **stateless**: if an account is **removed from MongoDB** (e.g. admin or moderation action), the old JWT can still verify until it expires.
@@ -139,7 +151,7 @@ PUBLIC_TRANSPORT_TIMING
 - Affiliate booking
 
 ## Folder Structure -
-### Client side Folder Structure
+### Client side Folder Structure (Vite + React)
 ```
 client/
 │
@@ -147,9 +159,7 @@ client/
 │   └── logo.png
 │
 ├── src/
-│   ├── assets/
-│   │   ├── images/
-│   │   └── icons/
+│   ├── assets/                 # static assets (images/icons) if used
 │   │
 │   ├── components/
 │   │   ├── auth/
@@ -158,50 +168,79 @@ client/
 │   │   ├── common/
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── Footer.jsx
-│   │   │   └── Loader.jsx
+│   │   │   └── ui/             # small UI building blocks (animations, reveal, etc.)
 │   │   │
 │   │   ├── hotels/
 │   │   │   ├── HotelCard.jsx
 │   │   │   └── HotelFilter.jsx
+│   │   │   └── HotelDetails.jsx
 │   │   │
 │   │   ├── transport/
 │   │   │   ├── TransportCard.jsx
 │   │   │   └── RouteSelector.jsx
 │   │   │
-│   │   └── reviews/
-│   │       └── ReviewForm.jsx
+│   │   ├── reviews/
+│   │   │   └── ReviewForm.jsx
+│   │   │
+│   │   ├── user-dashboard/     # dashboard tabs + sidebar
+│   │   │   ├── DashboardAccountSidebar.jsx
+│   │   │   ├── DashboardTabsBar.jsx
+│   │   │   ├── DashboardProfileTab.jsx
+│   │   │   ├── DashboardSavedHotelsTab.jsx
+│   │   │   ├── DashboardReviewsTab.jsx
+│   │   │   ├── DashboardTransportTab.jsx
+│   │   │   ├── DashboardRecentTab.jsx
+│   │   │   └── DashboardSettingsTab.jsx
+│   │   │
+│   │   └── user-profile/       # public profile UI sections
+│   │       ├── UserProfileHeader.jsx
+│   │       ├── UserProfileCard.jsx
+│   │       ├── UserProfileBioSection.jsx
+│   │       ├── UserProfileEditControls.jsx
+│   │       ├── UserProfileFeedbackSection.jsx
+│   │       └── UserProfileSkeleton.jsx
 │   │
 │   ├── pages/
 │   │   ├── Home.jsx
 │   │   ├── Hotels.jsx
 │   │   ├── UserDashboard.jsx
+│   │   ├── UserProfile.jsx
 │   │   ├── Transport.jsx
 │   │   ├── RoutePlanner.jsx
 │   │   ├── Timings.jsx
 │   │   ├── Login.jsx
 │   │   ├── Register.jsx
+│   │   ├── ForgotPassword.jsx
+│   │   ├── ResetPassword.jsx
 │   │   └── AdminDashboard.jsx
 │   │
 │   ├── layouts/
 │   │   └── MainLayout.jsx
 │   │
-│   ├── hooks/
-│   │   └── useAuth.js
-│   │
-│   ├── services/          # API calls
-│   │   ├── api.js
-│   │   ├── hotelService.js
-│   │   ├── transportService.js
-│   │   └── authService.js
-│   │
 │   ├── context/
 │   │   └── AuthContext.jsx
 │   │
+│   ├── lib/
+│   │   └── apiClient.js         # axios client + auth/401 handling
+│   │
+│   ├── services/                # API calls (client ↔ server)
+│   │   ├── auth.service.js
+│   │   ├── hotel.service.js
+│   │   ├── transport.service.js
+│   │   ├── userId.service.js
+│   │   ├── profile.service.js
+│   │   ├── favourite.service.js
+│   │   ├── review.service.js
+│   │   └── transportLog.service.js
+│   │
 │   ├── utils/
-│   │   └── helpers.js
+│   │   └── ScrollToTop.jsx
 │   │
 │   ├── routes/
 │   │   └── AppRoutes.jsx
+│   │
+│   ├── DB/
+│   │   └── hotelDB.json
 │   │
 │   ├── App.jsx
 │   └── main.jsx
@@ -210,20 +249,20 @@ client/
 └── vite.config.js
 ```
 
-### Server Side Folder Structure
+### Server Side Folder Structure (Express + MongoDB)
 ```
 server/
 │
 ├── config/
 │   ├── db.js
-│   └── env.js
+│   ├── env.js
+│   └── cloudinary.js            # Cloudinary SDK config
 │
 ├── modules/
 │   ├── user/
 │   │   ├── user.model.js
 │   │   ├── user.controller.js
 │   │   ├── user.routes.js
-│   │   ├── user.service.js
 │   │   ├── user.validation.js
 │   │   └── tokenBlacklist.model.js
 │   │
@@ -233,6 +272,31 @@ server/
 │   │   ├── hotel.routes.js
 │   │   ├── hotel.service.js
 │   │   └── hotel.validation.js
+│   │
+│   ├── profile/
+│   │   ├── profile.model.js
+│   │   ├── profile.controller.js
+│   │   └── profile.routes.js
+│   │
+│   ├── review/
+│   │   ├── review.model.js
+│   │   ├── review.controller.js
+│   │   └── review.routes.js
+│   │
+│   ├── favourite/
+│   │   ├── favourite.model.js
+│   │   ├── favourite.controller.js
+│   │   └── favourite.routes.js
+│   │
+│   ├── transportLog/
+│   │   ├── transportLog.model.js
+│   │   ├── transportLog.controller.js
+│   │   └── transportLog.routes.js
+│   │
+│   ├── report/
+│   │   ├── report.model.js
+│   │   ├── report.controller.js
+│   │   └── report.routes.js
 │   │
 │   ├── transport/
 │   │   ├── transportType.model.js
@@ -258,6 +322,7 @@ server/
 │
 ├── middlewares/
 │   ├── auth.middleware.js
+│   ├── upload.middleware.js     # multer + Cloudinary storage for image uploads
 │   ├── role.middleware.js
 │   ├── error.middleware.js
 │   └── validate.middleware.js
@@ -273,6 +338,26 @@ server/
 ├── app.js
 └── server.js
 ```
+
+## Functionalities (current)
+- **Authentication & sessions**
+  - **Register/Login/Logout** with JWT + cookie support; axios attaches `Authorization: Bearer <token>` and sends cookies with `withCredentials`.
+  - **Token blacklisting** on logout via `tokenBlacklist` collection (prevents reuse).
+  - **Session validation** checks token *and* loads the user from DB (handles deleted users / revoked tokens).
+  - **Forgot/Reset/Change password** flows supported via auth endpoints and client pages.
+- **User dashboard (`/dashboard`)**
+  - **Profile tab** shows profile snapshot for the logged-in user.
+  - **Saved Hotels tab** manages favourites (save/unsave + list).
+  - **My Reviews tab** lets users create/list/delete their own reviews.
+  - **Transport History tab** shows saved fare logs (estimated vs actual).
+  - **Recent Searches tab** reads/writes `localStorage` to show recently viewed hotels.
+  - **Settings tab** updates profile fields and uploads avatar to Cloudinary.
+- **Hotels**
+  - Browse hotels and view details; (API-driven with reusable service layer).
+- **Transport**
+  - Transport pages + route planner pages exist (module continues evolving).
+- **Reports**
+  - Users can submit issues (transport/hotel) and view their own submitted reports.
 
 ## Run Website
 - Clone Repo

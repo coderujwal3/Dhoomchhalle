@@ -18,7 +18,7 @@ If you discover a security vulnerability in this project, please report it respo
 
 ### How to Report
 
-* Send an email to: **[dhoomchhalle@gmail.com](mailto:your-email@example.com)**
+* Send an email to: **[dhoomchhalle@gmail.com](mailto:dhoomchhalle@gmail.com)**
 * Include a clear description of the issue
 * Provide steps to reproduce the vulnerability
 * Attach screenshots or proof-of-concept if possible

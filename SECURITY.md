@@ -1,4 +1,5 @@
 # Security Policy
+## Responsible Disclosure Policy
 
 ## Supported Versions
 

@@ -2,19 +2,20 @@ require('dotenv').config()
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors');
-const csrf = require('lusca').csrf();
+const helmet = require("helmet");
 
 const app = express();
 
 app.set("trust proxy", 1);
 app.use(cookieParser())
-app.use(express.json())
+app.use(helmet());
+app.use(express.json({ limit: "5mb" }))
+app.use(express.urlencoded({ extended: true, limit: "5mb" }))
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
   // origin: "http://localhost:5173",
   credentials: true
 }));
-app.use(csrf());  // using it for protection against CSRF attacks; can be configured to ignore certain routes if needed.
 
 // set up rate limiter: maximum of five requests per minute
 var RateLimit = require('express-rate-limit');
@@ -35,7 +36,7 @@ const reviewRoutes = require('./modules/review/review.routes')
 const favouriteRoutes = require('./modules/favourite/favourite.routes')
 const reportRoutes = require('./modules/report/report.routes')
 const transportLogRoutes = require('./modules/transportLog/transportLog.routes')
-const routeRoutes = require('./modules/route/route.routes')
+// const routeRoutes = require('./modules/route/route.routes')
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
@@ -49,7 +50,7 @@ app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/favourites", favouriteRoutes);
 app.use("/api/v1/reports", reportRoutes);
 app.use("/api/v1/transport-logs", transportLogRoutes);
-app.use("/api/v1/routes", routeRoutes);
+// app.use("/api/v1/routes", routeRoutes);
 
 // Backward compatibility for existing clients
 app.use("/api/auth", userRoutes);

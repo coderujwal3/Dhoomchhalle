@@ -31,12 +31,12 @@ export default function UserProfileCard({ user, profile }) {
     <aside className="rounded-2xl border border-orange-200 bg-white shadow-sm overflow-hidden">
       <div className="px-5 py-4 bg-orange-100/70 border-b border-orange-200">
         <p className="text-xs uppercase tracking-wide text-orange-700 font-semibold">Account</p>
-        <p className="text-sm text-gray-700">Signed in traveller</p>
+        <p className="text-sm text-gray-700">Signed in as {user?.role}</p>
       </div>
 
       <div className="p-5 border-b border-orange-100">
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-full border-2 border-orange-300 overflow-hidden bg-orange-200 flex items-center justify-center">
+          <div className="md:w-30 md:h-30 h-20 w-20 rounded-full border-2 border-orange-300 overflow-hidden bg-orange-200 flex items-center justify-center">
             {avatar ? (
               <img src={avatar} alt={user?.name || "User"} className="w-full h-full object-cover" />
             ) : (
@@ -45,7 +45,7 @@ export default function UserProfileCard({ user, profile }) {
           </div>
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wide">Name</p>
-            <h2 className="font-bold text-gray-900">{user?.name || "Unknown User"}</h2>
+            <h2 className="font-bold md:text-3xl text-xl text-red-900">{user?.name || "Unknown User"}</h2>
           </div>
         </div>
       </div>

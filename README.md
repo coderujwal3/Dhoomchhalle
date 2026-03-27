@@ -382,7 +382,7 @@ npm run dev
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/64dbee39-b5a6-40bd-8546-4c5ebd34f9bf" />
 
 ## User Profile QR Code - (Scan to view my profile)
-<img width="323" height="334" alt="image" src="https://github.com/user-attachments/assets/7dc89ea7-8c8a-4e97-8598-daf8887c6fea" />
+<img width="380" height="329" alt="image" src="https://github.com/user-attachments/assets/fada03bb-f03c-47cf-ad16-e80b5e762af3" />
 
 ## User Dashboard Look
 <img width="1590" height="897" alt="image" src="https://github.com/user-attachments/assets/aa9fabe7-c022-4ab2-9669-c7de298b6e44" />

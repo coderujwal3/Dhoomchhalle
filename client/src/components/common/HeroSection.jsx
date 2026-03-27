@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import heroImage from "../../assets/hero-varanasi.jpg";
-import { MapPin, Utensils, Bus, Users } from "lucide-react";
+import { LogIn, LayoutDashboard, Hotel } from "lucide-react";
 // import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import ShinyText from "./ui/ShinyText";
 
@@ -49,10 +50,9 @@ const HeroSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   const ctaItems = [
-    { label: "Explore Places", icon: MapPin, href: "#places" },
-    { label: "Famous Food", icon: Utensils, href: "#food" },
-    { label: "Transport", icon: Bus, href: "#transport" },
-    { label: "Find Guides", icon: Users, href: "#guides" },
+    { label: "Register", icon: LogIn, to: "/register" },
+    { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+    { label: "Hotels", icon: Hotel, to: "/hotels" },
   ];
 
   return (
@@ -194,20 +194,25 @@ const HeroSection = () => {
           className="flex flex-wrap justify-center gap-4"
         >
           {ctaItems.map((item) => (
-            <motion.a
+            <Link
+              to={item.to}
               key={item.label}
-              href={item.href}
-              whileHover={{
-                scale: 1.08,
-                boxShadow: "0 10px 40px -10px hsl(25 95% 53% / 0.4)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-300 text-primary-foreground font-medium text-sm shadow-warm"
+              className="flex justify-center items-center gap-2"
             >
-              <item.icon size={18} />
-              {item.label}
-            </motion.a>
+              <motion.div
+                key={item.label}
+                whileHover={{
+                  scale: 1.08,
+                  boxShadow: "0 10px 40px -10px hsl(25 95% 53% / 0.4)",
+                }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-300 text-primary-foreground font-medium text-sm shadow-warm"
+              >
+                <item.icon size={18} />
+                {item.label}
+              </motion.div>
+            </Link>
           ))}
         </motion.div>
       </motion.div>
@@ -216,7 +221,9 @@ const HeroSection = () => {
       <motion.div
         className="absolute bottom-8 left-1/2 -translate-x-1/2"
         animate={
-          animationStarted ? { opacity: 1, y: [0,10,0] } : { opacity: 0, y: [0,0,0] }
+          animationStarted
+            ? { opacity: 1, y: [0, 10, 0] }
+            : { opacity: 0, y: [0, 0, 0] }
         }
         transition={{ duration: 2, repeat: Infinity }}
       >

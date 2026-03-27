@@ -109,22 +109,6 @@ const Navbar = () => {
             </motion.a>
           ))}
 
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.1 * scrollLinks.length + 0.8,
-              duration: 0.6,
-            }}
-          >
-            <Link
-              to="/hotels"
-              className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-            >
-              Hotels
-            </Link>
-          </motion.div>
-
           {isAuthed ? (
             <>
               <motion.div

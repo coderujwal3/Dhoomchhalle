@@ -22,6 +22,10 @@ async function uploadToCloudinary(fileBuffer, folderName = 'dhoomchhalle', publi
                 resource_type: 'auto',
                 quality: 'auto',
                 fetch_format: 'auto',
+                gravity: 'faces',
+                width: 500,
+                height: 500,
+                crop: 'crop',
             };
 
             // If publicId is provided, it will replace the existing image

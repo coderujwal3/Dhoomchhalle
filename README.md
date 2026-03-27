@@ -381,8 +381,14 @@ npm run dev
 ## Website landing page
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/64dbee39-b5a6-40bd-8546-4c5ebd34f9bf" />
 
-## User Dashboard/Profile - (for now it look something like this)
-<img width="1919" height="1055" alt="image" src="https://github.com/user-attachments/assets/f54d3e2b-baa3-449d-a12d-8737182b5a26" />
+## User Profile QR Code - (Scan to view my profile)
+<img width="323" height="334" alt="image" src="https://github.com/user-attachments/assets/7dc89ea7-8c8a-4e97-8598-daf8887c6fea" />
+
+## User Dashboard Look
+<img width="1590" height="897" alt="image" src="https://github.com/user-attachments/assets/aa9fabe7-c022-4ab2-9669-c7de298b6e44" />
+
+## User Profile Look
+<img width="1570" height="912" alt="image" src="https://github.com/user-attachments/assets/6726b2ef-e2e8-48e7-bb33-1d73d152b9cb" />
 
 ## Mobile Landing page
 <img height="840" alt="image" src="https://github.com/user-attachments/assets/91ff65d4-779f-4fbc-976e-cb024a530834" />

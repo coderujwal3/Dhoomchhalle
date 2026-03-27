@@ -50,9 +50,30 @@ const HeroSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   const ctaItems = [
-    { label: "Register", icon: LogIn, to: "/register" },
-    { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
-    { label: "Hotels", icon: Hotel, to: "/hotels" },
+    {
+      label: "Register",
+      icon: LogIn,
+      to: "/register",
+      bg: "bg-red-600",
+      rounded: "rounded-md",
+      border: "hover:border-2 hover:border-amber-500",
+    },
+    {
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      to: "/dashboard",
+      bg: "bg-amber-500",
+      rounded: "rounded-full",
+      border: "hover:border-3 hover:border-red-700",
+    },
+    {
+      label: "Hotels",
+      icon: Hotel,
+      to: "/hotels",
+      bg: "bg-amber-500",
+      rounded: "rounded-full",
+      border: "hover:border-3 hover:border-red-700",
+    },
   ];
 
   return (
@@ -206,8 +227,8 @@ const HeroSection = () => {
                   boxShadow: "0 10px 40px -10px hsl(25 95% 53% / 0.4)",
                 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-300 text-primary-foreground font-medium text-sm shadow-warm"
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                className={`flex items-center gap-2 px-6 py-3 ${item.rounded} ${item.bg} ${item.border} text-white font-medium text-md shadow-warm`}
               >
                 <item.icon size={18} />
                 {item.label}

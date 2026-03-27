@@ -14,7 +14,7 @@ const scrollLinks = [
 ];
 
 const routeBtnClass =
-  "bg-linear-to-t from-red-800/40 via-red-600/20 to-red-500/40 p-2 rounded-md text-center";
+  "bg-red-600 text-white/90 p-2 rounded-md text-center hover:border-2 hover:border-amber-500";
 
 const scrollToSection = (id) => {
   const lenis = getLenis();
@@ -98,7 +98,7 @@ const Navbar = () => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
-              className={`font-sans text-lg font-medium transition-colors cursor-pointer relative group ${navTextClass}`}
+              className={`font-sans text-lg font-medium transition-all hover:bg-red-600 hover:text-white/90 hover:border-2 hover:border-amber-500 py-2 px-3 rounded-md cursor-pointer relative group ${navTextClass} duration-300`}
               href={`#${link.id}`}
               onClick={(e) => {
                 e.preventDefault();
@@ -235,7 +235,7 @@ const Navbar = () => {
                     <Link
                       to="/dashboard"
                       onClick={() => setIsOpen(false)}
-                      className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
+                      className="font-sans text-base font-medium py-2 hover:text-orange-600/60 transition-colors duration-300 block"
                     >
                       Dashboard
                     </Link>
@@ -246,7 +246,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
                     onClick={handleLogout}
-                    className="font-sans text-base font-medium text-left text-gray-900 py-2 hover:text-orange-600/60 transition-colors"
+                    className="font-sans text-base font-medium text-left text-gray-900 py-2 hover:text-orange-600/60 duration-300 transition-colors"
                   >
                     Log out
                   </motion.button>

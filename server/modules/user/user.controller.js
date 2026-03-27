@@ -19,11 +19,10 @@ const cookieOptions = {
 */
 async function userRegisterController(req, res) {
     try {
-        const { email, name, password, phone } = req.body;
-        const formattedPhone = `+91${phone}`;
+        const { email, name, password, phone, role } = req.body;
 
         const isExists = await userModel.findOne({
-            email: email
+            email: { $eq: email }
         })
 
         if (isExists) {
@@ -34,7 +33,7 @@ async function userRegisterController(req, res) {
         }
 
         const user = await userModel.create({
-            email, name, password, phone: formattedPhone
+            email, name, password, phone, role
         })
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '3h' })
@@ -48,7 +47,9 @@ async function userRegisterController(req, res) {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
-                    phone: formattedPhone,
+                    phone: user.phone,
+                    role: user.role,
+                    createdAt: user.createdAt,
                 }, token
             }
         })
@@ -75,7 +76,7 @@ async function userLoginController(req, res) {
     try {
         const { email, password } = req.body;
 
-        const user = await userModel.findOne({ email }).select("+password");
+        const user = await userModel.findOne({ email: {$eq: email} }).select("+password");
         if (!user) {
             return res.status(401).json({
                 message: "Invalid email or password",
@@ -163,7 +164,7 @@ async function userLogoutController(req, res) {
 async function forgotPasswordController(req, res) {
     try {
         const { email } = req.body;
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email: { $eq: email } });
 
         // Always return success to avoid account enumeration.
         if (!user) {
@@ -203,7 +204,7 @@ async function resetPasswordController(req, res) {
         const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
         const user = await userModel.findOne({
-            resetPasswordToken: hashedToken,
+            resetPasswordToken: {$eq: hashedToken},
             resetPasswordExpires: { $gt: new Date() },
         }).select("+resetPasswordToken +resetPasswordExpires");
 

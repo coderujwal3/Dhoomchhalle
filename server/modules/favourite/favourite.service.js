@@ -6,7 +6,7 @@ const favouriteModel = require("./favourite.model");
 async function addFavourite(userId, hotelId) {
     try {
         // Check if already favorited
-        const existing = await favouriteModel.findOne({ userId, hotelId });
+        const existing = await favouriteModel.findOne({ userId: {$eq: userId}, hotelId: {$eq: hotelId} });
         if (existing) {
             return existing;
         }

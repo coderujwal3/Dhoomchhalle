@@ -1,8 +1,30 @@
 import React, { useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { Eye, EyeOff, Lock, Mail, Phone, Sparkles, User } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Phone,
+  Sparkles,
+  User,
+  ChevronDown,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { register as registerUser } from "../services/auth.service";
+
+const COUNTRY_CODES = [
+  { code: "+1", country: "United States", flag: "🇺🇸", maxLength: 10 },
+  { code: "+44", country: "United Kingdom", flag: "🇬🇧", maxLength: 10 },
+  { code: "+91", country: "India", flag: "🇮🇳", maxLength: 10 },
+  { code: "+86", country: "China", flag: "🇨🇳", maxLength: 11 },
+  { code: "+81", country: "Japan", flag: "🇯🇵", maxLength: 10 },
+  { code: "+49", country: "Germany", flag: "🇩🇪", maxLength: 10 },
+  { code: "+33", country: "France", flag: "🇫🇷", maxLength: 9 },
+  { code: "+61", country: "Australia", flag: "🇦🇺", maxLength: 9 },
+  { code: "+55", country: "Brazil", flag: "🇧🇷", maxLength: 11 },
+  { code: "+39", country: "Italy", flag: "🇮🇹", maxLength: 10 },
+];
 
 const strongPasswordRule =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,64}$/;
@@ -11,15 +33,19 @@ function Register() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [countryCode, setCountryCode] = useState(COUNTRY_CODES[2]); // Default to India
   const [phone, setPhone] = useState("");
+  const [role, setRole] = useState("traveller"); // Default to "traveller"
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCountries, setShowCountries] = useState(false);
 
   const passwordIsStrong = strongPasswordRule.test(password);
-  const phoneIsValid = /^\d{10}$/.test(phone);
+  const phoneIsValid =
+    phone.length === countryCode.maxLength && /^\d+$/.test(phone);
   const passwordsMatch = password.length > 0 && password === confirmPassword;
   const canSubmit = useMemo(() => {
     return (
@@ -30,7 +56,14 @@ function Register() {
       passwordsMatch &&
       !isSubmitting
     );
-  }, [name, email, phoneIsValid, passwordIsStrong, passwordsMatch, isSubmitting]);
+  }, [
+    name,
+    email,
+    phoneIsValid,
+    passwordIsStrong,
+    passwordsMatch,
+    isSubmitting,
+  ]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,10 +71,12 @@ function Register() {
 
     try {
       setIsSubmitting(true);
+      const formattedPhone = `${countryCode.code}${phone}`;
       const res = await registerUser({
         name: name.trim(),
         email: email.trim(),
-        phone,
+        phone: formattedPhone,
+        role,
         password,
         confirmPassword,
       });
@@ -66,8 +101,12 @@ function Register() {
             <Sparkles size={14} />
             Join Dhoomchhalle
           </p>
-          <h1 className="text-3xl font-bold text-white mt-2">Create your account</h1>
-          <p className="text-sm text-zinc-300 mt-1">Plan stays, routes, and experiences in one place.</p>
+          <h1 className="text-3xl font-bold text-white mt-2">
+            Create your account
+          </h1>
+          <p className="text-sm text-zinc-300 mt-1">
+            Plan stays, routes, and experiences in one place.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,21 +143,106 @@ function Register() {
           <label className="block">
             <span className="text-sm text-zinc-200">Phone number</span>
             <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
-              <Phone size={16} className="text-zinc-300" />
+              {/* <Phone size={16} className="text-zinc-300" /> */}
+
+              {/* Country Code Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowCountries(!showCountries)}
+                  className="flex items-center gap-2 px-2 py-3 hover:bg-white/10 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  <span className="text-lg text-zinc-400">
+                    {countryCode.flag}
+                  </span>
+                  <span className="text-white text-sm font-medium">
+                    {countryCode.code}
+                  </span>
+                  <ChevronDown size={14} className="text-zinc-400" />
+                </button>
+
+                {showCountries && (
+                  <div className="absolute left-0 top-full mt-1 w-60 bg-zinc-800 border border-white/20 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                    {COUNTRY_CODES.map((country) => (
+                      <button
+                        key={country.code}
+                        type="button"
+                        onClick={() => {
+                          setCountryCode(country);
+                          setShowCountries(false);
+                          setPhone(""); // Reset phone when country changes
+                        }}
+                        className="w-full px-4 py-2 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-zinc-300 hover:text-white text-sm"
+                      >
+                        <span className="text-lg text-white">
+                          {country.flag}
+                        </span>
+                        <span className="flex-1">{country.country}</span>
+                        <span className="text-zinc-400 text-xs">
+                          {country.code}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <input
                 className="w-full py-3 bg-transparent text-white outline-none placeholder:text-zinc-400"
                 required
                 type="tel"
                 inputMode="numeric"
-                pattern="\d{10}"
-                maxLength={10}
-                placeholder="10-digit mobile number"
+                maxLength={countryCode.maxLength}
+                placeholder={`${countryCode.maxLength}-digit number`}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                onChange={(e) =>
+                  setPhone(
+                    e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, countryCode.maxLength),
+                  )
+                }
               />
             </div>
-            <p className="text-xs mt-1 text-zinc-300">Only 10 digits, country code is added automatically.</p>
+            <p
+              className={`text-xs mt-1 text-right ${phone && !phoneIsValid ? "text-red-300" : "text-zinc-300"}`}
+            >
+              {phone && !phoneIsValid
+                ? `Please enter ${countryCode.maxLength} digits`
+                : `Enter ${countryCode.maxLength}-digit number for ${countryCode.country}`}
+            </p>
           </label>
+
+          <div className="block">
+            <div className="flex gap-2 items-center">
+              <User size={16} className="text-zinc-300" />
+              <span className="text-sm text-zinc-200">Role</span>
+            </div>
+            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 p-3">
+              <input
+                type="radio"
+                name="role"
+                id="traveller"
+                value="traveller"
+                checked={role === "traveller"}
+                onChange={(e) => setRole(e.target.value)}
+              />
+              <label htmlFor="traveller" className="text-md text-white/90">
+                Traveller
+              </label>
+              <input
+                type="radio"
+                name="role"
+                id="verifier"
+                value="verifier"
+                checked={role === "verifier"}
+                onChange={(e) => setRole(e.target.value)}
+              />
+              <label htmlFor="verifier" className="text-md text-white/90">
+                Verifier
+              </label>
+            </div>
+          </div>
 
           <label className="block">
             <span className="text-sm text-zinc-200">Password</span>
@@ -142,8 +266,11 @@ function Register() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <p className={`text-xs mt-1 ${password && !passwordIsStrong ? "text-red-300" : "text-zinc-300"}`}>
-              Use 8+ chars with uppercase, lowercase, number, and special character.
+            <p
+              className={`text-xs mt-1 ${password && !passwordIsStrong ? "text-red-300" : "text-zinc-300"}`}
+            >
+              Use 8+ chars with uppercase, lowercase, number, and special
+              character.
             </p>
           </label>
 
@@ -164,13 +291,21 @@ function Register() {
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="text-zinc-200 hover:text-white transition-colors"
-                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            <p className={`text-xs mt-1 ${confirmPassword && !passwordsMatch ? "text-red-300" : "text-zinc-300"}`}>
-              {confirmPassword && !passwordsMatch ? "Passwords do not match." : "Both passwords must match."}
+            <p
+              className={`text-xs mt-1 ${confirmPassword && !passwordsMatch ? "text-red-300" : "text-zinc-300"}`}
+            >
+              {confirmPassword && !passwordsMatch
+                ? "Passwords do not match."
+                : "Both passwords must match."}
             </p>
           </label>
 
@@ -185,7 +320,10 @@ function Register() {
 
         <p className="text-sm text-zinc-300 mt-5 text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-orange-300 hover:text-orange-200 underline">
+          <Link
+            to="/login"
+            className="text-orange-300 hover:text-orange-200 underline"
+          >
             Login here
           </Link>
         </p>

@@ -21,8 +21,13 @@ const registerValidation = [
     .trim()
     .notEmpty()
     .withMessage("Phone number is required")
-    .matches(/^\d{10}$/)
-    .withMessage("Phone number should contain exactly 10 digits"),
+    .matches(/^\+\d{9,15}$/)
+    .withMessage("Please provide a valid phone number with country code (e.g., +919876543210)"),
+  body("role")
+    .notEmpty()
+    .withMessage("Role is necessary")
+    .isIn(['traveller', 'verifier'])
+    .withMessage("Role must be either 'traveller' or 'verifier'"),
   body("password")
     .notEmpty()
     .withMessage("Password is required")

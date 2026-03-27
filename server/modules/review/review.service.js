@@ -92,7 +92,7 @@ async function getReviewById(reviewId) {
 async function updateReview(reviewId, updateData) {
     try {
         const review = await reviewModel
-            .findByIdAndUpdate(reviewId, updateData, {
+            .findByIdAndUpdate(reviewId, {updateData: {$eq: updateData}}, {
                 new: true,
                 runValidators: true,
             })

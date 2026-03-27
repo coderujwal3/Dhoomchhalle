@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from "react";
+import React, { useEffect } from "react";
 import "./index.css";
 import AppRoutes from "./routes/AppRoutes";
 import { getSession } from "./services/auth.service";

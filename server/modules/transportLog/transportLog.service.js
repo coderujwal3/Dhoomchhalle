@@ -40,7 +40,7 @@ async function getLogById(logId) {
 
 async function updateTransportLog(logId, updateData) {
     try {
-        const log = await transportLogModel.findByIdAndUpdate(logId, updateData, {
+        const log = await transportLogModel.findByIdAndUpdate(logId, {updateData: {$eq: updateData}}, {
             new: true,
             runValidators: true,
         });

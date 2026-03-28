@@ -13,6 +13,25 @@ function formatDate(iso) {
   }
 }
 
+function maskEmail(email) {
+  const [name, domain] = email.split("@");
+
+  const visible = Math.floor(name.length / 4);
+  const masked = "x".repeat(name.length - visible - 1);
+
+  return name.slice(0, visible) + masked + name.slice(-1) + "@" + domain;
+}
+
+function maskPhone(phone) {
+  phone = phone.toString();
+
+  const countryCode = phone.slice(0, 3)
+  const visibleStart = phone.slice(3, 5);
+  const visibleEnd = phone.slice(-2);
+
+  return `${countryCode}-${visibleStart}xxxxxx${visibleEnd}`;
+}
+
 export default function DashboardSummaryCard({ user }) {
   return (
     <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
@@ -29,8 +48,8 @@ export default function DashboardSummaryCard({ user }) {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-border">
         <Info label="Name" value={user?.name ?? "—"} />
-        <Info label="Email" value={user?.email ?? "—"} className="truncate" />
-        <Info label="Phone" value={user?.phone ?? "—"} />
+        <Info label="Email" value={maskEmail(user?.email) ?? "—"} className="truncate" />
+        <Info label="Phone" value={maskPhone(user?.phone) ?? "—"} />
         <Info label="Role" value={user?.role ?? "—"} className="capitalize" />
         <Info label="Member Since" value={formatDate(user?.createdAt)} />
       </div>

@@ -13,6 +13,25 @@ function formatDate(iso) {
   }
 }
 
+function maskEmail(email) {
+  const [name, domain] = email.split("@");
+
+  const visible = Math.floor(name.length / 3);
+  const masked = "x".repeat(name.length - visible - 1);
+
+  return name.slice(0, visible) + masked + name.slice(-1) + "@" + domain;
+}
+
+function maskPhone(phone) {
+  phone = phone.toString();
+
+  const countryCode = phone.slice(0, 3);
+  const visibleStart = phone.slice(3, 5);
+  const visibleEnd = phone.slice(-2);
+
+  return `${countryCode}-${visibleStart}xxxxxx${visibleEnd}`;
+}
+
 export default function UserProfileCard({ user, profile }) {
   const avatar = profile?.avatar || profile?.avatarUrl;
   const initials = (user?.name || "U")
@@ -63,8 +82,8 @@ export default function UserProfileCard({ user, profile }) {
       </div>
 
       <div className="divide-y divide-orange-100">
-        <Row icon={Mail} label="Email" value={user?.email || "—"} />
-        <Row icon={Phone} label="Phone" value={user?.phone || "—"} />
+        <Row icon={Mail} label="Email" value={maskEmail(user?.email) || "—"} />
+        <Row icon={Phone} label="Phone" value={maskPhone(user?.phone) || "—"} />
         <Row icon={Shield} label="Role" value={user?.role || "traveller"} />
         <Row
           icon={Calendar}

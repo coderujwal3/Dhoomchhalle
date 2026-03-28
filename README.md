@@ -390,6 +390,9 @@ npm run dev
 ## User Profile Look
 <img width="1570" height="912" alt="image" src="https://github.com/user-attachments/assets/6726b2ef-e2e8-48e7-bb33-1d73d152b9cb" />
 
+
+# Mobile App Dhoomchhalle
+## NOTE => This will be added soon in this repo again (it has been removed from here, because it has several high risk vulnerabilites in it, after fixation it will be deployed again. Thank you for understanding).
 ## Mobile Landing page
 <img height="840" alt="image" src="https://github.com/user-attachments/assets/91ff65d4-779f-4fbc-976e-cb024a530834" />
 

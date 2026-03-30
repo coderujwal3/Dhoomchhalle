@@ -5,7 +5,6 @@ import {
   EyeOff,
   Lock,
   Mail,
-  Phone,
   Sparkles,
   User,
   ChevronDown,
@@ -35,7 +34,6 @@ function Register() {
   const [email, setEmail] = useState("");
   const [countryCode, setCountryCode] = useState(COUNTRY_CODES[2]); // Default to India
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("traveller"); // Default to "traveller"
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -76,7 +74,6 @@ function Register() {
         name: name.trim(),
         email: email.trim(),
         phone: formattedPhone,
-        role,
         password,
         confirmPassword,
       });
@@ -212,37 +209,6 @@ function Register() {
                 : `Enter ${countryCode.maxLength}-digit number for ${countryCode.country}`}
             </p>
           </label>
-
-          <div className="block">
-            <div className="flex gap-2 items-center">
-              <User size={16} className="text-zinc-300" />
-              <span className="text-sm text-zinc-200">Role</span>
-            </div>
-            <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 p-3">
-              <input
-                type="radio"
-                name="role"
-                id="traveller"
-                value="traveller"
-                checked={role === "traveller"}
-                onChange={(e) => setRole(e.target.value)}
-              />
-              <label htmlFor="traveller" className="text-md text-white/90">
-                Traveller
-              </label>
-              <input
-                type="radio"
-                name="role"
-                id="verifier"
-                value="verifier"
-                checked={role === "verifier"}
-                onChange={(e) => setRole(e.target.value)}
-              />
-              <label htmlFor="verifier" className="text-md text-white/90">
-                Verifier
-              </label>
-            </div>
-          </div>
 
           <label className="block">
             <span className="text-sm text-zinc-200">Password</span>

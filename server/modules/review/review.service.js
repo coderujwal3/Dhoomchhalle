@@ -92,8 +92,8 @@ async function getReviewById(reviewId) {
 async function updateReview(reviewId, updateData) {
     try {
         const review = await reviewModel
-            .findByIdAndUpdate(reviewId, {updateData: {$eq: updateData}}, {
-                new: true,
+            .findByIdAndUpdate(reviewId, { updateData: { $eq: updateData } }, {
+                returnDocument: 'after',
                 runValidators: true,
             })
             .populate([
@@ -160,7 +160,7 @@ async function markReviewHelpful(reviewId) {
         const review = await reviewModel.findByIdAndUpdate(
             reviewId,
             { $inc: { helpful: 1 } },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         if (!review) {

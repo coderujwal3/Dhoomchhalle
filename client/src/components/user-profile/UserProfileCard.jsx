@@ -1,4 +1,7 @@
 import { Calendar, Mail, Phone, Shield } from "lucide-react";
+import { useState } from "react";
+import ProfilePhotoModal from "./ProfilePhotoModal";
+
 
 function formatDate(iso) {
   if (!iso) return "—";
@@ -15,24 +18,24 @@ function formatDate(iso) {
 
 function maskEmail(email) {
   const [name, domain] = email.split("@");
-
+  
   const visible = Math.floor(name.length / 3);
   const masked = "x".repeat(name.length - visible - 1);
-
+  
   return name.slice(0, visible) + masked + name.slice(-1) + "@" + domain;
 }
 
 function maskPhone(phone) {
-  phone = phone.toString();
-
+  phone = phone.toString()
   const countryCode = phone.slice(0, 3);
   const visibleStart = phone.slice(3, 5);
   const visibleEnd = phone.slice(-2);
-
+  
   return `${countryCode}-${visibleStart}xxxxxx${visibleEnd}`;
 }
 
 export default function UserProfileCard({ user, profile }) {
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const avatar = profile?.avatar || profile?.avatarUrl;
   const initials = (user?.name || "U")
     .split(" ")
@@ -59,11 +62,20 @@ export default function UserProfileCard({ user, profile }) {
         <div className="flex items-center gap-4">
           <div className="md:w-30 md:h-30 h-20 w-20 rounded-full border-2 border-orange-300 overflow-hidden bg-orange-200 flex items-center justify-center">
             {avatar ? (
-              <img
-                src={avatar}
-                alt={user?.name || "User"}
-                className="w-full h-full object-cover"
-              />
+              <div>
+                <img
+                  src={avatar}
+                  alt={user?.name || "User"}
+                  onClick={() => setIsShareOpen(true)}
+                  className="w-full h-full object-cover cursor-pointer"
+                />
+                <ProfilePhotoModal
+                  isOpen={isShareOpen}
+                  onClose={() => setIsShareOpen(false)}
+                  profile={profile}
+                  userName={user?.name}
+                />
+              </div>
             ) : (
               <span className="text-3xl font-bold text-orange-700">
                 {initials}
@@ -75,7 +87,7 @@ export default function UserProfileCard({ user, profile }) {
               Name
             </p>
             <h2 className="font-bold md:text-3xl text-xl capitalize text-red-900">
-              {(user?.name) || "Unknown User"}
+              {user?.name || "Unknown User"}
             </h2>
           </div>
         </div>

@@ -15,17 +15,45 @@ Planning to give some facilities regarding the travel (currently planned only fo
 - Public transport timings (buses and trains timings)
 
 ## Tech Stack:
-- => MERN for website (I will build app later on with React Native (because it is good for both android and iphones)); with tailwindcss, Lenis Scrolling, lottiefiles (for 2D animated icons), framer motion (clean and beautiful animation) for best interacting user experience.
+
+### Frontend (Client)
+- **Framework**: React 19.2.0 with Vite bundler
+- **Routing**: React Router DOM 7.13.1
+- **Styling**: Tailwind CSS 4.1.18 with dark theme support
+- **UI Components**: Lucide React icons, React Hot Toast notifications
+- **Charts & Visualization**: Recharts 2.12.0, Chart.js 4.4.0
+- **Animations**: GSAP 3.14.2, Framer Motion (motion 12.35.0), Lenis smooth scrolling
+- **Media**: Lottie animations (.json), React QR Code
+- **HTTP Client**: Axios 1.13.5 with custom interceptors
+- **Loading States**: React Spinners 0.17.0
+- **Analytics**: Vercel Analytics & Speed Insights
+
+### Backend (Server)
+- **Framework**: Express.js 5.2.1
+- **Database**: MongoDB with Mongoose 9.2.1 ODM
+- **Authentication**: JWT (jsonwebtoken 9.0.3), Bcrypt 6.0.0 password hashing
+- **Security**: Helmet.js, express-mongo-sanitize, express-rate-limit
+- **Upload**: Multer 2.1.1 with Cloudinary integration
+- **Email**: Nodemailer 8.0.4 for password reset flows
+- **Input Validation**: Express Validator 7.3.1
+- **Middleware**: Cookie Parser, CORS, Morgan logging
+- **XSS Protection**: XSS library 1.0.15
+
+### Mobile (Future)
+- **Framework**: React Native with Expo
+- **Language**: TypeScript
+- **Emulator Support**: Android Studio (Pixel 5, 7 Pro, Tablet)
 
 ## 🚀 DHOOMCHHALLE – Core System Design
 🧠 Core Modules
-User Module-
-- Transport Module
-- Route & Traffic Module
-- Hotel/Hostel Module
-- Feedback & Reviews
-- Timings Module (Bus/Train)
-- Admin Panel (VERY IMPORTANT)
+- **User Module** - Authentication, JWT, sessions, profiles
+- **Admin Panel** - Dashboard, user management, moderation, analytics (NEW!)
+- **Transport Module** - Prices, types, fare calculations
+- **Route & Traffic Module** - Best routes, traffic analysis
+- **Hotel/Hostel Module** - Listings, filters, details, verification
+- **Feedback & Reviews** - User reviews, ratings, moderation
+- **Timings Module** - Bus/Train schedules, real-time updates
+- **Reports Module** - Issue reporting and tracking
 
 ## Authentication, session & user dashboard - (recent update)
 
@@ -165,14 +193,23 @@ client/
 │   │   ├── auth/
 │   │   │   ├── ProtectedRoute.jsx
 │   │   │   └── GuestOnlyRoute.jsx
+│   │   │
 │   │   ├── common/
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── Footer.jsx
 │   │   │   └── ui/             # small UI building blocks (animations, reveal, etc.)
 │   │   │
+│   │   ├── Admin/              # ADMIN PANEL COMPONENTS (NEW!)
+│   │   │   ├── AdminLayout.jsx
+│   │   │   ├── AdminRouteShell.jsx
+│   │   │   ├── ProtectedAdminRoute.jsx
+│   │   │   ├── StatCard.jsx
+│   │   │   ├── DashboardCharts.jsx
+│   │   │   └── RecentActivityFeed.jsx
+│   │   │
 │   │   ├── hotels/
 │   │   │   ├── HotelCard.jsx
-│   │   │   └── HotelFilter.jsx
+│   │   │   ├── HotelFilter.jsx
 │   │   │   └── HotelDetails.jsx
 │   │   │
 │   │   ├── transport/
@@ -212,7 +249,13 @@ client/
 │   │   ├── Register.jsx
 │   │   ├── ForgotPassword.jsx
 │   │   ├── ResetPassword.jsx
-│   │   └── AdminDashboard.jsx
+│   │   ├── AdminDashboard.jsx        # NEW - Admin pages
+│   │   ├── AdminUsers.jsx             # NEW
+│   │   ├── AdminReviews.jsx            # NEW
+│   │   ├── AdminReports.jsx            # NEW
+│   │   ├── AdminAnalytics.jsx          # NEW
+│   │   ├── AdminSettings.jsx           # NEW
+│   │   └── NotFound.jsx
 │   │
 │   ├── layouts/
 │   │   └── MainLayout.jsx
@@ -220,24 +263,31 @@ client/
 │   ├── context/
 │   │   └── AuthContext.jsx
 │   │
+│   ├── hooks/
+│   │   └── custom hooks for reusability
+│   │
 │   ├── lib/
 │   │   └── apiClient.js         # axios client + auth/401 handling
 │   │
 │   ├── services/                # API calls (client ↔ server)
-│   │   ├── auth.service.js
-│   │   ├── hotel.service.js
-│   │   ├── transport.service.js
-│   │   ├── userId.service.js
-│   │   ├── profile.service.js
-│   │   ├── favourite.service.js
-│   │   ├── review.service.js
-│   │   └── transportLog.service.js
+│   │   ├── api/
+│   │   │   ├── auth.service.js
+│   │   │   ├── hotel.service.js
+│   │   │   ├── transport.service.js
+│   │   │   ├── userId.service.js
+│   │   │   ├── profile.service.js
+│   │   │   ├── favourite.service.js
+│   │   │   ├── review.service.js
+│   │   │   ├── transportLog.service.js
+│   │   │   └── adminAPI.js          # NEW - Centralized admin API service
+│   │   │
 │   │
 │   ├── utils/
 │   │   └── ScrollToTop.jsx
 │   │
 │   ├── routes/
-│   │   └── AppRoutes.jsx
+│   │   ├── AppRoutes.jsx
+│   │   └── adminRoutes.jsx        # NEW - Admin routing
 │   │
 │   ├── DB/
 │   │   └── hotelDB.json
@@ -246,7 +296,9 @@ client/
 │   └── main.jsx
 │
 ├── package.json
-└── vite.config.js
+├── vite.config.js
+├── eslint.config.js
+└── tailwind.config.js
 ```
 
 ### Server Side Folder Structure (Express + MongoDB)
@@ -254,8 +306,8 @@ client/
 server/
 │
 ├── config/
-│   ├── db.js
-│   ├── env.js
+│   ├── db.js                    # MongoDB connection
+│   ├── env.js                   # Environment variables
 │   └── cloudinary.js            # Cloudinary SDK config
 │
 ├── modules/
@@ -265,6 +317,10 @@ server/
 │   │   ├── user.routes.js
 │   │   ├── user.validation.js
 │   │   └── tokenBlacklist.model.js
+│   │
+│   ├── admin/                   # NEW - Admin Module
+│   │   ├── admin.routes.js      # 18 admin endpoints
+│   │   └── admin.controller.js  # Admin business logic
 │   │
 │   ├── hotel/
 │   │   ├── hotel.model.js
@@ -322,8 +378,9 @@ server/
 │
 ├── middlewares/
 │   ├── auth.middleware.js
-│   ├── upload.middleware.js     # multer + Cloudinary storage for image uploads
+│   ├── upload.middleware.js         # multer + Cloudinary storage for image uploads
 │   ├── role.middleware.js
+│   ├── roleBasedAccess.middleware.js # NEW - RBAC with 3 authorization strategies
 │   ├── error.middleware.js
 │   └── validate.middleware.js
 │
@@ -345,6 +402,7 @@ server/
   - **Token blacklisting** on logout via `tokenBlacklist` collection (prevents reuse).
   - **Session validation** checks token *and* loads the user from DB (handles deleted users / revoked tokens).
   - **Forgot/Reset/Change password** flows supported via auth endpoints and client pages.
+
 - **User dashboard (`/dashboard`)**
   - **Profile tab** shows profile snapshot for the logged-in user.
   - **Saved Hotels tab** manages favourites (save/unsave + list).
@@ -352,12 +410,32 @@ server/
   - **Transport History tab** shows saved fare logs (estimated vs actual).
   - **Recent Searches tab** reads/writes `localStorage` to show recently viewed hotels.
   - **Settings tab** updates profile fields and uploads avatar to Cloudinary.
+
 - **Hotels**
   - Browse hotels and view details; (API-driven with reusable service layer).
+
 - **Transport**
   - Transport pages + route planner pages exist (module continues evolving).
+
 - **Reports**
   - Users can submit issues (transport/hotel) and view their own submitted reports.
+
+- **Admin Panel (`/admin`)** - NEW! ✨
+  - **Dashboard** - Real-time statistics (users, hotels, reviews, reports), charts with 30-day trends
+  - **User Management** - Search, filter, paginate users; update roles, suspend/activate accounts
+  - **Review Moderation** - View pending reviews, approve/reject with optional reasons
+  - **Report Management** - View reported issues, resolve with detailed notes
+  - **Analytics** - Advanced analytics dashboard with time period selection (30/90/365 days)
+    - User growth trends
+    - Hotel registration metrics
+    - Booking analytics & revenue tracking
+    - Report statistics & trends
+  - **Settings** - System configuration, feature flags (2FA, social login, multi-language)
+  - **Charts & Visualizations** - Line charts, bar charts, pie charts, area charts with Recharts
+  - **Role-Based Access Control (RBAC)** - Admin-only with 3 middleware strategies
+    - Strict admin verification
+    - Flexible role-based access
+    - Permission-based authorization matrix
 
 ## Run Website
 - Clone Repo

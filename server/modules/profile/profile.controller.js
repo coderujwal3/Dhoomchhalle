@@ -1,6 +1,7 @@
 const profileService = require("./profile.service");
 const { responseFormatter } = require("../../utils/responseFormatter");
 const { uploadAvatar } = require("../../services/cloudinary.service");
+const userModel = require("../user/user.model");
 
 /**
  * GET /api/v1/profile/:userId
@@ -74,8 +75,21 @@ async function getMyProfileController(req, res) {
         const userId = req.user._id;
 
         const profile = await profileService.getOrCreateProfile(userId);
+        const profileObject = profile.toObject();
+        const currentUser = await userModel
+            .findById(userId)
+            .select("twoFactorEnabled lastLoginAt")
+            .lean();
 
-        return res.status(200).json(responseFormatter(true, "Your profile fetched successfully", profile, 200));
+        profileObject.twoFactorEnabled = currentUser?.twoFactorEnabled || false;
+        profileObject.lastLoginAt = currentUser?.lastLoginAt || null;
+
+        if (profileObject.userId && typeof profileObject.userId === "object") {
+            profileObject.userId.twoFactorEnabled = currentUser?.twoFactorEnabled || false;
+            profileObject.userId.lastLoginAt = currentUser?.lastLoginAt || null;
+        }
+
+        return res.status(200).json(responseFormatter(true, "Your profile fetched successfully", profileObject, 200));
     } catch (error) {
         console.error("Error fetching user profile:", error);
         return res.status(500).json(responseFormatter(false, error.message, null, 500));

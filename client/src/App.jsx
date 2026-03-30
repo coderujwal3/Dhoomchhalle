@@ -8,11 +8,9 @@ function App() {
     if (!localStorage.getItem("token")) return;
     getSession().catch(() => {});
   }, []);
-  
+
   return (
-    <>
-        <AppRoutes />
-    </>
+    <AppRoutes />
   );
 }
 

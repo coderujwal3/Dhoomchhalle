@@ -2,7 +2,8 @@ import React, { useMemo, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Eye, EyeOff, Lock, Mail, Sparkles } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/auth.service";
+import { login, verifyOTP, resendOTP } from "../services/auth.service";
+import OTPVerification from "../components/auth/OTPVerification";
 
 function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [otpSessionToken, setOtpSessionToken] = useState(null);
+  const [otpLoading, setOtpLoading] = useState(false);
 
   const canSubmit = useMemo(() => {
     return email.trim().length > 4 && password.length >= 8 && !isSubmitting;
@@ -25,13 +29,74 @@ function Login() {
         email: email.trim(),
         password,
       });
-      localStorage.setItem("token", res.data?.token);
+
+      // Check if 2FA is required (check in data object)
+      if (res.data?.requiresOTP) {
+        setOtpSessionToken(res.data?.otpSessionToken || null);
+        setShowOTPVerification(true);
+        toast.success("Check your email for OTP code");
+        return;
+      }
+
+      // Regular login without 2FA
+      const token = res.data?.accessToken || res.data?.token;
+      const refreshToken = res.data?.refreshToken;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        if (refreshToken) {
+          localStorage.setItem("refreshToken", refreshToken);
+        }
+      }
+
       toast.success(res.message || "Logged in successfully");
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Login failed");
+      toast.error(
+        error?.response?.data?.message || "Login failed due to unknown error",
+      );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleOTPVerify = async (otpCode) => {
+    try {
+      setOtpLoading(true);
+      const res = await verifyOTP({
+        otp: otpCode,
+        otpSessionToken,
+      });
+
+      // Extract tokens from response
+      const token = res.data?.accessToken || res.data?.token;
+      const refreshToken = res.data?.refreshToken;
+
+      if (token) {
+        localStorage.setItem("token", token);
+        if (refreshToken) {
+          localStorage.setItem("refreshToken", refreshToken);
+        }
+      }
+
+      toast.success("2FA verified successfully!");
+      setShowOTPVerification(false);
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "OTP verification failed");
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      const response = await resendOTP({ otpSessionToken });
+      setOtpSessionToken(response?.data?.otpSessionToken || otpSessionToken);
+      toast.success("OTP resent to your email");
+      return response;
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to resend OTP");
     }
   };
 
@@ -46,8 +111,12 @@ function Login() {
             <Sparkles size={14} />
             Welcome Back
           </p>
-          <h1 className="text-3xl font-bold text-white mt-2">Login to Dhoomchhalle</h1>
-          <p className="text-sm text-zinc-300 mt-1">Continue your spiritual journey planner.</p>
+          <h1 className="text-3xl font-bold text-white mt-2">
+            Login to Dhoomchhalle
+          </h1>
+          <p className="text-sm text-zinc-300 mt-1">
+            Continue your spiritual journey planner.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,11 +177,33 @@ function Login() {
 
         <p className="text-sm text-zinc-300 mt-5 text-center">
           New here?{" "}
-          <Link to="/register" className="text-orange-300 hover:text-orange-200 underline">
+          <Link
+            to="/register"
+            className="text-orange-300 hover:text-orange-200 underline"
+          >
             Create an account
           </Link>
         </p>
       </div>
+
+      {/* OTP Verification Modal */}
+      {showOTPVerification && (
+        <OTPVerification
+          onVerify={handleOTPVerify}
+          onResend={handleResendOTP}
+          title="Verify Your Login"
+          description="Enter the 6-digit code we emailed to you to complete sign in."
+          footerText="Use the latest code sent to your email to finish logging in."
+          onCancel={() => {
+            setShowOTPVerification(false);
+            setOtpSessionToken(null);
+            setEmail("");
+            setPassword("");
+          }}
+          isLoading={otpLoading}
+        />
+      )}
+
       <Toaster />
     </section>
   );

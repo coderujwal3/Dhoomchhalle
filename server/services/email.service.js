@@ -55,7 +55,7 @@ async function sendRegistrationEmail(userEmail, name) {
     const text = `Hello ${name},\n\nThank you for registering at Dhoomchalle, ${tagline}.\nWe are excited to have you on board!\n\nBest regards,\nDhoomchalle Team`;
     const html = `<p>Hello ${name},</p><p>Thank you for registering at Dhoomchalle, <br/><strong>${tagline}</strong>.</p><p>We are excited to have you on board!</p><p>Best regards,<br>Dhoomchalle Team</p>`;
 
-    await sendEmail(userEmail, subject, text, html);
+    return sendEmail(userEmail, subject, text, html);
 }
 
 async function sendPasswordResetEmail(userEmail, name, resetLink) {
@@ -63,7 +63,15 @@ async function sendPasswordResetEmail(userEmail, name, resetLink) {
     const text = `Hello ${name},\n\nWe received a request to reset your password.\nUse this link to reset it:\n${resetLink}\n\nThis link will expire in 15 minutes.\nIf you did not request this, please ignore this message.`;
     const html = `<p>Hello ${name},</p><p>We received a request to reset your password.</p><p><a href="${resetLink}" target="_blank" rel="noopener noreferrer">Reset Password</a></p><p>This link will expire in <strong>15 minutes</strong>.</p><p>If you did not request this, please ignore this message.</p>`;
 
-    await sendEmail(userEmail, subject, text, html);
+    return sendEmail(userEmail, subject, text, html);
 }
 
-module.exports = { sendRegistrationEmail, sendPasswordResetEmail }
+async function sendOTPEmail(userEmail, name, otp) {
+    const subject = "Your Dhoomchhalle 2FA Authentication Code";
+    const text = `Hello ${name},\n\nYour two-factor authentication code is: ${otp}\n\nThis code will expire in 10 minutes.\nIf you did not request this code, please ignore this message.`;
+    const html = `<p>Hello ${name},</p><p>Your two-factor authentication code is:</p><p style="font-size: 24px; font-weight: bold; color: #ff6b35; letter-spacing: 2px;">${otp}</p><p>This code will expire in <strong>10 minutes</strong>.</p><p>If you did not request this code, please ignore this message.</p><p>Best regards,<br>Dhoomchhalle Security Team</p>`;
+
+    return sendEmail(userEmail, subject, text, html);
+}
+
+module.exports = { sendRegistrationEmail, sendPasswordResetEmail, sendOTPEmail }

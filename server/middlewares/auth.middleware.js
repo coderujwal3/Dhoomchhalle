@@ -1,84 +1,119 @@
-const mongoose = require('mongoose')
-const userModel = require('../modules/user/user.model')
-const jwt = require("jsonwebtoken")
-const tokenBlacklistModel = require('../modules/user/tokenBlacklist.model')
+const userModel = require("../modules/user/user.model");
+const jwt = require("jsonwebtoken");
+const tokenBlacklistModel = require("../modules/user/tokenBlacklist.model");
+
+const clearTokenCookie = (res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+    });
+};
+
+async function getAuthenticatedUser(token, includeRole = false) {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const query = userModel.findById(decodedToken.userId);
+
+    if (includeRole) {
+        query.select("+role");
+    }
+
+    return query;
+}
 
 
 async function authMiddleware(req, res, next) {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
         return res.status(401).json({
             message: "Unauthorized user is trying to access, token is missing"
-        })
+        });
     }
 
-    const isBkacklistedToken = await tokenBlacklistModel.findOne({ token })
-    if (isBkacklistedToken) {
+    const isBlacklistedToken = await tokenBlacklistModel.findOne({ token });
+    if (isBlacklistedToken) {
         return res.status(401).json({
             message: "Unauthorized access, Token is Blacklisted"
-        })
+        });
     }
 
     try {
-        const decoded_token = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        // using the same data to show, which was saved when initializing the token in auth.controller.js (e.i, user._id)
-        const user = await userModel.findById(decoded_token.userId)
+        const user = await getAuthenticatedUser(token);
         
         if (!user) {
-            res.clearCookie("token", { httpOnly: true, sameSite: "lax", path: "/" });
+            clearTokenCookie(res);
             return res.status(401).json({
                 message: "User no longer exists",
             });
         }
-        req.user = user
-        return next()
+
+        if (user.suspended) {
+            clearTokenCookie(res);
+            return res.status(403).json({
+                message: "User account is suspended",
+            });
+        }
+
+        req.user = user;
+        return next();
     } catch (error) {
+        clearTokenCookie(res);
         return res.status(401).json({
-            message: "Unauthorized user is trying to access, token is missing"
-        })
+            message: "Unauthorized user is trying to access, token is invalid"
+        });
     }
 }
 
 async function authSystemUserMiddleware(req, res, next) {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1]
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
         return res.status(401).json({
             message: "Unauthorized user is trying to access, token is missing"
-        })
+        });
     }
 
-    const isBkacklistedToken = await tokenBlacklistModel.findOne({ token })
-    if (isBkacklistedToken) {
+    const isBlacklistedToken = await tokenBlacklistModel.findOne({ token });
+    if (isBlacklistedToken) {
         return res.status(401).json({
             message: "Unauthorized access, Token is Invalid"
-        })
+        });
     }
 
     try {
-        const decoded_token = jwt.verify(token, process.env.JWT_SECRET_KEY)
-        const user = await userModel.findById(decoded_token.userId).select("+role");
+        const user = await getAuthenticatedUser(token, true);
+
         if (!user) {
-            res.clearCookie("token", { httpOnly: true, sameSite: "lax", path: "/" });
+            clearTokenCookie(res);
             return res.status(401).json({
                 message: "User no longer exists",
             });
         }
-        if (!user.role.includes("admin")) {
+
+        if (user.suspended) {
+            clearTokenCookie(res);
+            return res.status(403).json({
+                message: "User account is suspended",
+            });
+        }
+
+        if (user.role !== "admin") {
             return res.status(403).json({
                 message: "Forbidden Access, Unauthorized User"
-            })
+            });
         }
-        req.user = user
-        return next()
+
+        req.user = user;
+        return next();
     } catch (error) {
+        clearTokenCookie(res);
         return res.status(401).json({
-            message: "Unauthorized user is trying to access, token is missing"
-        })
+            message: "Unauthorized user is trying to access, token is invalid"
+        });
     }
 }
 
 
-
-module.exports = { authMiddleware, authSystemUserMiddleware }
+module.exports = { authMiddleware, authSystemUserMiddleware };

@@ -31,6 +31,18 @@ const userSchema = new mongoose.Schema(
             enum: ["traveller", "admin", "verifier"],
             default: "traveller"
         },
+        suspended: {
+            type: Boolean,
+            default: false
+        },
+        suspensionReason: {
+            type: String,
+            default: null
+        },
+        suspendedAt: {
+            type: Date,
+            default: null
+        },
         resetPasswordToken: {
             type: String,
             select: false
@@ -38,6 +50,18 @@ const userSchema = new mongoose.Schema(
         resetPasswordExpires: {
             type: Date,
             select: false
+        },
+        twoFactorEnabled: {
+            type: Boolean,
+            default: false,
+        },
+        lastLoginAt: {
+            type: Date,
+            default: null,
+        },
+        lastLoginIp: {
+            type: String,
+            default: null,
         },
     },
     { timestamps: true }

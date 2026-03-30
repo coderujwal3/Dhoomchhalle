@@ -24,10 +24,10 @@ const registerValidation = [
     .matches(/^\+\d{9,15}$/)
     .withMessage("Please provide a valid phone number with country code (e.g., +919876543210)"),
   body("role")
-    .notEmpty()
-    .withMessage("Role is necessary")
-    .isIn(['traveller', 'verifier'])
-    .withMessage("Role must be either 'traveller' or 'verifier'"),
+    .optional()
+    .custom(() => {
+      throw new Error("Role cannot be assigned during self-registration");
+    }),
   body("password")
     .notEmpty()
     .withMessage("Password is required")
@@ -82,9 +82,52 @@ const resetPasswordValidation = [
     .withMessage("Password and confirm password must match"),
 ];
 
+const otpValidation = [
+  body("otp")
+    .trim()
+    .notEmpty()
+    .withMessage("OTP is required")
+    .isLength({ min: 6, max: 6 })
+    .withMessage("OTP must be 6 digits")
+    .isNumeric()
+    .withMessage("OTP must contain only numbers"),
+  body("otpSessionToken")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("OTP session token cannot be empty"),
+  body("purpose")
+    .optional()
+    .isIn(["login", "enable_2fa"])
+    .withMessage("Invalid OTP purpose"),
+];
+
+const resendOTPValidation = [
+  body("otpSessionToken")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("OTP session token cannot be empty"),
+  body("purpose")
+    .optional()
+    .isIn(["login", "enable_2fa"])
+    .withMessage("Invalid OTP purpose"),
+];
+
+const refreshTokenValidation = [
+  body("refreshToken")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("Refresh token is required if provided in body"),
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
   forgotPasswordValidation,
   resetPasswordValidation,
+  otpValidation,
+  resendOTPValidation,
+  refreshTokenValidation,
 };

@@ -41,7 +41,7 @@ async function updateProfile(userId, updateData) {
     try {
         const profile = await profileModel.findOneAndUpdate(
             { userId },
-            {updateData: {$eq: updateData}},
+            { $set: updateData },
             { returnDocument: 'after', runValidators: true }
         ).populate("userId", "email name phone role");
 

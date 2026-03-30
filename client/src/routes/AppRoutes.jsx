@@ -24,6 +24,7 @@ import MainLayout from "../layouts/MainLayout";
 import GuestOnlyRoute from "../components/auth/GuestOnlyRoute";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import ScrollToTop from "../utils/ScrollToTop";
+import adminRoutes from "./adminRoutes";
 
 const AppRoutes = () => {
 
@@ -104,7 +105,7 @@ const AppRoutes = () => {
           {/* <Route path="/profile" element={<Profile />} /> */}
 
           {/* Admin Routes */}
-          {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
+          {adminRoutes}
 
           <Route path="*" element={<NotFound />} />
         </Routes>

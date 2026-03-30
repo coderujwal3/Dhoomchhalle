@@ -73,8 +73,8 @@ async function updateReportStatus(reportId, status, adminNotes, resolvedBy) {
             }),
         };
 
-        const report = await reportModel.findByIdAndUpdate(reportId, {updateData: {$eq: updateData}}, {
-            new: true,
+        const report = await reportModel.findByIdAndUpdate(reportId, { updateData: { $eq: updateData } }, {
+            returnDocument: 'after',
             runValidators: true,
         });
 

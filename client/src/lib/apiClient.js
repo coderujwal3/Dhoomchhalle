@@ -1,14 +1,19 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1",
-  // baseURL: "http://localhost:3000/api/v1",
+  // baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1",
+  baseURL: "http://localhost:3000/api/v1",
   withCredentials: true,
 });
 
 function isExpectedAuthFailure(config) {
   const url = (config?.url || "").toLowerCase();
-  return url.includes("/auth/login") || url.includes("/auth/register");
+  return (
+    url.includes("/auth/login") ||
+    url.includes("/auth/register") ||
+    url.includes("/auth/verify-otp") ||
+    url.includes("/auth/resend-otp")
+  );
 }
 
 /** Only these areas should force navigation to /login on 401; public pages (e.g. Home) stay put. */

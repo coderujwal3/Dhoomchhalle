@@ -1,19 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Camera } from "lucide-react";
+import { Camera, Shield, CheckCircle } from "lucide-react";
 import {
   getMyProfile,
   updateProfile,
   uploadAvatar,
 } from "../../../services/profile.service";
+import {
+  enable2FA,
+  disable2FA,
+  logout,
+  verifyOTP,
+  resendOTP,
+} from "../../../services/auth.service";
+import TwoFAModal from "../../../components/modals/TwoFAModal";
+import OTPVerification from "../../../components/auth/OTPVerification";
 
 export function SettingsTab() {
+  const TWO_FA_ENABLE_PURPOSE = "enable_2fa";
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [twoFALoading, setTwoFALoading] = useState(false);
+  const [otpSessionToken, setOtpSessionToken] = useState(null);
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [disabling2FA, setDisabling2FA] = useState(false);
   const [formData, setFormData] = useState({
     bio: "",
     location: "",
@@ -25,16 +44,24 @@ export function SettingsTab() {
     },
   });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  const extractTwoFactorState = (profileData) =>
+    Boolean(
+      profileData?.twoFactorEnabled ?? profileData?.userId?.twoFactorEnabled,
+    );
 
-  const fetchProfile = async () => {
+  const wait = (ms) =>
+    new Promise((resolve) => {
+      window.setTimeout(resolve, ms);
+    });
+
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       const result = await getMyProfile();
       const profileData = result.data;
+      const nextTwoFactorState = extractTwoFactorState(profileData);
       setProfile(profileData);
+      setTwoFAEnabled(nextTwoFactorState);
       setFormData({
         bio: profileData.bio || "",
         location: profileData.location || "",
@@ -51,25 +78,64 @@ export function SettingsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const waitForConfirmedTwoFactorState = useCallback(
+    async (expectedState, maxAttempts = 6, delayMs = 500) => {
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const result = await getMyProfile();
+        const profileData = result.data;
+        const resolvedState = extractTwoFactorState(profileData);
+
+        if (resolvedState === expectedState) {
+          return profileData;
+        }
+
+        if (attempt < maxAttempts) {
+          await wait(delayMs);
+        }
+      }
+
+      return null;
+    },
+    [],
+  );
+
+  const logoutAndNavigateToLogin = useCallback(async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.warn("[2FA][Settings] Logout after 2FA enable failed", error);
+    }
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    window.dispatchEvent(new Event("dhoom-auth-changed"));
+    navigate("/login", { replace: true });
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const nextValue = type === "checkbox" ? checked : value;
 
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
-      setFormData({
-        ...formData,
+      setFormData((currentFormData) => ({
+        ...currentFormData,
         [parent]: {
-          ...formData[parent],
-          [child]: type === "checkbox" ? checked : value,
+          ...currentFormData[parent],
+          [child]: nextValue,
         },
-      });
+      }));
     } else {
-      setFormData({
-        ...formData,
-        [name]: type === "checkbox" ? checked : value,
-      });
+      setFormData((currentFormData) => ({
+        ...currentFormData,
+        [name]: nextValue,
+      }));
     }
   };
 
@@ -125,12 +191,133 @@ export function SettingsTab() {
     e.preventDefault();
     try {
       setSaving(true);
-      await updateProfile(profile.userId?._id || profile.userId, formData);
+      const targetUserId = profile?.userId?._id || profile?.userId;
+      const result = await updateProfile(targetUserId, formData);
+      await fetchProfile();
       toast.success("Settings saved successfully");
     } catch (error) {
-      toast.error("Failed to save settings");
+      toast.error(error?.message || "Failed to save settings");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handle2FAToggle = () => {
+    if (twoFAEnabled) {
+      // Ask for confirmation before disabling
+      if (
+        window.confirm(
+          "Are you sure you want to disable 2FA? Your account will be less secure.",
+        )
+      ) {
+        handleDisable2FA();
+      }
+    } else {
+      // Show modal to confirm enabling 2FA
+      setShow2FAModal(true);
+    }
+  };
+
+  const handleEnable2FA = async () => {
+    try {
+      setTwoFALoading(true);
+      setShow2FAModal(false);
+
+      // Call enable 2FA API
+      const response = await enable2FA();
+      const nextOtpSessionToken = response?.data?.otpSessionToken || null;
+      console.log("[2FA][Settings] Enable 2FA response", {
+        message: response?.message,
+        requiresOTP: response?.data?.requiresOTP,
+        hasOtpSessionToken: Boolean(nextOtpSessionToken),
+      });
+      setOtpSessionToken(nextOtpSessionToken);
+
+      // Show OTP verification modal
+      setShowOTPVerification(true);
+      toast.success("Check your email for OTP code");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to enable 2FA");
+      console.error("Enable 2FA error:", error);
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    try {
+      setDisabling2FA(true);
+      await disable2FA();
+      setTwoFAEnabled(false);
+      setProfile((currentProfile) =>
+        currentProfile
+          ? {
+              ...currentProfile,
+              twoFactorEnabled: false,
+            }
+          : currentProfile,
+      );
+      await fetchProfile();
+      toast.success("2FA has been disabled");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to disable 2FA");
+      console.error("Disable 2FA error:", error);
+    } finally {
+      setDisabling2FA(false);
+    }
+  };
+
+  const handleOTPSubmit = async (otpValue) => {
+    try {
+      setOtpLoading(true);
+
+      // Verify OTP
+      const response = await verifyOTP({
+        otp: otpValue,
+        otpSessionToken,
+        purpose: TWO_FA_ENABLE_PURPOSE,
+      });
+
+      const enabledState = Boolean(response?.data?.twoFactorEnabled ?? true);
+
+      const confirmedProfile =
+        enabledState === true
+          ? await waitForConfirmedTwoFactorState(true)
+          : null;
+
+      if (!confirmedProfile) {
+        toast.error(
+          "OTP verified, but 2FA is not confirmed in your profile yet. Please check the server logs.",
+        );
+        console.warn("[2FA][Settings] 2FA state was not confirmed after OTP verify");
+        return;
+      }
+
+      setTwoFAEnabled(true);
+      setProfile(confirmedProfile);
+      setShowOTPVerification(false);
+      setOtpSessionToken(null);
+      toast.success("2FA enabled successfully! Please log in again.");
+      await logoutAndNavigateToLogin();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Invalid OTP");
+      console.error("OTP verification error:", error);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      const response = await resendOTP({
+        otpSessionToken,
+        purpose: TWO_FA_ENABLE_PURPOSE,
+      });
+      setOtpSessionToken(response?.data?.otpSessionToken || otpSessionToken);
+      toast.success("OTP resent to your email");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to resend OTP");
+      console.error("Resend OTP error:", error);
     }
   };
 
@@ -315,6 +502,47 @@ export function SettingsTab() {
           </div>
         </div>
 
+        {/* 2FA Security Section */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-orange-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Shield className="w-6 h-6 text-orange-500" />
+              <h3 className="font-bold text-lg">Two-Factor Authentication</h3>
+            </div>
+            {twoFAEnabled && (
+              <span className="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                <CheckCircle className="w-4 h-4" />
+                Enabled
+              </span>
+            )}
+          </div>
+
+          <p className="text-gray-600 text-sm mb-4">
+            {twoFAEnabled
+              ? "Your account is protected with two-factor authentication. You'll need to verify with an OTP code when logging in."
+              : "Add an extra layer of security to your account by enabling two-factor authentication. You'll receive an OTP code via email when logging in."}
+          </p>
+
+          <button
+            type="button"
+            onClick={handle2FAToggle}
+            disabled={twoFALoading || disabling2FA}
+            className={`w-full font-bold py-2 px-4 rounded-lg transition ${
+              twoFAEnabled
+                ? "bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white"
+                : "bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white"
+            }`}
+          >
+            {twoFALoading || disabling2FA
+              ? twoFAEnabled
+                ? "Disabling..."
+                : "Enabling..."
+              : twoFAEnabled
+                ? "Disable 2FA"
+                : "Enable 2FA"}
+          </button>
+        </div>
+
         <button
           type="submit"
           disabled={saving}
@@ -323,6 +551,31 @@ export function SettingsTab() {
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </form>
+
+      {/* 2FA Modal */}
+      {show2FAModal && (
+        <TwoFAModal
+          onConfirm={handleEnable2FA}
+          onCancel={() => setShow2FAModal(false)}
+          isLoading={twoFALoading}
+        />
+      )}
+
+      {/* OTP Verification Modal */}
+      {showOTPVerification && (
+        <OTPVerification
+          onVerify={handleOTPSubmit}
+          onResend={handleResendOTP}
+          title="Enable Two-Factor Authentication"
+          description="Enter the 6-digit code we emailed to verify your address and turn on 2FA."
+          footerText="Verifying this code will enable two-factor authentication for your account."
+          onCancel={() => {
+            setShowOTPVerification(false);
+            setOtpSessionToken(null);
+          }}
+          isLoading={otpLoading}
+        />
+      )}
     </div>
   );
 }

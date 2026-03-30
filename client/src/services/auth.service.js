@@ -29,3 +29,23 @@ export async function resetPassword(token, payload) {
   const response = await apiClient.post(`/auth/reset-password/${token}`, payload);
   return response.data;
 }
+
+export async function verifyOTP(payload) {
+  const response = await apiClient.post("/auth/verify-otp", payload);
+  return response.data;
+}
+
+export async function resendOTP(payload = {}) {
+  const response = await apiClient.post("/auth/resend-otp", payload);
+  return response.data;
+}
+
+export async function enable2FA() {
+  const response = await apiClient.post("/auth/enable-2fa");
+  return response.data;
+}
+
+export async function disable2FA() {
+  const response = await apiClient.post("/auth/disable-2fa");
+  return response.data;
+}

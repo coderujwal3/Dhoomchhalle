@@ -67,7 +67,7 @@ async function issueOTPForUser(user, purpose) {
         purpose,
     });
 
-    await otpModel.deleteMany({ userId: user._id, purpose });
+    await otpModel.deleteMany({ userId: {$eq: user._id}, purpose });
 
     const plainOTP = generateOTP();
     const hashedOTP = await hashOTP(plainOTP);
@@ -82,7 +82,7 @@ async function issueOTPForUser(user, purpose) {
     const emailSent = await emailService.sendOTPEmail(user.email, user.name, plainOTP);
 
     if (!emailSent) {
-        await otpModel.deleteMany({ userId: user._id, purpose });
+        await otpModel.deleteMany({ userId: {$eq: user._id}, purpose });
         throw new Error("OTP_EMAIL_FAILED");
     }
 
@@ -391,7 +391,7 @@ async function verifyOTPController(req, res) {
 
         // Find OTP record - check if expired
         const otpRecord = await otpModel.findOne({
-            userId: user._id,
+            userId: {$eq: user._id},
             purpose,
             expiresAt: { $gt: new Date() },
         });
@@ -622,7 +622,7 @@ async function refreshAccessTokenController(req, res) {
 
         // Check if token exists in database and not revoked
         const refreshTokenRecord = await refreshTokenModel.findOne({
-            token: refreshToken,
+            token: { $eq: refreshToken },
             isRevoked: false,
             expiresAt: { $gt: new Date() },
         });
@@ -820,7 +820,7 @@ async function userLogoutController(req, res) {
         // Revoke refresh token if exists
         if (refreshToken) {
             await refreshTokenModel.updateOne(
-                { token: refreshToken },
+                { token: { $eq: refreshToken } },
                 { isRevoked: true, revokedAt: new Date() }
             );
         }

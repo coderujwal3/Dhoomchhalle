@@ -39,6 +39,11 @@ async function getOrCreateProfile(userId) {
  */
 async function updateProfile(userId, updateData) {
     try {
+        // Ensure there is at least one field to update
+        if (!updateData || Object.keys(updateData).length === 0) {
+            throw new Error("No valid fields provided to update");
+        }
+
         const profile = await profileModel.findOneAndUpdate(
             { userId },
             { $set: updateData },

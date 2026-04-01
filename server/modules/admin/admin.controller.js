@@ -260,7 +260,7 @@ exports.updateUserRole = async (req, res) => {
 
         const user = await userModel.findByIdAndUpdate(
             userId,
-            { role },
+            { role: {$eq: role} },
             { returnDocument: 'after' }
         ).select('-password');
 
@@ -317,11 +317,16 @@ exports.suspendUser = async (req, res) => {
         const { userId } = req.params;
         const { reason } = req.body;
 
+        const suspensionReason =
+            typeof reason === 'string' && reason.trim().length > 0
+                ? reason
+                : 'No reason provided';
+        
         const user = await userModel.findByIdAndUpdate(
             userId,
             {
                 suspended: true,
-                suspensionReason: reason || 'No reason provided',
+                suspensionReason: suspensionReason,
                 suspendedAt: new Date()
             },
             { returnDocument: 'after' }
@@ -573,7 +578,7 @@ exports.rejectReview = async (req, res) => {
 
         const review = await reviewModel.findByIdAndUpdate(
             reviewId,
-            { status: 'rejected', rejectionReason: reason },
+            { status: 'rejected', rejectionReason: {$eq: reason} },
             { returnDocument: 'after' }
         );
 
@@ -641,7 +646,7 @@ exports.resolveReport = async (req, res) => {
                 status: 'resolved',
                 adminNotes: resolution,
                 resolvedAt: new Date(),
-                resolvedBy: req.user._id,
+                resolvedBy: {$eq: req.user._id},
             },
             { returnDocument: 'after' }
         )

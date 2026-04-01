@@ -47,10 +47,20 @@ const AdminSettings = () => {
       const keys = path.split(".");
       let current = newSettings;
 
+      const isSafeKey = (key) => key !== "__proto__" && key !== "constructor" && key !== "prototype";
       for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+        const key = keys[i];
+        if (!isSafeKey(key)) {
+          return prev;
+        }
+        current = current[key];
       }
-      current[keys[keys.length - 1]] = value;
+
+      const lastKey = keys[keys.length - 1];
+      if (!isSafeKey(lastKey)) {
+        return prev;
+      }
+      current[lastKey] = value;
 
       return newSettings;
     });

@@ -170,24 +170,41 @@ exports.getRevenueStats = async (req, res) => {
 };
 
 // ============== USER MANAGEMENT ==============
+
+// Escape special characters in a string so it can be used safely in a MongoDB $regex.
+// This ensures user-controlled search terms cannot inject arbitrary regex patterns.
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 exports.getAllUsers = async (req, res) => {
     try {
         const { page = 1, limit = 20, role = null, search = '' } = req.query;
-        const skip = (page - 1) * limit;
+
+        const numericPage = Number(page) > 0 ? Number(page) : 1;
+        const numericLimit = Number(limit) > 0 ? Number(limit) : 20;
+        const skip = (numericPage - 1) * numericLimit;
 
         let query = {};
-        if (role) query.role = role;
-        if (search) {
+
+        // Whitelist allowed roles to prevent injection of query operators via role parameter
+        const allowedRoles = ['admin', 'user', 'hotel_owner', 'transport'];
+        if (typeof role === 'string' && allowedRoles.includes(role)) {
+            query.role = role;
+        }
+
+        if (typeof search === 'string' && search.trim() !== '') {
+            const safeSearch = escapeRegex(search.trim());
             query.$or = [
-                { name: { $regex: search, $options: 'i' } },
-                { email: { $regex: search, $options: 'i' } }
+                { name: { $regex: safeSearch, $options: 'i' } },
+                { email: { $regex: safeSearch, $options: 'i' } }
             ];
         }
 
         const total = await userModel.countDocuments(query);
         const users = await userModel.find(query)
             .skip(skip)
-            .limit(limit)
+            .limit(numericLimit)
             .select('-password')
             .sort({ createdAt: -1 });
 
@@ -198,9 +215,9 @@ exports.getAllUsers = async (req, res) => {
                 users,
                 pagination: {
                     total,
-                    pages: Math.ceil(total / limit),
-                    currentPage: page,
-                    limit
+                    pages: Math.ceil(total / numericLimit),
+                    currentPage: numericPage,
+                    limit: numericLimit
                 }
             }
         });

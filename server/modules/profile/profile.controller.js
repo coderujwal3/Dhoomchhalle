@@ -37,7 +37,7 @@ async function getProfileController(req, res) {
 async function updateProfileController(req, res) {
     try {
         const { userId } = req.params;
-        const updateData = req.body;
+        const requestBody = req.body || {};
 
         // Validate userId
         if (!userId || userId.length !== 24) {
@@ -49,8 +49,26 @@ async function updateProfileController(req, res) {
             return res.status(403).json(responseFormatter(false, "Not authorized to update this profile", null, 403));
         }
 
-        // Prevent updating userId
-        if (updateData.userId) {
+        // Whitelist allowed profile fields to prevent mass assignment / operator injection
+        const allowedFields = [
+            "name",
+            "phone",
+            "avatar",
+            "bio",
+            "location",
+            "website",
+            "dateOfBirth",
+            "gender"
+        ];
+        const updateData = {};
+        for (const key of allowedFields) {
+            if (Object.prototype.hasOwnProperty.call(requestBody, key)) {
+                updateData[key] = requestBody[key];
+            }
+        }
+
+        // Prevent updating userId explicitly if it somehow passed through
+        if (Object.prototype.hasOwnProperty.call(updateData, "userId")) {
             delete updateData.userId;
         }
 

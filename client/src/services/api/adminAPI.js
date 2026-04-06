@@ -53,6 +53,16 @@ export const adminAPI = {
   resolveReport: (reportId, resolution) =>
     apiClient.post(`/admin/reports/${reportId}/resolve`, { resolution }),
 
+  getAllHotels: (page = 1, limit = 20, category = null, search = "") => {
+    let url = `/admin/hotels?page=${page}&limit=${limit}`;
+    if (category) url += `&category=${category}`;
+    if (search) url += `&search=${search}`;
+    return apiClient.get(url);
+  },
+  getHotelDetails: (hotelId) => apiClient.get(`/admin/hotels/${hotelId}`),
+  // updateHotelStatus: (hotelId, status) =>
+  //   apiClient.put(`/admin/hotels/${hotelId}/status`, { status }),
+
   // Settings
   getSettings: () => apiClient.get("/admin/settings"),
   updateSettings: (settings) =>

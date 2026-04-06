@@ -3,8 +3,10 @@ const hotelModel = require('../hotel/hotel.model');
 const reviewModel = require('../review/review.model');
 const reportModel = require('../report/report.model');
 const transportLogModel = require('../transportLog/transportLog.model');
+const mongoose = require('mongoose');
 
 const REPORT_OPEN_STATUSES = ['open', 'in-review'];
+const HOTEL_CATEGORIES = ['budget', 'mid', 'luxury', 'hostel'];
 
 function buildAdminReportQuery(status) {
     if (!status) {
@@ -20,6 +22,21 @@ function buildAdminReportQuery(status) {
     }
 
     return { status };
+};
+
+function buildAdminHotelQuery(category, search) {
+    const query = {};
+
+    if (typeof category === 'string' && HOTEL_CATEGORIES.includes(category)) {
+        query.category = category;
+    }
+
+    if (typeof search === 'string' && search.trim() !== '') {
+        const safeSearch = escapeRegex(search.trim());
+        query.name = { $regex: safeSearch, $options: 'i' };
+    }
+
+    return query;
 }
 
 function formatReportForAdmin(report) {
@@ -34,6 +51,17 @@ function formatReportForAdmin(report) {
         contentType: reportObject.entityType,
         contentId: reportObject.entityId,
     };
+}
+
+function formatHotelForAdmin(hotel) {
+    const hotelObject = hotel.toObject ? hotel.toObject() : hotel;
+
+    return {
+        ...hotelObject,
+        id: hotelObject._id,
+        verified: Boolean(hotelObject.verified),
+        owner: hotelObject.userId?.name || hotelObject.userId?.email || null
+    }
 }
 
 // ============== DASHBOARD STATISTICS ==============
@@ -686,6 +714,78 @@ exports.resolveReport = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Error resolving report",
+            error: error.message
+        });
+    }
+};
+
+exports.getHotels = async (req, res) => {
+    try {
+        const { page = 1, limit = 20, category = null, search = '' } = req.query;
+        const numericPage = Number(page) > 0 ? Number(page) : 1;
+        const numericLimit = Number(limit) > 0 ? Number(limit) : 20;
+        const skip = (numericPage - 1) * numericLimit;
+        const query = buildAdminHotelQuery(category, search);
+
+        const total = await hotelModel.countDocuments(query);
+        const hotels = await hotelModel.find(query)
+            .skip(skip)
+            .limit(numericLimit)
+            .sort({ createdAt: -1 });
+
+        const formattedHotels = hotels.map(formatHotelForAdmin);
+
+        res.status(200).json({
+            success: true,
+            message: "Hotels retrieved",
+            data: {
+                hotels: formattedHotels,
+                pagination: {
+                    total,
+                    pages: Math.ceil(total / numericLimit),
+                    currentPage: numericPage,
+                    limit: numericLimit
+                }
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching hotels",
+            error: error.message
+        });
+    }
+};
+
+exports.getHotelDetails = async (req, res) => {
+    try {
+        const { hotelId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(hotelId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid hotel id"
+            });
+        }
+
+        const hotel = await hotelModel.findById(hotelId);
+
+        if (!hotel) {
+            return res.status(404).json({
+                success: false,
+                message: "Hotel not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Hotel details retrieved",
+            data: formatHotelForAdmin(hotel)
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching hotel details",
             error: error.message
         });
     }

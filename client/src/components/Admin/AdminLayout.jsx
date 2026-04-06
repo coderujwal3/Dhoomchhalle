@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  HotelIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { logout } from "../../services/auth.service";
@@ -29,14 +30,20 @@ const AdminLayout = ({ children }) => {
       icon: MessageSquare,
       delay: 0.22,
     },
-    { label: "Reports", path: "/admin/reports", icon: AlertCircle, delay: 0.28 },
+    {
+      label: "Reports",
+      path: "/admin/reports",
+      icon: AlertCircle,
+      delay: 0.28,
+    },
     {
       label: "Analytics",
       path: "/admin/analytics",
       icon: BarChart3,
       delay: 0.34,
     },
-    { label: "Settings", path: "/admin/settings", icon: Settings, delay: 0.4 },
+    { label: "Hotels", path: "/admin/hotels", icon: HotelIcon, delay: 0.4 },
+    { label: "Settings", path: "/admin/settings", icon: Settings, delay: 0.46 },
   ];
 
   const handleLogout = async () => {

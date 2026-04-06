@@ -7,6 +7,7 @@ import AdminReviews from "../pages/AdminReviews";
 import AdminReports from "../pages/AdminReports";
 import AdminAnalytics from "../pages/AdminAnalytics";
 import AdminSettings from "../pages/AdminSettings";
+import AdminHotels from "../pages/AdminHotels";
 
 export const adminRoutes = (
   <Route path="/admin" element={<AdminRouteShell />}>
@@ -16,6 +17,7 @@ export const adminRoutes = (
     <Route path="reports" element={<AdminReports />} />
     <Route path="analytics" element={<AdminAnalytics />} />
     <Route path="settings" element={<AdminSettings />} />
+    <Route path="hotels" element={<AdminHotels />} />
     <Route path="*" element={<Navigate to="/admin" replace />} />
   </Route>
 );

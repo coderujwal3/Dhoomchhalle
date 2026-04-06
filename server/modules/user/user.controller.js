@@ -91,23 +91,38 @@ async function issueOTPForUser(user, purpose) {
     };
 }
 
+function sanitizeOtpPurpose(rawPurpose) {
+    // Ensure purpose is a simple, known string value to avoid NoSQL injection
+    if (typeof rawPurpose !== "string") {
+        return null;
+    }
+
+    const allowedPurposes = new Set(Object.values(OTP_PURPOSES || {}));
+    if (allowedPurposes.size > 0 && !allowedPurposes.has(rawPurpose)) {
+        return null;
+    }
+
+    return rawPurpose;
+}
+
 async function resolveOTPContext(req) {
     const { otpSessionToken, purpose: requestPurpose } = req.body || {};
     const authenticatedUser = await getAuthenticatedUserFromRequest(req);
     const authenticatedUserId = authenticatedUser?._id?.toString() || null;
+    const resolvedPurpose = sanitizeOtpPurpose(requestPurpose);
 
     if (otpSessionToken) {
         const decoded = decodeOTPSessionToken(otpSessionToken);
         const user = await userModel.findById(decoded.userId);
 
         console.info("[2FA] Resolved OTP session token", {
-            requestPurpose: requestPurpose || null,
+            requestPurpose: resolvedPurpose || null,
             decodedPurpose: decoded.purpose,
             otpUserId: decoded.userId,
             authenticatedUserId,
         });
 
-        if (requestPurpose && decoded.purpose !== requestPurpose) {
+        if (resolvedPurpose && decoded.purpose !== resolvedPurpose) {
             console.warn("[2FA] OTP purpose mismatch detected", {
                 requestPurpose,
                 decodedPurpose: decoded.purpose,
@@ -116,13 +131,13 @@ async function resolveOTPContext(req) {
             });
 
             if (
-                requestPurpose === OTP_PURPOSES.ENABLE_2FA &&
+                resolvedPurpose === OTP_PURPOSES.ENABLE_2FA &&
                 authenticatedUserId &&
                 authenticatedUserId === decoded.userId
             ) {
                 return {
                     user: authenticatedUser,
-                    purpose: requestPurpose,
+                    purpose: resolvedPurpose,
                     source: "authenticated_enable_2fa_fallback",
                 };
             }
@@ -140,14 +155,14 @@ async function resolveOTPContext(req) {
     if (!authenticatedUser) {
         return {
             user: null,
-            purpose: requestPurpose || OTP_PURPOSES.ENABLE_2FA,
+            purpose: resolvedPurpose || OTP_PURPOSES.ENABLE_2FA,
             source: "missing_auth_context",
         };
     }
 
     return {
         user: authenticatedUser,
-        purpose: requestPurpose || OTP_PURPOSES.ENABLE_2FA,
+        purpose: resolvedPurpose || OTP_PURPOSES.ENABLE_2FA,
         source: "authenticated_request",
     };
 }

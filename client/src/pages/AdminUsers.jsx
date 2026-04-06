@@ -114,7 +114,7 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <div className="p-8 bg-linear-to-br from-slate-900 to-slate-800 min-h-screen">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">User Management</h1>

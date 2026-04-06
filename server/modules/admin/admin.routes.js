@@ -31,6 +31,10 @@ router.post('/reviews/:reviewId/reject', authSystemUserMiddleware, adminControll
 router.get('/reports', authSystemUserMiddleware, adminController.getAllReports);
 router.post('/reports/:reportId/resolve', authSystemUserMiddleware, adminController.resolveReport);
 
+// Hotels Management
+router.get('/hotels', authSystemUserMiddleware, adminController.getHotels);
+router.get('/hotels/:hotelId', authSystemUserMiddleware, adminController.getHotelDetails);
+
 // Settings
 router.get('/settings', authSystemUserMiddleware, adminController.getSettings);
 router.put('/settings', authSystemUserMiddleware, adminController.updateSettings);

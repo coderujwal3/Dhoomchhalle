@@ -3,6 +3,8 @@ const hotelModel = require('../hotel/hotel.model');
 const reviewModel = require('../review/review.model');
 const reportModel = require('../report/report.model');
 const transportLogModel = require('../transportLog/transportLog.model');
+const favouriteModel = require('../favourite/favourite.model');
+const { uploadHotelPhoto } = require('../../services/cloudinary.service');
 const mongoose = require('mongoose');
 
 const REPORT_OPEN_STATUSES = ['open', 'in-review'];
@@ -719,6 +721,237 @@ exports.resolveReport = async (req, res) => {
     }
 };
 
+function normalizeAmenities(amenities) {
+    if (Array.isArray(amenities)) {
+        return amenities
+            .map((amenity) => String(amenity || '').trim())
+            .filter(Boolean);
+    }
+
+    if (typeof amenities === 'string') {
+        return amenities
+            .split(',')
+            .map((amenity) => amenity.trim())
+            .filter(Boolean);
+    }
+
+    return [];
+}
+
+function normalizePhotoUrls(photos) {
+    if (Array.isArray(photos)) {
+        return photos
+            .map((photo) => String(photo || '').trim())
+            .filter(Boolean);
+    }
+
+    if (typeof photos !== 'string') {
+        return [];
+    }
+
+    const trimmedPhotos = photos.trim();
+    if (!trimmedPhotos) {
+        return [];
+    }
+
+    try {
+        const parsed = JSON.parse(trimmedPhotos);
+        if (Array.isArray(parsed)) {
+            return parsed
+                .map((photo) => String(photo || '').trim())
+                .filter(Boolean);
+        }
+    } catch {
+        // If parsing fails, treat it as comma-separated string.
+    }
+
+    return trimmedPhotos
+        .split(',')
+        .map((photo) => photo.trim())
+        .filter(Boolean);
+}
+
+function isValidTimeString(value) {
+    return /^([01]\d|2[0-3]):([0-5]\d)$/.test(value);
+}
+
+function normalizeHttpUrl(value) {
+    if (typeof value !== 'string' || value.trim() === '') {
+        return '';
+    }
+
+    const trimmedValue = value.trim();
+    const parsedUrl = new URL(trimmedValue);
+
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        throw new Error('URL protocol is invalid');
+    }
+
+    return parsedUrl.toString();
+}
+
+exports.createHotel = async (req, res) => {
+    let createdHotel = null;
+
+    try {
+        const {
+            name,
+            location,
+            address = '',
+            category,
+            pricePerNight,
+            contactNumber = '',
+            websiteUrl = '',
+            mapUrl = '',
+            checkIn = '',
+            checkOut = '',
+            description = '',
+            amenities = [],
+            photos = [],
+            avgRating = 0
+        } = req.body || {};
+
+        const normalizedName = typeof name === 'string' ? name.trim() : '';
+        const normalizedLocation = typeof location === 'string' ? location.trim() : '';
+        const normalizedCategory = typeof category === 'string' ? category.trim().toLowerCase() : '';
+        const normalizedPricePerNight = Number(pricePerNight);
+        const normalizedRating = avgRating === '' ? 0 : Number(avgRating);
+        const normalizedAddress = typeof address === 'string' ? address.trim() : '';
+        const normalizedContactNumber = typeof contactNumber === 'string' ? contactNumber.trim() : '';
+        const normalizedCheckIn = typeof checkIn === 'string' ? checkIn.trim() : '';
+        const normalizedCheckOut = typeof checkOut === 'string' ? checkOut.trim() : '';
+        const normalizedDescription = typeof description === 'string' ? description.trim() : '';
+        const normalizedAmenities = normalizeAmenities(amenities);
+        const normalizedManualPhotoUrls = normalizePhotoUrls(photos);
+        const uploadedPhotoFiles = Array.isArray(req.files) ? req.files : [];
+
+        if (!normalizedName || !normalizedLocation || !normalizedCategory || Number.isNaN(normalizedPricePerNight)) {
+            return res.status(400).json({
+                success: false,
+                message: 'name, location, category and pricePerNight are required',
+            });
+        }
+
+        if (!HOTEL_CATEGORIES.includes(normalizedCategory)) {
+            return res.status(400).json({
+                success: false,
+                message: `category must be one of: ${HOTEL_CATEGORIES.join(', ')}`,
+            });
+        }
+
+        if (normalizedPricePerNight <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'pricePerNight must be greater than 0',
+            });
+        }
+
+        if (Number.isNaN(normalizedRating) || normalizedRating < 0 || normalizedRating > 5) {
+            return res.status(400).json({
+                success: false,
+                message: 'avgRating must be between 0 and 5',
+            });
+        }
+
+        if (normalizedCheckIn && !isValidTimeString(normalizedCheckIn)) {
+            return res.status(400).json({
+                success: false,
+                message: "checkIn must be in HH:mm format",
+            });
+        }
+
+        if (normalizedCheckOut && !isValidTimeString(normalizedCheckOut)) {
+            return res.status(400).json({
+                success: false,
+                message: "checkOut must be in HH:mm format",
+            });
+        }
+
+        if (normalizedContactNumber && !/^[0-9+\-\s()]{7,20}$/.test(normalizedContactNumber)) {
+            return res.status(400).json({
+                success: false,
+                message: 'contactNumber format is invalid',
+            });
+        }
+
+        let normalizedWebsiteUrl = '';
+        let normalizedMapUrl = '';
+        try {
+            normalizedWebsiteUrl = normalizeHttpUrl(websiteUrl);
+            normalizedMapUrl = normalizeHttpUrl(mapUrl);
+        } catch (urlError) {
+            return res.status(400).json({
+                success: false,
+                message: 'websiteUrl or mapUrl must be valid http/https URL',
+            });
+        }
+
+        createdHotel = await hotelModel.create({
+            name: normalizedName,
+            location: normalizedLocation,
+            address: normalizedAddress,
+            category: normalizedCategory,
+            pricePerNight: normalizedPricePerNight,
+            contactNumber: normalizedContactNumber,
+            websiteUrl: normalizedWebsiteUrl,
+            mapUrl: normalizedMapUrl,
+            checkIn: normalizedCheckIn,
+            checkOut: normalizedCheckOut,
+            description: normalizedDescription,
+            amenities: normalizedAmenities,
+            photos: normalizedManualPhotoUrls,
+            avgRating: normalizedRating
+        });
+
+        if (uploadedPhotoFiles.length > 0) {
+            const uploadedPhotoUrls = await Promise.all(
+                uploadedPhotoFiles.map((file, index) =>
+                    uploadHotelPhoto(
+                        file.buffer,
+                        createdHotel._id.toString(),
+                        `${Date.now()}_${index + 1}`
+                    )
+                )
+            );
+
+            createdHotel.photos = [
+                ...normalizedManualPhotoUrls,
+                ...uploadedPhotoUrls.filter(Boolean)
+            ];
+
+            await createdHotel.save();
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'Hotel created successfully',
+            data: formatHotelForAdmin(createdHotel)
+        });
+    } catch (error) {
+        if (createdHotel?._id) {
+            try {
+                await hotelModel.deleteOne({ _id: createdHotel._id });
+            } catch {
+                // Best-effort rollback if image upload fails after hotel creation.
+            }
+        }
+
+        if (error instanceof mongoose.Error.ValidationError) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation failed while creating hotel',
+                error: error.message
+            });
+        }
+
+        res.status(500).json({
+            success: false,
+            message: "Error creating hotel",
+            error: error.message
+        });
+    }
+};
+
 exports.getHotels = async (req, res) => {
     try {
         const { page = 1, limit = 20, category = null, search = '' } = req.query;
@@ -786,6 +1019,49 @@ exports.getHotelDetails = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Error fetching hotel details",
+            error: error.message
+        });
+    }
+};
+
+exports.deleteHotel = async (req, res) => {
+    try {
+        const { hotelId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(hotelId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid hotel id"
+            });
+        }
+
+        const hotel = await hotelModel.findById(hotelId).select('name');
+
+        if (!hotel) {
+            return res.status(404).json({
+                success: false,
+                message: "Hotel not found"
+            });
+        }
+
+        await Promise.all([
+            reviewModel.deleteMany({ hotelId }),
+            favouriteModel.deleteMany({ hotelId }),
+            hotelModel.deleteOne({ _id: hotelId })
+        ]);
+
+        res.status(200).json({
+            success: true,
+            message: "Hotel deleted successfully",
+            data: {
+                id: String(hotel._id),
+                name: hotel.name
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error deleting hotel",
             error: error.message
         });
     }

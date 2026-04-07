@@ -140,7 +140,6 @@ function Register() {
           <label className="block">
             <span className="text-sm text-zinc-200">Phone number</span>
             <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
-              {/* <Phone size={16} className="text-zinc-300" /> */}
 
               {/* Country Code Dropdown */}
               <div className="relative">

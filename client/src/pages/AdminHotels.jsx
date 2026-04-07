@@ -9,10 +9,14 @@ import {
   ChevronRight,
   IndianRupee,
   Eye,
+  Trash2,
+  AlertTriangle,
   X,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { adminAPI } from "../services/api/adminAPI";
+import { getSession } from "../services/auth.service";
 
 const HOTELS_PER_PAGE = 10;
 const FETCH_BATCH_SIZE = 100;
@@ -47,6 +51,7 @@ const formatDate = (dateValue) => {
 };
 
 const AdminHotels = () => {
+  const navigate = useNavigate();
   const [hotels, setHotels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -56,6 +61,30 @@ const AdminHotels = () => {
   const [reloadSeed, setReloadSeed] = useState(0);
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [deletingHotelId, setDeletingHotelId] = useState("");
+  const [hotelPendingDelete, setHotelPendingDelete] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    queueMicrotask(async () => {
+      try {
+        const session = await getSession();
+        if (!cancelled) {
+          setIsAdmin(session?.data?.user?.role === "admin");
+        }
+      } catch {
+        if (!cancelled) {
+          setIsAdmin(false);
+        }
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -119,6 +148,41 @@ const AdminHotels = () => {
       setSelectedHotel(null);
     } finally {
       setDetailsLoading(false);
+    }
+  };
+
+  const handleDeleteHotel = (hotel) => {
+    if (!isAdmin) return;
+
+    const hotelId = hotel?._id || hotel?.id;
+    if (!hotelId) return;
+
+    setHotelPendingDelete(hotel);
+  };
+
+  const confirmDeleteHotel = async () => {
+    if (!hotelPendingDelete || !isAdmin) return;
+
+    const hotelId = hotelPendingDelete?._id || hotelPendingDelete?.id;
+    if (!hotelId) return;
+
+    try {
+      setDeletingHotelId(hotelId);
+      await adminAPI.deleteHotel(hotelId);
+      setHotels((previousHotels) =>
+        previousHotels.filter((item) => (item._id || item.id) !== hotelId),
+      );
+
+      if ((selectedHotel?._id || selectedHotel?.id) === hotelId) {
+        setSelectedHotel(null);
+      }
+
+      toast.success("Hotel deleted successfully");
+      setHotelPendingDelete(null);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to delete hotel");
+    } finally {
+      setDeletingHotelId("");
     }
   };
 
@@ -196,7 +260,7 @@ const AdminHotels = () => {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
+    <div className="p-8 bg-linear-to-br from-slate-900 to-slate-800 min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Hotels Management</h1>
         <p className="text-slate-400">
@@ -304,7 +368,7 @@ const AdminHotels = () => {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px]">
+              <table className="w-full min-w-245">
                 <thead className="bg-slate-600">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-white">
@@ -372,14 +436,30 @@ const AdminHotels = () => {
                       </td>
 
                       <td className="px-6 py-4 align-top">
-                        <button
-                          type="button"
-                          onClick={() => handleViewHotel(hotel._id)}
-                          className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold transition"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleViewHotel(hotel._id)}
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-semibold transition"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </button>
+
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteHotel(hotel)}
+                              disabled={deletingHotelId === (hotel._id || hotel.id)}
+                              className="inline-flex items-center gap-2 px-3 py-2 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400/60 text-white rounded text-xs font-semibold transition disabled:cursor-not-allowed"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              {deletingHotelId === (hotel._id || hotel.id)
+                                ? "Deleting..."
+                                : "Delete"}
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -516,6 +596,66 @@ const AdminHotels = () => {
           </div>
         </div>
       )}
+
+      {hotelPendingDelete && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-xl bg-slate-800 ring-1 ring-slate-600 overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-600 bg-slate-700 flex items-start gap-3">
+              <div className="rounded-full bg-rose-100 p-2 mt-0.5">
+                <AlertTriangle className="h-4 w-4 text-rose-600" />
+              </div>
+              <div>
+                <h3 className="text-white text-lg font-semibold">Delete Hotel</h3>
+                <p className="text-slate-300 text-sm mt-1">
+                  You are about to delete{" "}
+                  <span className="font-semibold text-white">
+                    {hotelPendingDelete.name || "this hotel"}
+                  </span>
+                  . This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-5 py-4 bg-slate-800 space-y-2">
+              <p className="text-slate-300 text-sm">
+                All related favourite and review records linked to this hotel will
+                also be removed.
+              </p>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setHotelPendingDelete(null)}
+                  disabled={deletingHotelId === (hotelPendingDelete._id || hotelPendingDelete.id)}
+                  className="px-4 py-2 rounded-md bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium transition disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDeleteHotel}
+                  disabled={deletingHotelId === (hotelPendingDelete._id || hotelPendingDelete.id)}
+                  className="px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold transition disabled:bg-rose-400/60 disabled:cursor-not-allowed"
+                >
+                  {deletingHotelId === (hotelPendingDelete._id || hotelPendingDelete.id)
+                    ? "Deleting..."
+                    : "Delete Hotel"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={() => {
+        navigate("/admin/addhotelform");
+      }}
+        className="mt-3 mb-3 w-full text-xl p-4 bg-red-400 text-white border-none rounded-md cursor-pointer"
+        type="button"
+      >
+        Add Hotel
+      </button>
     </div>
   );
 };

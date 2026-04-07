@@ -19,11 +19,12 @@ async function uploadToCloudinary(fileBuffer, folderName = 'dhoomchhalle', publi
         return new Promise((resolve, reject) => {
             const uploadOptions = {
                 folder: folderName,
-                resource_type: 'auto',
-                quality: 'auto',
+                resource_type: 'image',
+                quality: 'auto:best',
                 fetch_format: 'auto',
-                height: 500,
-                width: 500,
+                transformation: [
+                    { width: 1200, crop: "limit" }
+                ],
                 crop: "fill",
                 gravity: "face"
             };
@@ -75,6 +76,46 @@ async function uploadAvatar(imageBuffer, userId) {
 }
 
 /**
+ * Upload a hotel photo to Cloudinary
+ * @param {Buffer} imageBuffer - Image file buffer
+ * @param {string} hotelId - Hotel ID for folder organization
+ * @param {string} suffix - Optional suffix for public id
+ * @returns {Promise<string>} Secure URL of uploaded image
+ */
+async function uploadHotelPhoto(imageBuffer, hotelId, suffix = "") {
+    try {
+        const publicId = suffix
+            ? `hotel_${hotelId}_${suffix}`
+            : `hotel_${hotelId}_${Date.now()}`;
+
+        const result = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    folder: `dhoomchhalle/hotels/${hotelId}`,
+                    public_id: publicId,
+                    resource_type: 'image',
+                    quality: 'auto',
+                    fetch_format: 'auto',
+                },
+                (error, uploadResult) => {
+                    if (error) {
+                        reject(new Error(`Cloudinary upload failed: ${error.message}`));
+                    } else {
+                        resolve(uploadResult);
+                    }
+                }
+            );
+
+            uploadStream.end(imageBuffer);
+        });
+
+        return result?.secure_url || "";
+    } catch (error) {
+        throw new Error(`Hotel photo upload failed: ${error.message}`);
+    }
+}
+
+/**
  * Delete image from Cloudinary
  * @param {string} publicId - Cloudinary public ID
  * @returns {Promise<Object>} Deletion result
@@ -105,6 +146,7 @@ async function deleteAvatar(userId) {
 module.exports = {
     uploadToCloudinary,
     uploadAvatar,
+    uploadHotelPhoto,
     deleteFromCloudinary,
     deleteAvatar,
     cloudinary,

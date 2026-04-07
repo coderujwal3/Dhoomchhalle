@@ -48,6 +48,7 @@ const AppRoutes = () => {
 
             <Route path="/hotels" element={<Hotels />} />
             <Route path="/hotels/:id" element={<HotelDetails />} />
+            <Route path="/hotel/:hotel_id" element={<HotelDetails />} />
 
             <Route path="/user/:id" element={<UserProfile />} />
 
@@ -102,7 +103,6 @@ const AppRoutes = () => {
           />
 
           {/* User Routes */}
-          {/* <Route path="/profile" element={<Profile />} /> */}
 
           {/* Admin Routes */}
           {adminRoutes}

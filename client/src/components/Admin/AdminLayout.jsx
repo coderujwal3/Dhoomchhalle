@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -20,6 +20,12 @@ const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const mainContentRef = useRef(null);
+
+  useEffect(() => {
+    // Admin pages scroll inside this container, not the window.
+    mainContentRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname]);
 
   const menuItems = [
     { label: "Dashboard", path: "/admin", icon: LayoutDashboard, delay: 0.1 },
@@ -140,6 +146,7 @@ const AdminLayout = ({ children }) => {
 
       {/* Main Content */}
       <div
+        ref={mainContentRef}
         className={`${sidebarOpen ? "ml-64" : "ml-20"} flex-1 overflow-auto transition-all duration-300`}
       >
         {/* Top Bar */}

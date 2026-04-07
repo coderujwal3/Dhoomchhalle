@@ -1,6 +1,13 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Heart, ArrowLeftCircle } from "lucide-react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { getHotelById } from "../../services/hotel.service";
+import {
+  addFavourite,
+  checkIsFavourited,
+  removeFavourite,
+} from "../../services/favourite.service";
 import fallbackHotels from "../../DB/hotelDB.json";
 
 function normalizeFallbackHotel(hotel) {
@@ -48,15 +55,28 @@ function normalizeApiHotel(hotel) {
 }
 
 const HotelDetails = () => {
-  const { id } = useParams();
+  const { id, hotel_id: hotelIdParam } = useParams();
+  const hotelIdentifier = id || hotelIdParam;
+  const navigate = useNavigate();
   const [hotel, setHotel] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
+  const [isFavourited, setIsFavourited] = React.useState(false);
+  const [checkingFavourite, setCheckingFavourite] = React.useState(false);
+  const [favouriteBusy, setFavouriteBusy] = React.useState(false);
+  const [hasToken, setHasToken] = React.useState(
+    Boolean(localStorage.getItem("token")),
+  );
+
+  const isMongoObjectId = React.useCallback(
+    (value) => /^[a-f\d]{24}$/i.test(String(value || "")),
+    [],
+  );
 
   React.useEffect(() => {
     async function fetchHotel() {
       setLoading(true);
       try {
-        const apiHotel = await getHotelById(id);
+        const apiHotel = await getHotelById(hotelIdentifier);
         if (apiHotel) {
           setHotel(normalizeApiHotel(apiHotel));
           return;
@@ -65,7 +85,9 @@ const HotelDetails = () => {
         // Continue to fallback source.
       }
 
-      const fallback = fallbackHotels.find((item) => item.id === id);
+      const fallback = fallbackHotels.find(
+        (item) => item.id === hotelIdentifier,
+      );
       if (fallback) {
         setHotel(normalizeFallbackHotel(fallback));
       } else {
@@ -75,7 +97,88 @@ const HotelDetails = () => {
     }
 
     fetchHotel().finally(() => setLoading(false));
-  }, [id]);
+  }, [hotelIdentifier]);
+
+  React.useEffect(() => {
+    const syncAuthState = () => {
+      setHasToken(Boolean(localStorage.getItem("token")));
+    };
+
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("dhoom-auth-changed", syncAuthState);
+
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("dhoom-auth-changed", syncAuthState);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    async function fetchFavouriteStatus() {
+      if (!hasToken || !isMongoObjectId(hotel?.id)) {
+        setIsFavourited(false);
+        return;
+      }
+
+      try {
+        setCheckingFavourite(true);
+        const response = await checkIsFavourited(hotel.id);
+
+        if (!cancelled) {
+          setIsFavourited(Boolean(response?.data?.isFavourited));
+        }
+      } catch {
+        if (!cancelled) {
+          setIsFavourited(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setCheckingFavourite(false);
+        }
+      }
+    }
+
+    if (hotel?.id) {
+      fetchFavouriteStatus();
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hotel?.id, hasToken, isMongoObjectId]);
+
+  const handleToggleFavourite = async () => {
+    if (!hasToken) {
+      toast.error("Please login to mark favourites.");
+      navigate("/login", { state: { from: `/hotels/${hotelIdentifier}` } });
+      return;
+    }
+
+    if (!isMongoObjectId(hotel?.id)) {
+      toast.error("This hotel cannot be added to favourites right now.");
+      return;
+    }
+
+    try {
+      setFavouriteBusy(true);
+
+      if (isFavourited) {
+        await removeFavourite(hotel.id);
+        setIsFavourited(false);
+        toast.success("Removed from favourites");
+      } else {
+        await addFavourite(hotel.id);
+        setIsFavourited(true);
+        toast.success("Added to favourites");
+      }
+    } catch (error) {
+      toast.error(error?.message || "Unable to update favourites");
+    } finally {
+      setFavouriteBusy(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -101,8 +204,12 @@ const HotelDetails = () => {
   return (
     <section className="bg-orange-100/20 min-h-screen py-14">
       <div className="container mx-auto px-4 space-y-8">
-        <Link to="/hotels" className="text-orange-600 hover:underline relative z-9990">
-          {"<- Back to all hotels"}
+        <Link
+          to="/hotels"
+          className="text-orange-600 mt-5 flex mb-2 items-center gap-1 ml-3 hover:underline relative z-9990"
+        >
+          <ArrowLeftCircle />
+          {"Back to all hotels"}
         </Link>
 
         <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-orange-100">
@@ -115,8 +222,20 @@ const HotelDetails = () => {
           <div className="p-6 md:p-8 space-y-5">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-red-900">{hotel.name}</h1>
-                <p className="text-gray-600 mt-1">{hotel.address || hotel.location}</p>
+                <h1 className="text-3xl font-bold text-red-900">
+                  {hotel.name}
+                </h1>
+                <p className="text-gray-600 mt-1">
+                  {hotel.address || hotel.location}
+                </p>
+                <p className="text-gray-600 mt-1">
+                  Entity ID:{" "}
+                  <code className="text-lg text-red-800 text-semibold">
+                    {hotel.id}
+                  </code>
+                  , This will help you to file report on this hotel, from
+                  dashboard
+                </p>
               </div>
               <div className="bg-orange-50 border border-orange-100 rounded-lg px-4 py-3">
                 <p className="text-2xl font-bold">₹{hotel.pricePerNight}</p>
@@ -127,30 +246,86 @@ const HotelDetails = () => {
             <p className="text-gray-700">{hotel.description}</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <p><span className="font-semibold">Category:</span> {hotel.category}</p>
-              <p><span className="font-semibold">Rating:</span> {hotel.rating}</p>
-              <p><span className="font-semibold">Check-in:</span> {hotel.checkIn || "N/A"}</p>
-              <p><span className="font-semibold">Check-out:</span> {hotel.checkOut || "N/A"}</p>
-              <p><span className="font-semibold">Contact:</span> {hotel.contactNumber || "N/A"}</p>
+              <p>
+                <span className="font-semibold">Category:</span>{" "}
+                {hotel.category}
+              </p>
+              <p>
+                <span className="font-semibold">Rating:</span> {hotel.rating}
+              </p>
+              <p>
+                <span className="font-semibold">Check-in:</span>{" "}
+                {hotel.checkIn || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Check-out:</span>{" "}
+                {hotel.checkOut || "N/A"}
+              </p>
+              <p>
+                <span className="font-semibold">Contact:</span>{" "}
+                {hotel.contactNumber || "N/A"}
+              </p>
               <p className="truncate">
                 <span className="font-semibold">Website:</span>{" "}
                 {hotel.websiteUrl ? (
-                  <a href={hotel.websiteUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                  <a
+                    href={hotel.websiteUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
                     {hotel.websiteUrl}
                   </a>
-                ) : "N/A"}
+                ) : (
+                  "N/A"
+                )}
               </p>
             </div>
 
             <div className="flex flex-wrap gap-2">
               {hotel.amenities.map((item) => (
-                <span key={item} className="px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs">
+                <span
+                  key={item}
+                  className="px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs"
+                >
                   {item}
                 </span>
               ))}
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={handleToggleFavourite}
+                disabled={favouriteBusy || checkingFavourite}
+                className={`px-4 py-2 rounded-full text-white transition disabled:cursor-not-allowed disabled:opacity-70 ${
+                  isFavourited
+                    ? "bg-rose-600 hover:bg-rose-700"
+                    : "bg-slate-800 hover:bg-slate-900"
+                }`}
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Heart
+                    size={16}
+                    fill={isFavourited ? "currentColor" : "none"}
+                    className="shrink-0"
+                  />
+                  {checkingFavourite
+                    ? "Checking..."
+                    : favouriteBusy
+                      ? "Updating..."
+                      : !hasToken
+                        ? "Login to Favourite"
+                        : isFavourited
+                          ? "Remove Favourite"
+                          : "Add to Favourite"}
+                </span>
+              </button>
+              {!hasToken ? (
+                <p className="self-center text-xs text-slate-600">
+                  Login required to save this hotel in favourites.
+                </p>
+              ) : null}
               {hotel.mapUrl ? (
                 <a
                   href={hotel.mapUrl}

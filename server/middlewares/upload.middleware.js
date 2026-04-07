@@ -25,6 +25,7 @@ const upload = multer({
 
 // Middleware for single file avatar upload
 const uploadAvatarMiddleware = upload.single('avatar');
+const uploadHotelPhotosMiddleware = upload.array('photos', 10);
 
 // Error handling wrapper for multer errors
 const handleUploadError = (err, req, res, next) => {
@@ -55,6 +56,7 @@ const handleUploadError = (err, req, res, next) => {
 
 module.exports = {
     uploadAvatarMiddleware,
+    uploadHotelPhotosMiddleware,
     handleUploadError,
     upload,
 };

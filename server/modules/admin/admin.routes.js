@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authSystemUserMiddleware } = require('../../middlewares/auth.middleware');
+const { uploadHotelPhotosMiddleware, handleUploadError } = require('../../middlewares/upload.middleware');
 const adminController = require('./admin.controller');
 
 // Dashboard Statistics
@@ -33,6 +34,8 @@ router.post('/reports/:reportId/resolve', authSystemUserMiddleware, adminControl
 
 // Hotels Management
 router.get('/hotels', authSystemUserMiddleware, adminController.getHotels);
+router.post('/hotels', authSystemUserMiddleware, uploadHotelPhotosMiddleware, handleUploadError, adminController.createHotel);
+router.delete('/hotels/:hotelId', authSystemUserMiddleware, adminController.deleteHotel);
 router.get('/hotels/:hotelId', authSystemUserMiddleware, adminController.getHotelDetails);
 
 // Settings

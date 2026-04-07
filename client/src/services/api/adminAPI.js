@@ -59,7 +59,9 @@ export const adminAPI = {
     if (search) url += `&search=${search}`;
     return apiClient.get(url);
   },
+  createHotel: (hotelPayload) => apiClient.post("/admin/hotels", hotelPayload),
   getHotelDetails: (hotelId) => apiClient.get(`/admin/hotels/${hotelId}`),
+  deleteHotel: (hotelId) => apiClient.delete(`/admin/hotels/${hotelId}`),
   // updateHotelStatus: (hotelId, status) =>
   //   apiClient.put(`/admin/hotels/${hotelId}/status`, { status }),
 

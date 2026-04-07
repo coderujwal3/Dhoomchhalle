@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -73,16 +73,32 @@ function AddHotelForm() {
     setSelectedPhotos([]);
   };
 
-  const photoPreviewUrls = useMemo(
-    () => selectedPhotos.map((file) => URL.createObjectURL(file)),
+  const photoPreviews = useMemo(
+    () =>
+      selectedPhotos.map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+      })),
     [selectedPhotos],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
-      photoPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+      photoPreviews.forEach(({ url }) => URL.revokeObjectURL(url));
     };
-  }, [photoPreviewUrls]);
+  }, [photoPreviews]);
+
+  const safePhotoPreviews = useMemo(
+    () =>
+      photoPreviews.filter(
+        ({ file, url }) =>
+          url.startsWith("blob:") &&
+          ["image/jpeg", "image/png", "image/webp", "image/gif"].includes(
+            file.type,
+          ),
+      ),
+    [photoPreviews],
+  );
 
   const handlePhotoSelection = (event) => {
     const files = Array.from(event.target.files || []);
@@ -415,9 +431,9 @@ function AddHotelForm() {
                   onChange={handlePhotoSelection}
                 />
 
-                {photoPreviewUrls.length > 0 ? (
+                {safePhotoPreviews.length > 0 ? (
                   <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                    {photoPreviewUrls.map((url, index) => (
+                    {safePhotoPreviews.map(({ url }, index) => (
                       <img
                         key={`${url}-${index}`}
                         src={url}

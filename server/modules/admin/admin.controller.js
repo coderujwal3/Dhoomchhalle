@@ -687,13 +687,20 @@ exports.resolveReport = async (req, res) => {
         const { reportId } = req.params;
         const { resolution } = req.body;
 
+        if (typeof resolution !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid resolution",
+            });
+        }
+
         const report = await reportModel.findByIdAndUpdate(
             reportId,
             {
                 status: 'resolved',
                 adminNotes: resolution,
                 resolvedAt: new Date(),
-                resolvedBy: {$eq: req.user._id},
+                resolvedBy: req.user._id,
             },
             { returnDocument: 'after' }
         )

@@ -1,14 +1,15 @@
-import React from "react";
+import React, { lazy } from "react";
 import { Route, Navigate } from "react-router-dom";
 import AdminRouteShell from "../components/Admin/AdminRouteShell";
-import AdminDashboard from "../pages/AdminDashboard";
-import AdminUsers from "../pages/AdminUsers";
-import AdminReviews from "../pages/AdminReviews";
-import AdminReports from "../pages/AdminReports";
-import AdminAnalytics from "../pages/AdminAnalytics";
-import AdminSettings from "../pages/AdminSettings";
-import AdminHotels from "../pages/AdminHotels";
-import AddHotelForm from "../components/Admin/AddHotelForm";
+
+const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
+const AdminUsers = lazy(() => import("../pages/AdminUsers"));
+const AdminReviews = lazy(() => import("../pages/AdminReviews"));
+const AdminReports = lazy(() => import("../pages/AdminReports"));
+const AdminAnalytics = lazy(() => import("../pages/AdminAnalytics"));
+const AdminSettings = lazy(() => import("../pages/AdminSettings"));
+const AdminHotels = lazy(() => import("../pages/AdminHotels"));
+const AddHotelForm = lazy(() => import("../components/Admin/AddHotelForm"));
 
 
 export const adminRoutes = (

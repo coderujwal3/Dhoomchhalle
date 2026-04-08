@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import heroImage from "../../assets/hero-varanasi.jpg";
-import { LogIn, LayoutDashboard, Hotel } from "lucide-react";
+import { LogIn, LayoutDashboard, Hotel, UserCircle2 } from "lucide-react";
 // import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import ShinyText from "./ui/ShinyText";
 
@@ -62,6 +62,14 @@ const HeroSection = () => {
       label: "Dashboard",
       icon: LayoutDashboard,
       to: "/dashboard",
+      bg: "bg-amber-500",
+      rounded: "rounded-full",
+      border: "hover:border-3 hover:border-red-700",
+    },
+    {
+      label: "Creators",
+      icon: UserCircle2,
+      to: "/contributors",
       bg: "bg-amber-500",
       rounded: "rounded-full",
       border: "hover:border-3 hover:border-red-700",

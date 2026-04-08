@@ -12,6 +12,7 @@ const Hotels = lazy(() => import("../pages/Hotels"));
 const HotelDetails = lazy(() => import("../components/hotels/HotelDetails"));
 const UserDashboard = lazy(() => import("../pages/UserDashboard"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
+const Contributors = lazy(() => import("../pages/Contributors"));
 // import Transport from "../pages/Transport";
 // import RoutePlanner from "../pages/RoutePlanner";
 // import Timings from "../pages/Timings";
@@ -47,6 +48,8 @@ const AppRoutes = () => {
             <Route path="/" element={<Home />} />
 
             <Route path="/hotels" element={<Hotels />} />
+            <Route path="/contributors" element={<Contributors />} />
+            
             <Route path="/hotels/:id" element={<HotelDetails />} />
             <Route path="/hotel/:hotel_id" element={<HotelDetails />} />
 

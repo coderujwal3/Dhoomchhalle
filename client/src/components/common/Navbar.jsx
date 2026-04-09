@@ -13,8 +13,7 @@ const scrollLinks = [
   { label: "Guides", id: "guides" },
 ];
 
-const routeBtnClass =
-  "bg-red-600 text-white/90 p-2 rounded-md text-center hover:border-2 hover:border-amber-500";
+const routeBtnClass = "bg-red-600 text-white/90 p-2 rounded-md text-center hover:border-2 hover:border-amber-500";
 
 const scrollToSection = (id) => {
   const lenis = getLenis();
@@ -92,25 +91,23 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {scrollLinks.map((link, i) => (
-            <motion.a
-              key={link.id}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
-              className={`font-sans text-lg font-medium transition-all hover:bg-red-600 hover:text-white/90 hover:border-2 hover:border-amber-500 py-2 px-3 rounded-md cursor-pointer relative group ${navTextClass} duration-300`}
-              href={`#${link.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection(link.id);
-              }}
-            >
-              {link.label}
-            </motion.a>
-          ))}
-
           {isAuthed ? (
             <>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  duration: 0.6,
+                }}
+              >
+                <Link
+                  to="/hotels"
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+                >
+                  Hotels
+                </Link>
+              </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -142,26 +139,27 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              {scrollLinks.map((link, i) => (
+                <motion.a
+                  key={link.id}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
+                  className={`font-sans text-lg font-medium transition-all hover:bg-red-600 hover:text-white/90 hover:border-2 hover:border-amber-500 py-2 px-3 rounded-md cursor-pointer relative group ${navTextClass} duration-300`}
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(link.id);
+                  }}
+                >
+                  {link.label}
+                </motion.a>
+              ))}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   delay: 0.1 * (scrollLinks.length + 1) + 0.8,
-                  duration: 0.6,
-                }}
-              >
-                <Link
-                  to="/register"
-                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-                >
-                  Register
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.1 * (scrollLinks.length + 2) + 0.8,
                   duration: 0.6,
                 }}
               >

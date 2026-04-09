@@ -26,25 +26,33 @@ const spring = {
   mass: 0.8,
 };
 
-const ContributorsCard = ({ contributor }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  const initials = contributor.name
+const getInitials = (name = "") =>
+  name
     .split(" ")
-    .map((part) => part[0])
+    .map((part) => part[0] || "")
     .join("")
     .slice(0, 2)
     .toUpperCase();
 
+const ContributorsCard = ({ contributor }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const initials = getInitials(contributor.name);
   const quickSocials = (contributor.socials || []).slice(0, 3);
-
-  const renderDetails = () => (
-    <>
-      <p className="mb-4 border-l-2 border-amber-200/70 pl-3 text-sm leading-relaxed text-zinc-100/90">
-        {contributor.bio}
-      </p>
-
-      {contributor.techStack?.length ? (
+  const detailSections = [
+    {
+      key: "bio",
+      isVisible: Boolean(contributor.bio),
+      content: (
+        <p className="mb-4 border-l-2 border-amber-200/70 pl-3 text-sm leading-relaxed text-zinc-100/90">
+          {contributor.bio}
+        </p>
+      ),
+    },
+    {
+      key: "tech",
+      isVisible: contributor.techStack?.length > 0,
+      content: (
         <div className="mb-4">
           <div className="mb-2 flex items-center gap-2 text-amber-50">
             <Code2 size={15} />
@@ -53,7 +61,7 @@ const ContributorsCard = ({ contributor }) => {
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {contributor.techStack.map((tech) => (
+            {contributor.techStack?.map((tech) => (
               <span
                 key={tech}
                 className="rounded-full border border-white/35 bg-white/10 px-3 py-1 text-xs font-medium text-zinc-100"
@@ -63,9 +71,12 @@ const ContributorsCard = ({ contributor }) => {
             ))}
           </div>
         </div>
-      ) : null}
-
-      {contributor.currentlyBuilding ? (
+      ),
+    },
+    {
+      key: "building",
+      isVisible: Boolean(contributor.currentlyBuilding),
+      content: (
         <div className="mb-1 rounded-xl border border-amber-100/30 bg-black/15 p-3">
           <p className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-amber-100">
             <Sparkles size={14} />
@@ -75,7 +86,17 @@ const ContributorsCard = ({ contributor }) => {
             {contributor.currentlyBuilding}
           </p>
         </div>
-      ) : null}
+      ),
+    },
+  ];
+
+  const renderDetails = () => (
+    <>
+      {detailSections
+        .filter((section) => section.isVisible)
+        .map((section) => (
+          <React.Fragment key={section.key}>{section.content}</React.Fragment>
+        ))}
     </>
   );
 
@@ -88,7 +109,8 @@ const ContributorsCard = ({ contributor }) => {
       onFocusCapture={() => setIsExpanded(true)}
       onBlurCapture={() => setIsExpanded(false)}
       animate={{
-        y: isExpanded ? -6 : 0,
+        y: isExpanded ? -10 : 0,
+        opacity: isExpanded ? 1 : 0.9,
       }}
       className="group relative h-full"
     >
@@ -97,7 +119,7 @@ const ContributorsCard = ({ contributor }) => {
         transition={spring}
         className={`relative z-10 overflow-hidden rounded-2xl border border-amber-100/20 bg-white/10 p-5 backdrop-blur-xl shadow-[0_16px_45px_rgba(0,0,0,0.35)] ${
           isExpanded
-            ? "lg:aspect-auto lg:min-h-[30rem]"
+            ? "lg:aspect-auto lg:min-h-120"
             : "lg:aspect-square"
         }`}
       >
@@ -121,7 +143,7 @@ const ContributorsCard = ({ contributor }) => {
                   alt={contributor.name}
                   className="h-full w-full object-cover"
                   loading="lazy"
-                  animate={{ scale: isExpanded ? 1.05 : 1 }}
+                  animate={{ scale: isExpanded ? 1.03 : 1 }}
                   transition={spring}
                 />
               ) : (
@@ -144,7 +166,7 @@ const ContributorsCard = ({ contributor }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3 mb-2">
             {quickSocials.map((social) => {
               const Icon = socialIcons[social.type] || ExternalLink;
               return (
@@ -171,7 +193,7 @@ const ContributorsCard = ({ contributor }) => {
         </div>
 
         <Motion.div
-          initial={false}
+          initial={{opacity: 0}}
           animate={{
             height: isExpanded ? "auto" : 0,
             opacity: isExpanded ? 1 : 0,

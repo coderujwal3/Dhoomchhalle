@@ -4,6 +4,7 @@ const Hyperspeed = lazy(() => import("../components/common/ui/Hyperspeed"));
 
 // Importing contributors image
 import MyImg from "../assets/MyPic.jpeg";
+import AyushImg from "../assets/Ayush.jpeg";
 
 const contributors = [
   {
@@ -14,9 +15,21 @@ const contributors = [
     techStack: ["React", "Node.js", "Express", "MongoDB", "Kali/Parrot Linux"],
     currentlyBuilding: "The web page you are seeing right now (Dhoomchhalle)",
     socials: [
-      { type: "github", label: "GitHub", url: "https://github.com/coderujwal3" },
-      { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
-      { type: "twitter", label: "X", url: "https://x.com/" },
+      {
+        type: "github",
+        label: "GitHub",
+        url: "https://github.com/coderujwal3",
+      },
+      {
+        type: "linkedin",
+        label: "LinkedIn",
+        url: "https://www.linkedin.com/in/ujwal-singh-930034266/",
+      },
+      {
+        type: "website",
+        label: "portfolio",
+        url: "https://ujwalsinghportfolio.vercel.app/",
+      },
     ],
   },
   {
@@ -25,7 +38,8 @@ const contributors = [
     specialization: "Backend Developer",
     bio: "Designs resilient APIs and secure systems that keep products fast, stable, and production-ready from day one.",
     techStack: ["Node.js", "Express", "MongoDB", "Redis"],
-    currentlyBuilding: "A modular service layer for analytics and performance insights.",
+    currentlyBuilding:
+      "A modular service layer for analytics and performance insights.",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
@@ -38,7 +52,8 @@ const contributors = [
     specialization: "Full Stack Engineer",
     bio: "Bridges design and architecture to ship complete features, from polished UI flows to robust deployment pipelines.",
     techStack: ["React", "Node.js", "PostgreSQL", "Docker"],
-    currentlyBuilding: "Contributor tools for smoother collaboration and faster releases.",
+    currentlyBuilding:
+      "Contributor tools for smoother collaboration and faster releases.",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
@@ -47,11 +62,12 @@ const contributors = [
   },
   {
     name: "Ayush Agrahari",
-    image: "https://i.pravatar.cc/300?img=69",
+    image: AyushImg,
     specialization: "Full Stack Engineer",
     bio: "Bridges design and architecture to ship complete features, from polished UI flows to robust deployment pipelines.",
     techStack: ["React", "Node.js", "PostgreSQL", "Docker"],
-    currentlyBuilding: "Contributor tools for smoother collaboration and faster releases.",
+    currentlyBuilding:
+      "Contributor tools for smoother collaboration and faster releases.",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
@@ -64,14 +80,14 @@ const contributors = [
     specialization: "Full Stack Engineer",
     bio: "Bridges design and architecture to ship complete features, from polished UI flows to robust deployment pipelines.",
     techStack: ["React", "Node.js", "PostgreSQL", "Docker"],
-    currentlyBuilding: "Contributor tools for smoother collaboration and faster releases.",
+    currentlyBuilding:
+      "Contributor tools for smoother collaboration and faster releases.",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
       { type: "email", label: "Email", url: "mailto:hello@example.com" },
     ],
   },
-  
 ];
 
 const Contributors = () => {
@@ -82,13 +98,13 @@ const Contributors = () => {
           effectOptions={{
             distortion: "turbulentDistortion",
             length: 400,
-            roadWidth: 10,
+            roadWidth: 25,
             islandWidth: 2,
-            lanesPerRoad: 3,
-            fov: 90,
+            lanesPerRoad: 5,
+            fov: 150,
             fovSpeedUp: 150,
             speedUp: 2,
-            carLightsFade: 0.4,
+            carLightsFade: 0.9,
             totalSideLightSticks: 20,
             lightPairsPerRoadWay: 40,
             shoulderLinesWidthPercentage: 0.05,

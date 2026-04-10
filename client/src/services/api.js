@@ -83,7 +83,9 @@ export const transportLogAPI = {
  * ROUTE ENDPOINTS
  */
 export const routeAPI = {
-    computeRoute: (data) => apiClient.post(`/routes/compute`, data),
-    getBestRoute: (source, destination) =>
-        apiClient.get(`/routes/best?source=${source}&destination=${destination}`),
+    getPlacesByBounds: (params) => apiClient.get(`/places`, { params }),
+    computeRoute: (data) => apiClient.post(`/route`, data),
+    calculateFare: (data) => apiClient.post(`/fare`, data),
+    getPopularRoutes: (limit = 8) => apiClient.get(`/routes/popular`, { params: { limit } }),
+    getTransports: () => apiClient.get(`/transports`),
 };

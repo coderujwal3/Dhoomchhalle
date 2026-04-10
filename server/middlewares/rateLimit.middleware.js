@@ -44,9 +44,33 @@ const forgotPasswordLimiter = rateLimit({
   },
 });
 
+const mapApiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: "failed",
+    message: "Too many map requests. Please slow down and try again shortly.",
+  },
+});
+
+const osrmRouteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 80,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: "failed",
+    message: "Route limit reached. Please retry after some time.",
+  },
+});
+
 module.exports = {
   authLoginLimiter,
   otpLimiter,
   otpVerifyLimiter,
   forgotPasswordLimiter,
+  mapApiLimiter,
+  osrmRouteLimiter,
 };

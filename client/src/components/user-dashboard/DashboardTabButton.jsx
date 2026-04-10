@@ -9,7 +9,7 @@ export default function DashboardTabButton({ active, onClick, icon: Icon, label 
       }`}
     >
       <Icon size={18} />
-      <span className="hidden sm:inline">{label}</span>
+      <span className="hidden cursor-pointer sm:inline">{label}</span>
     </button>
   );
 }

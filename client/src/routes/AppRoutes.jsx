@@ -9,6 +9,7 @@ const Register = lazy(() => import("../pages/Register"));
 const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const Hotels = lazy(() => import("../pages/Hotels"));
+const RoutePlanner = lazy(() => import("../pages/RoutePlanner"));
 const HotelDetails = lazy(() => import("../components/hotels/HotelDetails"));
 const UserDashboard = lazy(() => import("../pages/UserDashboard"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
@@ -48,6 +49,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Home />} />
 
             <Route path="/hotels" element={<Hotels />} />
+            <Route path="/route-planner" element={<RoutePlanner />} />
             <Route path="/contributors" element={<Contributors />} />
             
             <Route path="/hotels/:id" element={<HotelDetails />} />
@@ -65,8 +67,6 @@ const AppRoutes = () => {
             />
 
             {/* <Route path="/transport" element={<Transport />} /> */}
-
-            {/* <Route path="/route-planner" element={<RoutePlanner />} /> */}
 
             {/* <Route path="/timings" element={<Timings />} /> */}
           </Route>

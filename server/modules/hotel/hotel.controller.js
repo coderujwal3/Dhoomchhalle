@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 async function getHotelsController(req, res) {
   try {
     const hotels = await Hotel.find({})
-      .select("name location category pricePerNight amenities avgRating contactNumber photos")
+      .select("name location latitude longitude category pricePerNight amenities avgRating contactNumber photos")
       .sort({ createdAt: -1 })    // to get latest data on top
       .lean();
 

@@ -579,7 +579,7 @@ const RoutePlanner = () => {
             <div className="h-[calc(100vh-10rem)] min-h-120">
               <MapContainer
                 center={DEFAULT_CENTER}
-                zoom={16}
+                zoom={12}
                 className="h-full w-full"
                 preferCanvas
               >
@@ -652,7 +652,7 @@ const RoutePlanner = () => {
                     <Marker
                       key={place.id}
                       position={[place.latitude, place.longitude]}
-                      raiseOnHover={true}
+                      riseOnHover={true}
                       // eventHandlers={{
                       //   click: () => fetchRoute(place),
                       // }}

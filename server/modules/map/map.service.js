@@ -1,5 +1,6 @@
 const xss = require("xss");
 const Place = require("./place.model");
+const Hotel = require("../hotel/hotel.model");
 const MapRoute = require("./route.model");
 const Transport = require("./transport.model");
 const {
@@ -234,6 +235,47 @@ function buildPlacesCacheKey({ north, south, east, west, types, limit }) {
   return `north:${north}|south:${south}|east:${east}|west:${west}|types:${typeKey}|limit:${limit}`;
 }
 
+function buildHotelBoundsQuery({ north, south, east, west }) {
+  const query = {
+    latitude: { $gte: Number(south), $lte: Number(north) },
+  };
+
+  if (east >= west) {
+    query.longitude = { $gte: Number(west), $lte: Number(east) };
+    return query;
+  }
+
+  query.$or = [
+    { longitude: { $gte: Number(west), $lte: 180 } },
+    { longitude: { $gte: -180, $lte: Number(east) } },
+  ];
+
+  return query;
+}
+
+function formatHotelAsPlace(hotel) {
+  const latitude = Number(hotel?.latitude);
+  const longitude = Number(hotel?.longitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
+  }
+
+  const fallbackDetails = hotel?.category
+    ? `${hotel.category} hotel in ${hotel.location || "the city"}`
+    : `Hotel in ${hotel.location || "the city"}`;
+
+  return {
+    id: `hotel-${hotel._id}`,
+    name: hotel.name,
+    price: Number(hotel.pricePerNight || 0),
+    type: "hotel",
+    details: sanitizeText(hotel.description || hotel.address || fallbackDetails),
+    latitude,
+    longitude,
+  };
+}
+
 async function getPlacesWithinBounds({ north, south, east, west, types, limit }) {
   const safeLimit = Math.max(
     1,
@@ -255,6 +297,8 @@ async function getPlacesWithinBounds({ north, south, east, west, types, limit })
   });
   const cached = getCached(placesCache, cacheKey);
   if (cached) return cached;
+  const shouldIncludeHotels =
+    normalizedTypes.length === 0 || normalizedTypes.includes("hotel");
 
   const query = {};
   if (normalizedTypes.length) {
@@ -295,13 +339,26 @@ async function getPlacesWithinBounds({ north, south, east, west, types, limit })
     ];
   }
 
-  const places = await Place.find(query)
+  const placeQuery = Place.find(query)
     .select("name location price type details")
     .limit(safeLimit)
     .lean()
     .exec();
 
-  const response = places.map((place) => ({
+  const hotelQueryPromise = shouldIncludeHotels
+    ? Hotel.find(buildHotelBoundsQuery({ north, south, east, west }))
+        .select(
+          "name location address latitude longitude category pricePerNight description"
+        )
+        .sort({ createdAt: -1 })
+        .limit(safeLimit)
+        .lean()
+        .exec()
+    : Promise.resolve([]);
+
+  const [places, hotels] = await Promise.all([placeQuery, hotelQueryPromise]);
+
+  const defaultPlaces = places.map((place) => ({
     id: place._id,
     name: place.name,
     price: Number(place.price || 0),
@@ -310,6 +367,15 @@ async function getPlacesWithinBounds({ north, south, east, west, types, limit })
     latitude: Number(place.location?.coordinates?.[1]),
     longitude: Number(place.location?.coordinates?.[0]),
   }));
+
+  const hotelPlaces = hotels.map(formatHotelAsPlace).filter(Boolean);
+
+  const response = [...defaultPlaces, ...hotelPlaces]
+    .filter(
+      (place) =>
+        Number.isFinite(place.latitude) && Number.isFinite(place.longitude)
+    )
+    .slice(0, safeLimit);
 
   setCached(placesCache, cacheKey, response, 30 * 1000);
   return response;

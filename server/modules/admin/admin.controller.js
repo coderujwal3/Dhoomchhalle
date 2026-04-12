@@ -805,6 +805,8 @@ exports.createHotel = async (req, res) => {
             name,
             location,
             address = '',
+            latitude = '',
+            longitude = '',
             category,
             pricePerNight,
             contactNumber = '',
@@ -820,6 +822,14 @@ exports.createHotel = async (req, res) => {
 
         const normalizedName = typeof name === 'string' ? name.trim() : '';
         const normalizedLocation = typeof location === 'string' ? location.trim() : '';
+        const hasLatitude = typeof latitude === 'number'
+            ? true
+            : (typeof latitude === 'string' && latitude.trim() !== '');
+        const hasLongitude = typeof longitude === 'number'
+            ? true
+            : (typeof longitude === 'string' && longitude.trim() !== '');
+        const normalizedLatitude = Number(latitude);
+        const normalizedLongitude = Number(longitude);
         const normalizedCategory = typeof category === 'string' ? category.trim().toLowerCase() : '';
         const normalizedPricePerNight = Number(pricePerNight);
         const normalizedRating = avgRating === '' ? 0 : Number(avgRating);
@@ -832,10 +842,33 @@ exports.createHotel = async (req, res) => {
         const normalizedManualPhotoUrls = normalizePhotoUrls(photos);
         const uploadedPhotoFiles = Array.isArray(req.files) ? req.files : [];
 
-        if (!normalizedName || !normalizedLocation || !normalizedCategory || Number.isNaN(normalizedPricePerNight)) {
+        if (
+            !normalizedName ||
+            !normalizedLocation ||
+            !normalizedCategory ||
+            !hasLatitude ||
+            !hasLongitude ||
+            Number.isNaN(normalizedLatitude) ||
+            Number.isNaN(normalizedLongitude) ||
+            Number.isNaN(normalizedPricePerNight)
+        ) {
             return res.status(400).json({
                 success: false,
-                message: 'name, location, category and pricePerNight are required',
+                message: 'name, location, latitude, longitude, category and pricePerNight are required',
+            });
+        }
+
+        if (normalizedLatitude < -90 || normalizedLatitude > 90) {
+            return res.status(400).json({
+                success: false,
+                message: 'latitude must be between -90 and 90',
+            });
+        }
+
+        if (normalizedLongitude < -180 || normalizedLongitude > 180) {
+            return res.status(400).json({
+                success: false,
+                message: 'longitude must be between -180 and 180',
             });
         }
 
@@ -897,6 +930,8 @@ exports.createHotel = async (req, res) => {
             name: normalizedName,
             location: normalizedLocation,
             address: normalizedAddress,
+            latitude: normalizedLatitude,
+            longitude: normalizedLongitude,
             category: normalizedCategory,
             pricePerNight: normalizedPricePerNight,
             contactNumber: normalizedContactNumber,

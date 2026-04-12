@@ -15,6 +15,14 @@ const hotelSchema = new mongoose.Schema(
         address: {
             type: String,
         },
+        latitude: {
+            type: Number,
+            required: true
+        },
+        longitude: {
+            type: Number,
+            required: true
+        },
         category: {
             type: String,
             enum: ["budget", "mid", "luxury", "hostel"],

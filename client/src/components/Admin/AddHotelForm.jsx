@@ -14,6 +14,7 @@ import {
   Phone,
   Sparkles,
   Star,
+  Map,
 } from "lucide-react";
 import { adminAPI } from "../../services/api/adminAPI";
 
@@ -21,6 +22,8 @@ const INITIAL_FORM = {
   name: "",
   location: "",
   address: "",
+  latitude: "",
+  longitude: "",
   category: "",
   pricePerNight: "",
   contactNumber: "",
@@ -46,7 +49,7 @@ function AddHotelForm() {
   const [selectedPhotos, setSelectedPhotos] = useState([]);
 
   const canSubmit = useMemo(() => {
-    const requiredKeys = ["name", "location", "category", "pricePerNight"];
+    const requiredKeys = ["name", "location", "latitude", "longitude", "category", "pricePerNight"];
     const hasRequiredValues = requiredKeys.every((key) =>
       String(formData[key] || "").trim(),
     );
@@ -151,6 +154,8 @@ function AddHotelForm() {
     payload.append("name", formData.name.trim());
     payload.append("location", formData.location.trim());
     payload.append("address", formData.address.trim());
+    payload.append("latitude", formData.latitude);
+    payload.append("longitude", formData.longitude);
     payload.append("category", formData.category);
     payload.append("pricePerNight", String(Number(formData.pricePerNight)));
     payload.append("contactNumber", formData.contactNumber.trim());
@@ -238,13 +243,57 @@ function AddHotelForm() {
             <label className="block">
               <span className="text-sm text-slate-200">Location *</span>
               <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
-                <MapPin className="h-4 w-4 text-slate-300" />
+                <Map className="h-4 w-4 text-slate-300" />
                 <input
                   className="w-full bg-transparent py-3 text-white outline-none placeholder:text-slate-400"
                   type="text"
                   placeholder="e.g., Varanasi, Uttar Pradesh"
                   value={formData.location}
-                  onChange={(event) => updateField("location", event.target.value)}
+                  onChange={(event) =>
+                    updateField("location", event.target.value)
+                  }
+                  required
+                />
+              </div>
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-slate-200">Latitude *</span>
+              <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+                <MapPin className="h-4 w-4 text-slate-300" />
+                <input
+                  className="w-full bg-transparent py-3 text-white outline-none placeholder:text-slate-400"
+                  type="number"
+                  maxLength={12}
+                  placeholder="e.g., 28.032283"
+                  value={formData.latitude}
+                  onChange={(event) =>
+                    updateField(
+                      "latitude",
+                      event.target.value
+                    )
+                  }
+                  required
+                />
+              </div>
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-slate-200">Longitude *</span>
+              <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
+                <MapPin className="h-4 w-4 text-slate-300" />
+                <input
+                  className="w-full bg-transparent py-3 text-white outline-none placeholder:text-slate-400"
+                  type="number"
+                  maxLength={12}
+                  placeholder="e.g., 20.3827443"
+                  value={formData.longitude}
+                  onChange={(event) =>
+                    updateField(
+                      "longitude",
+                      event.target.value
+                    )
+                  }
                   required
                 />
               </div>
@@ -257,7 +306,9 @@ function AddHotelForm() {
                 <select
                   className="w-full bg-transparent py-3 text-white outline-none"
                   value={formData.category}
-                  onChange={(event) => updateField("category", event.target.value)}
+                  onChange={(event) =>
+                    updateField("category", event.target.value)
+                  }
                   required
                 >
                   <option value="" className="bg-slate-900 text-slate-200">
@@ -277,7 +328,9 @@ function AddHotelForm() {
             </label>
 
             <label className="block">
-              <span className="text-sm text-slate-200">Price / Night (INR) *</span>
+              <span className="text-sm text-slate-200">
+                Price / Night (INR) *
+              </span>
               <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
                 <IndianRupee className="h-4 w-4 text-slate-300" />
                 <input
@@ -286,7 +339,9 @@ function AddHotelForm() {
                   min={1}
                   placeholder="e.g., 2500"
                   value={formData.pricePerNight}
-                  onChange={(event) => updateField("pricePerNight", event.target.value)}
+                  onChange={(event) =>
+                    updateField("pricePerNight", event.target.value)
+                  }
                   required
                 />
               </div>
@@ -321,7 +376,9 @@ function AddHotelForm() {
                   type="url"
                   placeholder="https://your-hotel-site.com"
                   value={formData.websiteUrl}
-                  onChange={(event) => updateField("websiteUrl", event.target.value)}
+                  onChange={(event) =>
+                    updateField("websiteUrl", event.target.value)
+                  }
                 />
               </div>
             </label>
@@ -334,7 +391,9 @@ function AddHotelForm() {
                   className="w-full bg-transparent py-3 text-white outline-none"
                   type="time"
                   value={formData.checkIn}
-                  onChange={(event) => updateField("checkIn", event.target.value)}
+                  onChange={(event) =>
+                    updateField("checkIn", event.target.value)
+                  }
                 />
               </div>
             </label>
@@ -347,7 +406,9 @@ function AddHotelForm() {
                   className="w-full bg-transparent py-3 text-white outline-none"
                   type="time"
                   value={formData.checkOut}
-                  onChange={(event) => updateField("checkOut", event.target.value)}
+                  onChange={(event) =>
+                    updateField("checkOut", event.target.value)
+                  }
                 />
               </div>
             </label>
@@ -361,7 +422,9 @@ function AddHotelForm() {
                   rows={3}
                   placeholder="Full hotel address"
                   value={formData.address}
-                  onChange={(event) => updateField("address", event.target.value)}
+                  onChange={(event) =>
+                    updateField("address", event.target.value)
+                  }
                 />
               </div>
             </label>
@@ -375,7 +438,9 @@ function AddHotelForm() {
                   rows={4}
                   placeholder="Highlight what makes this hotel special"
                   value={formData.description}
-                  onChange={(event) => updateField("description", event.target.value)}
+                  onChange={(event) =>
+                    updateField("description", event.target.value)
+                  }
                 />
               </div>
             </label>
@@ -391,13 +456,17 @@ function AddHotelForm() {
                   type="text"
                   placeholder="Wi-Fi, Parking, Breakfast, AC"
                   value={formData.amenities}
-                  onChange={(event) => updateField("amenities", event.target.value)}
+                  onChange={(event) =>
+                    updateField("amenities", event.target.value)
+                  }
                 />
               </div>
             </label>
 
             <label className="block">
-              <span className="text-sm text-slate-200">Average Rating (0 - 5)</span>
+              <span className="text-sm text-slate-200">
+                Average Rating (0 - 5)
+              </span>
               <div className="mt-1 flex items-center gap-2 rounded-xl border border-white/20 bg-black/20 px-3">
                 <Star className="h-4 w-4 text-slate-300" />
                 <input
@@ -408,7 +477,9 @@ function AddHotelForm() {
                   step={0.1}
                   placeholder="e.g., 4.2"
                   value={formData.avgRating}
-                  onChange={(event) => updateField("avgRating", event.target.value)}
+                  onChange={(event) =>
+                    updateField("avgRating", event.target.value)
+                  }
                 />
               </div>
             </label>

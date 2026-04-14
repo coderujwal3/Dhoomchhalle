@@ -275,6 +275,13 @@ async function evaluateFareCheck(payload) {
 }
 
 async function reportFareCheck(payload) {
+  const fareCheckId =
+    typeof payload.fareCheckId === "string" ? payload.fareCheckId.trim() : "";
+
+  if (!fareCheckId || !FareCheckLog.isValidObjectId(fareCheckId)) {
+    throw new Error("Invalid fare check id");
+  }
+
   const updatePayload = {
     wasReported: true,
     reportReason: payload.reason || "other",
@@ -287,7 +294,7 @@ async function reportFareCheck(payload) {
   }
 
   const updatedLog = await FareCheckLog.findByIdAndUpdate(
-    payload.fareCheckId,
+    fareCheckId,
     { $set: updatePayload },
     { new: true }
   )

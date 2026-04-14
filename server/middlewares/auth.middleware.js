@@ -66,6 +66,30 @@ async function authMiddleware(req, res, next) {
     }
 }
 
+async function optionalAuthMiddleware(req, _res, next) {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const isBlacklistedToken = await tokenBlacklistModel.findOne({ token });
+        if (isBlacklistedToken) {
+            return next();
+        }
+
+        const user = await getAuthenticatedUser(token);
+        if (user && !user.suspended) {
+            req.user = user;
+        }
+    } catch {
+        // Ignore token parsing failures for optional auth.
+    }
+
+    return next();
+}
+
 async function authSystemUserMiddleware(req, res, next) {
     const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
@@ -116,4 +140,4 @@ async function authSystemUserMiddleware(req, res, next) {
 }
 
 
-module.exports = { authMiddleware, authSystemUserMiddleware };
+module.exports = { authMiddleware, optionalAuthMiddleware, authSystemUserMiddleware };

@@ -20,8 +20,8 @@ export const adminAPI = {
     return apiClient.get(url);
   },
   getUserDetails: (userId) => apiClient.get(`/admin/users/${userId}`),
-  updateUserRole: (userId, role) =>
-    apiClient.put(`/admin/users/${userId}/role`, { role }),
+  updateUserRole: (userId, newRole) =>
+    apiClient.put(`/admin/users/${userId}/role`, { role: newRole }),
   deleteUser: (userId) => apiClient.delete(`/admin/users/${userId}`),
   suspendUser: (userId, reason) =>
     apiClient.post(`/admin/users/${userId}/suspend`, { reason }),
@@ -35,6 +35,10 @@ export const adminAPI = {
     apiClient.get(`/admin/analytics/hotels?days=${days}`),
   getBookingAnalytics: () => apiClient.get("/admin/analytics/bookings"),
   getReportsAnalytics: () => apiClient.get("/admin/analytics/reports"),
+  getFareCheckHotspots: (days = 30, limit = 10, minRisk = "medium") =>
+    apiClient.get(
+      `/fare-checks/hotspots?days=${days}&limit=${limit}&minRisk=${minRisk}`
+    ),
 
   // Reviews
   getPendingReviews: (page = 1, limit = 20) =>

@@ -10,6 +10,7 @@ const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const Hotels = lazy(() => import("../pages/Hotels"));
 const RoutePlanner = lazy(() => import("../pages/RoutePlanner"));
+const FareCheck = lazy(() => import("../pages/FareCheck"));
 const HotelDetails = lazy(() => import("../components/hotels/HotelDetails"));
 const UserDashboard = lazy(() => import("../pages/UserDashboard"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
@@ -50,6 +51,7 @@ const AppRoutes = () => {
 
             <Route path="/hotels" element={<Hotels />} />
             <Route path="/route-planner" element={<RoutePlanner />} />
+            <Route path="/fare-check" element={<FareCheck />} />
             <Route path="/contributors" element={<Contributors />} />
             
             <Route path="/hotels/:id" element={<HotelDetails />} />

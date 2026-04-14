@@ -1,4 +1,4 @@
-import { Hotel, Home, User, Map } from "lucide-react";
+import { Hotel, Home, User, Map, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import QRCode from "react-qr-code";
 import { useState } from "react";
@@ -57,6 +57,13 @@ export default function DashboardProfilePane({ user }) {
           >
             <Map size={20} className="text-orange-600" />
             <span>Plan Route</span>
+          </Link>
+          <Link
+            to="/fare-check"
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 border border-gray-400 transition"
+          >
+            <ShieldCheck size={20} className="text-orange-600" />
+            <span>Fare Check</span>
           </Link>
           <Link
             to="/"

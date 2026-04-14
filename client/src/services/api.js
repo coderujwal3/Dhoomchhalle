@@ -89,3 +89,12 @@ export const routeAPI = {
     getPopularRoutes: (limit = 8) => apiClient.get(`/routes/popular`, { params: { limit } }),
     getTransports: () => apiClient.get(`/transports`),
 };
+
+/**
+ * FARE CHECK ENDPOINTS
+ */
+export const fareCheckAPI = {
+    evaluateFare: (data) => apiClient.post(`/fare-checks/evaluate`, data),
+    reportFareCheck: (data) => apiClient.post(`/fare-checks/report`, data),
+    getFareHotspots: (params) => apiClient.get(`/fare-checks/hotspots`, { params }),
+};

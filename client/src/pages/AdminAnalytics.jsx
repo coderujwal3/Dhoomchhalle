@@ -21,6 +21,7 @@ const AdminAnalytics = () => {
   const [hotelAnalytics, setHotelAnalytics] = useState([]);
   const [bookingAnalytics, setBookingAnalytics] = useState(null);
   const [reportsAnalytics, setReportsAnalytics] = useState(null);
+  const [fareHotspots, setFareHotspots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
 
@@ -30,11 +31,13 @@ const AdminAnalytics = () => {
     queueMicrotask(async () => {
       try {
         setLoading(true);
-        const [userRes, hotelRes, bookingRes, reportsRes] = await Promise.all([
+        const [userRes, hotelRes, bookingRes, reportsRes, fareHotspotRes] =
+          await Promise.all([
           adminAPI.getUserAnalytics(days),
           adminAPI.getHotelAnalytics(days),
           adminAPI.getBookingAnalytics(),
           adminAPI.getReportsAnalytics(),
+          adminAPI.getFareCheckHotspots(days, 10, "medium"),
         ]);
 
         if (cancelled) return;
@@ -43,6 +46,7 @@ const AdminAnalytics = () => {
         setHotelAnalytics(hotelRes.data.data.dailyData);
         setBookingAnalytics(bookingRes.data.data);
         setReportsAnalytics(reportsRes.data.data);
+        setFareHotspots(fareHotspotRes?.data?.data || []);
         setLoading(false);
       } catch (error) {
         if (!cancelled) {
@@ -210,6 +214,51 @@ const AdminAnalytics = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="bg-slate-700 rounded-lg p-6 ring-1 ring-slate-600">
+            <h3 className="text-white font-semibold mb-4">
+              Fare Overcharge Hotspots
+            </h3>
+            {!fareHotspots.length ? (
+              <p className="text-slate-300 text-sm">
+                No medium/high-risk fare hotspots found in this window.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead>
+                    <tr className="text-slate-300 border-b border-slate-600">
+                      <th className="py-2 pr-3">Route</th>
+                      <th className="py-2 pr-3">Transport</th>
+                      <th className="py-2 pr-3">Checks</th>
+                      <th className="py-2 pr-3">High Risk</th>
+                      <th className="py-2 pr-3">Reported</th>
+                      <th className="py-2 pr-3">Avg Overcharge</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {fareHotspots.map((spot) => (
+                      <tr
+                        key={`${spot.routeKey}-${spot.transportType}`}
+                        className="border-b border-slate-600/70 text-slate-100"
+                      >
+                        <td className="py-2 pr-3">{spot.routeLabel}</td>
+                        <td className="py-2 pr-3 capitalize">
+                          {spot.transportType}
+                        </td>
+                        <td className="py-2 pr-3">{spot.checks}</td>
+                        <td className="py-2 pr-3">{spot.highRiskCount}</td>
+                        <td className="py-2 pr-3">{spot.reportedCount}</td>
+                        <td className="py-2 pr-3">
+                          {spot.avgOverchargePercent}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Comparative Analysis */}

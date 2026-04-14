@@ -127,9 +127,6 @@ erDiagram
 
 `REPORT` uses a polymorphic reference (`entityType` + `entityId`) to target hotels, reviews, transport issues, or other entities.
 
-## ER Diagram
-<img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/7456db3d-7de5-4f08-9eb0-3982487166b4" />
-
 ## Future Monetization (Think Big)
 - Hotel promotions
 - Transport advertisement

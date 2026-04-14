@@ -132,6 +132,21 @@ const Navbar = () => {
                 }}
               >
                 <Link
+                  to="/fare-check"
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+                >
+                  Fare Check
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  duration: 0.6,
+                }}
+              >
+                <Link
                   to="/dashboard"
                   className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
                 >
@@ -183,6 +198,21 @@ const Navbar = () => {
                   className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
                 >
                   Route Map
+                </Link>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  duration: 0.6,
+                }}
+              >
+                <Link
+                  to="/fare-check"
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+                >
+                  Fare Check
                 </Link>
               </motion.div>
               <motion.div
@@ -266,12 +296,25 @@ const Navbar = () => {
                   Route Map
                 </Link>
               </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
+              >
+                <Link
+                  to="/fare-check"
+                  onClick={() => setIsOpen(false)}
+                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
+                >
+                  Fare Check
+                </Link>
+              </motion.div>
               {isAuthed ? (
                 <>
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
+                    transition={{ delay: (scrollLinks.length + 3) * 0.05 }}
                   >
                     <Link
                       to="/dashboard"
@@ -285,7 +328,7 @@ const Navbar = () => {
                     type="button"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 3) * 0.05 }}
+                    transition={{ delay: (scrollLinks.length + 4) * 0.05 }}
                     onClick={handleLogout}
                     className="font-sans text-base font-medium text-left text-gray-900 py-2 hover:text-orange-600/60 duration-300 transition-colors"
                   >
@@ -297,7 +340,7 @@ const Navbar = () => {
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
+                    transition={{ delay: (scrollLinks.length + 3) * 0.05 }}
                   >
                     <Link
                       to="/register"
@@ -310,7 +353,7 @@ const Navbar = () => {
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 3) * 0.05 }}
+                    transition={{ delay: (scrollLinks.length + 4) * 0.05 }}
                   >
                     <Link
                       to="/login"

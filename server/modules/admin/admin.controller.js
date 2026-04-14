@@ -307,7 +307,7 @@ exports.updateUserRole = async (req, res) => {
 
         const user = await userModel.findByIdAndUpdate(
             userId,
-            { role: {$eq: role} },
+            { role: role.toLowerCase() },
             { returnDocument: 'after' }
         ).select('-password');
 
@@ -317,6 +317,7 @@ exports.updateUserRole = async (req, res) => {
             data: user
         });
     } catch (error) {
+        console.log(error);
         res.status(500).json({
             success: false,
             message: "Error updating user role",
@@ -368,7 +369,7 @@ exports.suspendUser = async (req, res) => {
             typeof reason === 'string' && reason.trim().length > 0
                 ? reason
                 : 'No reason provided';
-        
+
         const user = await userModel.findByIdAndUpdate(
             userId,
             {
@@ -625,7 +626,7 @@ exports.rejectReview = async (req, res) => {
 
         const review = await reviewModel.findByIdAndUpdate(
             reviewId,
-            { status: 'rejected', rejectionReason: {$eq: reason} },
+            { status: 'rejected', rejectionReason: { $eq: reason } },
             { returnDocument: 'after' }
         );
 

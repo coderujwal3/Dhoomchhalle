@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["traveller", "admin", "verifier"],
+            enum: ["traveller", "admin", "verifier","hotel_owner","transport"],
             default: "traveller"
         },
         suspended: {

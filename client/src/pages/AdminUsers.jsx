@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import {motion} from "framer-motion";
 import toast from "react-hot-toast";
 import { adminAPI } from "../services/api/adminAPI";
 
@@ -116,10 +117,16 @@ const AdminUsers = () => {
   return (
     <div className="p-8 bg-linear-to-br from-slate-900 to-slate-800 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
+      <motion.div
+        className="mb-8"
+        initial={{ y: 10, opacity: 0, scale: 0 }}
+        animate={{ y: 0, opacity: 1, delay: 0.6, scale: 1 }}
+        transition={{ duration: 1, type: "spring", stiffness: 50 }}
+        layout
+      >
         <h1 className="text-3xl font-bold text-white mb-2">User Management</h1>
         <p className="text-slate-400">Manage all system users</p>
-      </div>
+      </motion.div>
 
       {/* Filters */}
       <div className="bg-slate-700 rounded-lg p-6 mb-6 ring-1 ring-slate-600">
@@ -197,9 +204,13 @@ const AdminUsers = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-600">
                   {users.map((user) => (
-                    <tr
+                    <motion.tr
                       key={user._id}
-                      className="hover:bg-slate-600 transition"
+                      className="hover:bg-slate-600"
+                      initial={{ y: 10, opacity: 0.7, scale: 0 }}
+                      animate={{ y: 0, opacity: 1, delay: 0.8, scale: 1 }}
+                      transition={{ duration: 1, type: "spring", stiffness: 50 }}
+                      
                     >
                       <td className="px-6 py-4 text-sm text-white">
                         {user.name}
@@ -295,7 +306,7 @@ const AdminUsers = () => {
                           )}
                         </div>
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>

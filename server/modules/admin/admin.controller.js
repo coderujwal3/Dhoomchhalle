@@ -523,7 +523,7 @@ exports.getBookingAnalytics = async (req, res) => {
         };
 
         const logs = await transportLogModel.find();
-        stats.totalRevenue = logs.reduce((sum, log) => sum + (log.amount || 0), 0);
+        stats.totalRevenue = logs.reduce((sum, log) => sum + (log.actualPrice || 0), 0);
 
         res.status(200).json({
             success: true,
@@ -1143,8 +1143,9 @@ exports.updateSettings = async (req, res) => {
     try {
         const { settings } = req.body;
 
-        // Here you would update settings in database if you have a settings collection
-        // For now, returning the successful update response
+        if (settings.twoFactorAuth) {
+            
+        }
 
         res.status(200).json({
             success: true,

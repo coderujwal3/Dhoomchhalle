@@ -1,17 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Users,
-  Hotel,
-  Star,
-  AlertCircle,
-  TrendingUp,
-  Activity,
-} from "lucide-react";
+import { Users, Hotel, Star, AlertCircle } from "lucide-react";
+import {motion} from "framer-motion";
 import StatCard from "../components/Admin/StatCard";
 import DashboardCharts from "../components/Admin/DashboardCharts";
 import RecentActivityFeed from "../components/Admin/RecentActivityFeed";
 import { adminAPI } from "../services/api/adminAPI";
+import { delay } from "lodash";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -58,10 +53,16 @@ const AdminDashboard = () => {
   return (
     <div className="p-8 bg-linear-to-br from-slate-900 to-slate-800 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
+      <motion.div
+        className="mb-8"
+        initial={{ x: 10, opacity: 0, scale: 0 }}
+        animate={{ x: 0, opacity: 1, delay: 0.6, scale: 1 }}
+        transition={{ duration: 1, type: "spring", stiffness: 100 }}
+        layout
+      >
         <h1 className="text-4xl font-bold text-white mb-2">Dashboard</h1>
         <p className="text-slate-400">Welcome to Admin Control Panel</p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -150,11 +150,11 @@ const AdminLayout = ({ children }) => {
         className={`${sidebarOpen ? "ml-64" : "ml-20"} flex-1 overflow-auto transition-all duration-300`}
       >
         {/* Top Bar */}
-        <div className="bg-slate-800 border-b border-slate-700 px-8 py-4 flex items-center justify-between sticky top-0 z-30">
-          <div>
+        <div className="bg-slate-800 border-b border-slate-700 px-12 py-4 flex items-center justify-end sticky top-0 z-30">
+          {/* <div>
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-slate-400 hover:text-white transition lg:hidden"
+              className="text-slate-400 hover:text-white transition hidden"
             >
               {sidebarOpen ? (
                 <X className="w-6 h-6" />
@@ -162,7 +162,7 @@ const AdminLayout = ({ children }) => {
                 <Menu className="w-6 h-6" />
               )}
             </button>
-          </div>
+          </div> */}
           <div className="text-slate-300 text-sm">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",

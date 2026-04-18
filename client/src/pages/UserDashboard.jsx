@@ -31,11 +31,6 @@ function UserDashboard() {
   const [loggingOut, setLoggingOut] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
 
-  if (user?.role === "admin") {
-    navigate("/admin");
-    return null;
-  }
-
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -56,6 +51,16 @@ function UserDashboard() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      navigate("/admin", { replace: true });
+    }
+  }, [user?.role, navigate]);
+
+  if (user?.role === "admin") {
+    return null;
+  }
 
   const handleLogout = async () => {
     setLoggingOut(true);

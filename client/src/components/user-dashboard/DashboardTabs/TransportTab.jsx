@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import {
@@ -22,11 +22,7 @@ export function TransportTab() {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchLogs();
-  }, [page]);
-
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     try {
       setLoading(true);
       const result = await getMyTransportLogs(page, 10);
@@ -38,7 +34,11 @@ export function TransportTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,7 +89,7 @@ export function TransportTab() {
       await deleteTransportLog(logId);
       toast.success("Transport log deleted");
       setLogs((prev) => prev.filter((log) => log._id !== logId));
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete transport log");
     }
   };

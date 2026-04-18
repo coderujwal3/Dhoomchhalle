@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { createReport, getMyReports } from "../../../services/report.service";
 
@@ -15,22 +15,22 @@ export function ReportsTab() {
     description: "",
   });
 
-  useEffect(() => {
-    fetchReports();
-  }, [page]);
-
-  const fetchReports = async () => {
+  const fetchReports = useCallback(async () => {
     try {
       setLoading(true);
       const result = await getMyReports(page, 10);
       setReports(result.data?.reports || []);
       setPagination(result.data?.pagination || null);
-    } catch (error) {
+    } catch {
       toast.error("Failed to load reports");
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

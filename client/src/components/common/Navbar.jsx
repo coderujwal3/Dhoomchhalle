@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getLenis } from "./ui/SmoothScroll";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getLenis } from "./ui/lenisInstance";
+import { Link, useNavigate } from "react-router-dom";
 import { logout as logoutRequest } from "../../services/auth.service";
 
 const scrollLinks = [
@@ -19,6 +19,10 @@ const scrollToSection = (id) => {
   const lenis = getLenis();
   const el = document.getElementById(id);
   if (!el) return;
+  if (!lenis) {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   lenis.scrollTo(el, {
     offset: -80,
     duration: 1.5,
@@ -29,8 +33,7 @@ const scrollToSection = (id) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [authTick, setAuthTick] = useState(0);
-  const location = useLocation();
+  const [, setAuthTick] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,9 +42,8 @@ const Navbar = () => {
     return () => window.removeEventListener("dhoom-auth-changed", onAuthChanged);
   }, []);
 
-  const isAuthed = useMemo(
-    () => Boolean(typeof window !== "undefined" && localStorage.getItem("token")),
-    [location.pathname, authTick],
+  const isAuthed = Boolean(
+    typeof window !== "undefined" && localStorage.getItem("token"),
   );
 
   useEffect(() => {

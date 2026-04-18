@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const TextCursor = ({
@@ -20,7 +20,7 @@ const TextCursor = ({
   const rafRef = useRef(0);
   const isEnabledRef = useRef(false);
 
-  const appendTrailFromMouse = (mouseX, mouseY) => {
+  const appendTrailFromMouse = useCallback((mouseX, mouseY) => {
     if (!containerRef.current) return;
 
     const createRandomData = () =>
@@ -82,9 +82,9 @@ const TextCursor = ({
     });
 
     lastMoveTimeRef.current = Date.now();
-  };
+  }, [followMouseDirection, maxPoints, randomFloat, spacing]);
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = useCallback((e) => {
     if (!isEnabledRef.current || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     pendingMouseRef.current = {
@@ -99,7 +99,7 @@ const TextCursor = ({
       appendTrailFromMouse(pendingMouseRef.current.x, pendingMouseRef.current.y);
       pendingMouseRef.current = null;
     });
-  };
+  }, [appendTrailFromMouse]);
 
   useEffect(() => {
     const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
@@ -119,7 +119,7 @@ const TextCursor = ({
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, []);
+  }, [handleMouseMove]);
 
   useEffect(() => {
     const interval = setInterval(() => {

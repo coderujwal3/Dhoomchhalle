@@ -192,7 +192,7 @@ export function SettingsTab() {
     try {
       setSaving(true);
       const targetUserId = profile?.userId?._id || profile?.userId;
-      const result = await updateProfile(targetUserId, formData);
+      await updateProfile(targetUserId, formData);
       await fetchProfile();
       toast.success("Settings saved successfully");
     } catch (error) {

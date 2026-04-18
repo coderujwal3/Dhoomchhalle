@@ -10,14 +10,14 @@ const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const Hotels = lazy(() => import("../pages/Hotels"));
 const RoutePlanner = lazy(() => import("../pages/RoutePlanner"));
+const Transport = lazy(() => import("../pages/Transport"));
+const Timings = lazy(() => import("../pages/Timings"));
 const FareCheck = lazy(() => import("../pages/FareCheck"));
 const HotelDetails = lazy(() => import("../components/hotels/HotelDetails"));
 const UserDashboard = lazy(() => import("../pages/UserDashboard"));
 const UserProfile = lazy(() => import("../pages/UserProfile"));
 const Contributors = lazy(() => import("../pages/Contributors"));
-// import Transport from "../pages/Transport";
 // import RoutePlanner from "../pages/RoutePlanner";
-// import Timings from "../pages/Timings";
 // import Profile from "../pages/Profile";
 // import AdminDashboard from "../pages/AdminDashboard";
 const NotFound = lazy(() => import("../pages/NotFound"));
@@ -51,6 +51,8 @@ const AppRoutes = () => {
 
             <Route path="/hotels" element={<Hotels />} />
             <Route path="/route-planner" element={<RoutePlanner />} />
+            <Route path="/transport" element={<Transport />} />
+            <Route path="/timings" element={<Timings />} />
             <Route path="/fare-check" element={<FareCheck />} />
             <Route path="/contributors" element={<Contributors />} />
             
@@ -68,9 +70,6 @@ const AppRoutes = () => {
               }
             />
 
-            {/* <Route path="/transport" element={<Transport />} /> */}
-
-            {/* <Route path="/timings" element={<Timings />} /> */}
           </Route>
 
           {/* Auth Routes */}

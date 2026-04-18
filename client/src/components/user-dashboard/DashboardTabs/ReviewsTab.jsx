@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Star, Trash2, Edit2 } from "lucide-react";
 import { getMyReviews, deleteReview } from "../../../services/review.service";
@@ -9,11 +9,7 @@ export function ReviewsTab() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
 
-  useEffect(() => {
-    fetchReviews();
-  }, [page]);
-
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
       const result = await getMyReviews(page, 10);
@@ -25,7 +21,11 @@ export function ReviewsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   const handleDeleteReview = async (reviewId) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
@@ -33,7 +33,7 @@ export function ReviewsTab() {
         await deleteReview(reviewId);
         toast.success("Review deleted successfully");
         setReviews(reviews.filter((r) => r._id !== reviewId));
-      } catch (error) {
+      } catch {
         toast.error("Failed to delete review");
       }
     }

@@ -22,7 +22,7 @@
     "xss": "^1.0.15"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test/health.test.js",
     "dev": "npx nodemon server.js",
     "start": "node server.js"
   }

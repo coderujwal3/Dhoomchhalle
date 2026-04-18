@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Hotel, Star, AlertCircle } from "lucide-react";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 import StatCard from "../components/Admin/StatCard";
 import DashboardCharts from "../components/Admin/DashboardCharts";
 import RecentActivityFeed from "../components/Admin/RecentActivityFeed";
 import { adminAPI } from "../services/api/adminAPI";
-import { delay } from "lodash";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();

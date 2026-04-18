@@ -177,7 +177,10 @@ exports.getRevenueStats = async (req, res) => {
             createdAt: { $gte: dateFilter }
         });
 
-        const totalRevenue = transportLogs.reduce((sum, log) => sum + (log.amount || 0), 0);
+        const totalRevenue = transportLogs.reduce(
+            (sum, log) => sum + Number(log.actualPrice ?? log.fare ?? 0),
+            0
+        );
         const avgRevenue = transportLogs.length > 0 ? totalRevenue / transportLogs.length : 0;
 
         res.status(200).json({
@@ -218,7 +221,7 @@ exports.getAllUsers = async (req, res) => {
         let query = {};
 
         // Whitelist allowed roles to prevent injection of query operators via role parameter
-        const allowedRoles = ['admin', 'user', 'hotel_owner', 'transport'];
+        const allowedRoles = ['admin', 'traveller', 'verifier'];
         if (typeof role === 'string' && allowedRoles.includes(role)) {
             query.role = role;
         }
@@ -523,7 +526,10 @@ exports.getBookingAnalytics = async (req, res) => {
         };
 
         const logs = await transportLogModel.find();
-        stats.totalRevenue = logs.reduce((sum, log) => sum + (log.actualPrice || 0), 0);
+        stats.totalRevenue = logs.reduce(
+            (sum, log) => sum + Number(log.actualPrice ?? log.fare ?? 0),
+            0
+        );
 
         res.status(200).json({
             success: true,
@@ -624,9 +630,11 @@ exports.rejectReview = async (req, res) => {
         const { reviewId } = req.params;
         const { reason } = req.body;
 
+        const rejectionReason = typeof reason === 'string' ? reason.trim() : '';
+
         const review = await reviewModel.findByIdAndUpdate(
             reviewId,
-            { status: 'rejected', rejectionReason: { $eq: reason } },
+            { status: 'rejected', rejectionReason },
             { returnDocument: 'after' }
         );
 

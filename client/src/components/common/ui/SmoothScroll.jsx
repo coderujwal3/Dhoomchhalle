@@ -1,19 +1,17 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
-
-let lenis = null;
-
-export const getLenis = () => lenis;
+import { clearLenis, setLenis } from "./lenisInstance";
 
 const SmoothScroll = ({ children }) => {
   useEffect(() => {
-    lenis = new Lenis({
+    const lenis = new Lenis({
       duration: 1.2,
       smoothWheel: true,
       smoothTouch: false,
       wheelMultiplier: 1,
       allowNestedScroll: true,
     });
+    setLenis(lenis);
 
     let rafId = 0;
     function raf(time) {
@@ -26,7 +24,7 @@ const SmoothScroll = ({ children }) => {
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
-      lenis = null;
+      clearLenis();
     };
   }, []);
 

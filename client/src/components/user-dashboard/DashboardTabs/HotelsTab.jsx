@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Star, Heart, MapPin, Phone } from "lucide-react";
 import {
@@ -12,11 +12,7 @@ export function HotelsTab() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
 
-  useEffect(() => {
-    fetchFavourites();
-  }, [page]);
-
-  const fetchFavourites = async () => {
+  const fetchFavourites = useCallback(async () => {
     try {
       setLoading(true);
       const result = await getMyFavourites(page, 10);
@@ -28,14 +24,18 @@ export function HotelsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
+
+  useEffect(() => {
+    fetchFavourites();
+  }, [fetchFavourites]);
 
   const handleRemoveFavourite = async (hotelId) => {
     try {
       await removeFavourite(hotelId);
       toast.success("Removed from favorites");
       setHotels(hotels.filter((h) => h.hotelId._id !== hotelId));
-    } catch (error) {
+    } catch {
       toast.error("Failed to remove favorite");
     }
   };

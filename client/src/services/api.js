@@ -91,6 +91,22 @@ export const routeAPI = {
 };
 
 /**
+ * TRANSPORT DIRECTORY ENDPOINTS
+ */
+export const transportAPI = {
+    getTransportTypes: () => apiClient.get(`/transports/types`),
+    getTransportPrices: (params) => apiClient.get(`/transports/prices`, { params }),
+    reportTransportIssue: (data) => apiClient.post(`/transports/reports`, data),
+};
+
+/**
+ * TIMING DIRECTORY ENDPOINTS
+ */
+export const timingAPI = {
+    getTimings: (params) => apiClient.get(`/timings`, { params }),
+};
+
+/**
  * FARE CHECK ENDPOINTS
  */
 export const fareCheckAPI = {

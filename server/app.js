@@ -56,6 +56,9 @@ const transportLogRoutes = require('./modules/transportLog/transportLog.routes')
 const adminRoutes = require('./modules/admin/admin.routes')
 const mapRoutes = require('./modules/map/map.routes')
 const fareCheckRoutes = require('./modules/fareCheck/fareCheck.routes')
+const routeRoutes = require('./modules/route/route.routes')
+const transportRoutes = require('./modules/transport/transport.routes')
+const timingRoutes = require('./modules/timing/timing.routes')
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
@@ -72,6 +75,9 @@ app.use("/api/v1/transport-logs", transportLogRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/fare-checks", fareCheckRoutes);
 app.use("/api/v1", mapRoutes);
+app.use("/api/v1/routes", routeRoutes);
+app.use("/api/v1/transports", transportRoutes);
+app.use("/api/v1/timings", timingRoutes);
 
 // Backward compatibility for existing clients
 app.use("/api/auth", userRoutes);

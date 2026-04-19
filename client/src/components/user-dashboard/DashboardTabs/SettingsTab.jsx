@@ -16,6 +16,7 @@ import {
 } from "../../../services/auth.service";
 import TwoFAModal from "../../../components/modals/TwoFAModal";
 import OTPVerification from "../../../components/auth/OTPVerification";
+import AvatarCropModal from "../../../components/modals/AvatarCropModal";
 
 export function SettingsTab() {
   const TWO_FA_ENABLE_PURPOSE = "enable_2fa";
@@ -26,6 +27,8 @@ export function SettingsTab() {
   const [saving, setSaving] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [cropImageSrc, setCropImageSrc] = useState("");
+  const [showAvatarCropModal, setShowAvatarCropModal] = useState(false);
   const [show2FAModal, setShow2FAModal] = useState(false);
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
@@ -83,6 +86,22 @@ export function SettingsTab() {
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
+
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
+
+  useEffect(() => {
+    return () => {
+      if (cropImageSrc && cropImageSrc.startsWith("blob:")) {
+        URL.revokeObjectURL(cropImageSrc);
+      }
+    };
+  }, [cropImageSrc]);
 
   const waitForConfirmedTwoFactorState = useCallback(
     async (expectedState, maxAttempts = 6, delayMs = 500) => {
@@ -156,14 +175,24 @@ export function SettingsTab() {
       return;
     }
 
-    setSelectedFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setCropImageSrc(objectUrl);
+    setShowAvatarCropModal(true);
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    // Allow selecting the same file again after modal close.
+    e.target.value = "";
+  };
+
+  const handleAvatarCropCancel = () => {
+    setShowAvatarCropModal(false);
+    setCropImageSrc("");
+  };
+
+  const handleAvatarCropApply = async ({ file, previewUrl }) => {
+    setSelectedFile(file);
+    setPreview(previewUrl);
+    setShowAvatarCropModal(false);
+    setCropImageSrc("");
   };
 
   const handleAvatarUpload = async () => {
@@ -387,13 +416,13 @@ export function SettingsTab() {
                 disabled={uploading}
                 className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white font-bold py-2 rounded-lg transition"
               >
-                {uploading ? "Uploading..." : "Upload Avatar"}
+                {uploading ? "Uploading..." : "Upload Cropped Avatar"}
               </button>
             )}
 
             {/* File Type Info */}
             <p className="text-xs text-gray-500 text-center">
-              Supported formats: JPEG, PNG, WebP, GIF (Max 5MB)
+              Supported formats: JPEG, PNG, WebP, GIF (Max 5MB). Cropping is required before upload.
             </p>
           </div>
         </div>
@@ -576,6 +605,13 @@ export function SettingsTab() {
           isLoading={otpLoading}
         />
       )}
+
+      <AvatarCropModal
+        isOpen={showAvatarCropModal}
+        imageSrc={cropImageSrc}
+        onCancel={handleAvatarCropCancel}
+        onApply={handleAvatarCropApply}
+      />
     </div>
   );
 }

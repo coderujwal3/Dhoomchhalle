@@ -6,6 +6,7 @@ import {
   Heart,
   MessageSquare,
   MapPin,
+  Shield,
   Cog,
   TriangleAlert,
 } from "lucide-react";
@@ -14,6 +15,7 @@ import { getSession, logout } from "../services/auth.service";
 import {
   DashboardActions,
   DashboardHeader,
+  DashboardFareChecksTab,
   DashboardProfilePane,
   DashboardReportsTab,
   DashboardReviewsTab,
@@ -134,6 +136,12 @@ function UserDashboard() {
                   label="Transport"
                 />
                 <DashboardTabButton
+                  active={activeTab === "fare-checks"}
+                  onClick={() => setActiveTab("fare-checks")}
+                  icon={Shield}
+                  label="Fare Checks"
+                />
+                <DashboardTabButton
                   active={activeTab === "settings"}
                   onClick={() => setActiveTab("settings")}
                   icon={Cog}
@@ -153,6 +161,7 @@ function UserDashboard() {
                 {activeTab === "hotels" && <DashboardSavedHotelsTab />}
                 {activeTab === "reviews" && <DashboardReviewsTab />}
                 {activeTab === "transport" && <DashboardTransportTab />}
+                {activeTab === "fare-checks" && <DashboardFareChecksTab />}
                 {activeTab === "settings" && <DashboardSettingsTab />}
                 {activeTab === "reports" && <DashboardReportsTab />}
               </div>

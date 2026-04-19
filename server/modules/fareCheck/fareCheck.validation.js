@@ -81,9 +81,62 @@ const fareHotspotsValidation = [
     .withMessage("minRisk must be one of low, medium, high"),
 ];
 
+const myFareChecksValidation = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("page must be a positive integer")
+    .toInt(),
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("limit must be between 1 and 100")
+    .toInt(),
+  query("riskLevel")
+    .optional()
+    .isIn(["low", "medium", "high"])
+    .withMessage("riskLevel must be one of low, medium, high"),
+];
+
+const hotspotActionValidation = [
+  body("routeKey")
+    .notEmpty()
+    .withMessage("routeKey is required")
+    .trim()
+    .isLength({ min: 3, max: 260 })
+    .withMessage("routeKey must be between 3 and 260 characters"),
+  body("transportType")
+    .notEmpty()
+    .withMessage("transportType is required")
+    .isIn(transportTypes)
+    .withMessage("Invalid transportType"),
+  body("status")
+    .notEmpty()
+    .withMessage("status is required")
+    .isIn([
+      "monitoring",
+      "investigating",
+      "enforcement-requested",
+      "resolved",
+      "ignored",
+    ])
+    .withMessage("Invalid status"),
+  body("priority")
+    .optional()
+    .isIn(["low", "medium", "high", "critical"])
+    .withMessage("Invalid priority"),
+  body("notes")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("notes must be less than or equal to 500 characters"),
+];
+
 module.exports = {
   evaluateFareValidation,
   reportFareCheckValidation,
   fareHotspotsValidation,
+  myFareChecksValidation,
+  hotspotActionValidation,
   transportTypes,
 };

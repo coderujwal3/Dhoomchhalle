@@ -1,6 +1,9 @@
 const FareCheckLog = require("./fareCheck.model");
+const FareHotspotAction = require("./fareHotspotAction.model");
 const TransportLog = require("../transportLog/transportLog.model");
 const { calculateFare } = require("../map/map.service");
+const Place = require("../map/place.model");
+const Hotel = require("../hotel/hotel.model");
 
 const TRANSPORT_TO_MAP_MODE = {
   "petrol-auto": "auto",
@@ -41,6 +44,25 @@ function normalizeLocation(value) {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, " ");
+}
+
+function severityScore({ checks, highRiskCount, reportedCount, avgOverchargePercent }) {
+  return roundCurrency(
+    Number(checks || 0) * 0.5 +
+      Number(highRiskCount || 0) * 2 +
+      Number(reportedCount || 0) * 1.25 +
+      Number(avgOverchargePercent || 0) * 0.1
+  );
+}
+
+function suggestedAdminAction({ checks, highRiskCount, avgOverchargePercent }) {
+  if (Number(highRiskCount) >= 5 || Number(avgOverchargePercent) >= 45) {
+    return "enforcement-requested";
+  }
+  if (Number(highRiskCount) >= 2 || Number(checks) >= 8) {
+    return "investigating";
+  }
+  return "monitoring";
 }
 
 function toCanonicalRouteKey(fromLocation, toLocation) {
@@ -320,6 +342,83 @@ function risksFromMinRisk(minRisk = "medium") {
   return ["medium", "high"];
 }
 
+async function lookupPlaceCoordinates(locationName) {
+  const safeName = String(locationName || "").trim();
+  if (!safeName) return null;
+
+  const escaped = escapeRegex(safeName);
+  const exactPattern = new RegExp(`^${escaped}$`, "i");
+
+  const place = await Place.findOne({ name: exactPattern })
+    .select("location.coordinates")
+    .lean()
+    .exec();
+
+  const placeCoordinates = place?.location?.coordinates || [];
+  if (
+    Array.isArray(placeCoordinates) &&
+    placeCoordinates.length === 2 &&
+    Number.isFinite(Number(placeCoordinates[0])) &&
+    Number.isFinite(Number(placeCoordinates[1]))
+  ) {
+    return {
+      lng: Number(placeCoordinates[0]),
+      lat: Number(placeCoordinates[1]),
+      source: "place",
+    };
+  }
+
+  const hotel = await Hotel.findOne({
+    $or: [{ name: exactPattern }, { location: exactPattern }],
+  })
+    .select("latitude longitude")
+    .lean()
+    .exec();
+
+  if (
+    hotel &&
+    Number.isFinite(Number(hotel.latitude)) &&
+    Number.isFinite(Number(hotel.longitude))
+  ) {
+    return {
+      lat: Number(hotel.latitude),
+      lng: Number(hotel.longitude),
+      source: "hotel",
+    };
+  }
+
+  return null;
+}
+
+async function enrichHotspotsWithGeo(hotspots) {
+  const coordinateCache = new Map();
+
+  async function getCoords(locationName) {
+    const key = normalizeLocation(locationName);
+    if (!key) return null;
+    if (coordinateCache.has(key)) return coordinateCache.get(key);
+
+    const resolved = await lookupPlaceCoordinates(locationName);
+    coordinateCache.set(key, resolved);
+    return resolved;
+  }
+
+  return Promise.all(
+    hotspots.map(async (spot) => {
+      const [fromCoordinates, toCoordinates] = await Promise.all([
+        getCoords(spot.fromLocation),
+        getCoords(spot.toLocation),
+      ]);
+
+      return {
+        ...spot,
+        fromCoordinates,
+        toCoordinates,
+      };
+    })
+  );
+}
+
 async function getFareRiskHotspots({ limit = 20, days = 30, minRisk = "medium" }) {
   const sinceDate = new Date();
   sinceDate.setDate(sinceDate.getDate() - Number(days || 30));
@@ -368,7 +467,7 @@ async function getFareRiskHotspots({ limit = 20, days = 30, minRisk = "medium" }
     { $limit: Math.max(1, Math.min(Number(limit || 20), 50)) },
   ]);
 
-  return hotspots.map((spot) => ({
+  const normalizedHotspots = hotspots.map((spot) => ({
     routeKey: spot._id.routeKey,
     transportType: spot._id.transportType,
     routeLabel: spot.routeLabel,
@@ -382,12 +481,154 @@ async function getFareRiskHotspots({ limit = 20, days = 30, minRisk = "medium" }
     avgExpectedMax: roundCurrency(spot.avgExpectedMax || 0),
     avgOverchargeAmount: roundCurrency(spot.avgOverchargeAmount || 0),
     avgOverchargePercent: roundCurrency(spot.avgOverchargePercent || 0),
+    severityScore: severityScore({
+      checks: spot.checks,
+      highRiskCount: spot.highRiskCount,
+      reportedCount: spot.reportedCount,
+      avgOverchargePercent: spot.avgOverchargePercent,
+    }),
+    suggestedAction: suggestedAdminAction({
+      checks: spot.checks,
+      highRiskCount: spot.highRiskCount,
+      avgOverchargePercent: spot.avgOverchargePercent,
+    }),
     latestAt: spot.latestAt,
   }));
+
+  if (!normalizedHotspots.length) {
+    return [];
+  }
+
+  const actions = await FareHotspotAction.find({
+    $or: normalizedHotspots.map((spot) => ({
+      canonicalRouteKey: spot.routeKey,
+      transportType: spot.transportType,
+    })),
+  })
+    .populate("assignedTo", "name email")
+    .populate("updatedBy", "name email")
+    .lean()
+    .exec();
+
+  const actionMap = new Map(
+    actions.map((action) => [
+      `${action.canonicalRouteKey}::${action.transportType}`,
+      {
+        status: action.status,
+        priority: action.priority,
+        notes: action.notes,
+        assignedTo: action.assignedTo || null,
+        updatedBy: action.updatedBy || null,
+        updatedAt: action.updatedAt,
+        resolvedAt: action.resolvedAt,
+      },
+    ])
+  );
+
+  const hotspotsWithAction = normalizedHotspots.map((spot) => ({
+    ...spot,
+    action:
+      actionMap.get(`${spot.routeKey}::${spot.transportType}`) || {
+        status: "monitoring",
+        priority: "medium",
+        notes: "",
+        assignedTo: null,
+        updatedBy: null,
+        updatedAt: null,
+        resolvedAt: null,
+      },
+  }));
+
+  return enrichHotspotsWithGeo(hotspotsWithAction);
+}
+
+async function getUserFareCheckHistory({
+  userId,
+  page = 1,
+  limit = 10,
+  riskLevel,
+}) {
+  const safePage = Math.max(1, Number(page) || 1);
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 10, 100));
+  const skip = (safePage - 1) * safeLimit;
+
+  const query = { userId };
+  if (["low", "medium", "high"].includes(riskLevel)) {
+    query.riskLevel = riskLevel;
+  }
+
+  const [records, total] = await Promise.all([
+    FareCheckLog.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(safeLimit)
+      .lean()
+      .exec(),
+    FareCheckLog.countDocuments(query),
+  ]);
+
+  return {
+    records,
+    pagination: {
+      total,
+      page: safePage,
+      pages: Math.ceil(total / safeLimit),
+      limit: safeLimit,
+    },
+  };
+}
+
+async function upsertHotspotAction(payload) {
+  const routeKey = String(payload.routeKey || "").trim();
+  const transportType = String(payload.transportType || "").trim();
+
+  const existing = await FareCheckLog.findOne({
+    canonicalRouteKey: routeKey,
+    transportType,
+  })
+    .select("canonicalRouteKey transportType")
+    .lean()
+    .exec();
+
+  if (!existing) {
+    throw new Error("Hotspot route not found");
+  }
+
+  const actionPayload = {
+    status: payload.status,
+    priority: payload.priority || "medium",
+    notes: String(payload.notes || "").trim(),
+    assignedTo: payload.assignedTo || null,
+    updatedBy: payload.updatedBy,
+    resolvedAt: payload.status === "resolved" ? new Date() : null,
+  };
+
+  if (payload.lastRiskSnapshot && typeof payload.lastRiskSnapshot === "object") {
+    actionPayload.lastRiskSnapshot = payload.lastRiskSnapshot;
+  }
+
+  return FareHotspotAction.findOneAndUpdate(
+    {
+      canonicalRouteKey: routeKey,
+      transportType,
+    },
+    { $set: actionPayload },
+    {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    }
+  )
+    .populate("assignedTo", "name email")
+    .populate("updatedBy", "name email")
+    .lean()
+    .exec();
 }
 
 module.exports = {
   evaluateFareCheck,
   reportFareCheck,
   getFareRiskHotspots,
+  getUserFareCheckHistory,
+  upsertHotspotAction,
 };

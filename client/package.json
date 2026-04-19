@@ -27,6 +27,7 @@
     "react": "^19.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^19.2.0",
+    "react-easy-crop": "^5.5.7",
     "react-hot-toast": "^2.6.0",
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^4.1.3",

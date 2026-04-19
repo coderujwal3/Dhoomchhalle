@@ -1,34 +1,19 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getLenis } from "./ui/lenisInstance";
 import { Link, useNavigate } from "react-router-dom";
 import { logout as logoutRequest } from "../../services/auth.service";
 
-const scrollLinks = [
-  { label: "Home", id: "home" },
-  { label: "Places", id: "places" },
-  { label: "Food", id: "food" },
-  { label: "Transport", id: "transport" },
-  { label: "Guides", id: "guides" },
-];
+const commonRoutes = [
+  { to: "/", label: "Home" },
+  { to: "/hotels", label: "Hotels" },
+  { to: "/timings", label: "Timings" },
+  { to: "/route-planner", label: "Route Planner" },
+  { to: "/transport", label: "Transport" },
+  { to: "/fare-check", label: "Fare Check" },
+]
 
 const routeBtnClass = "bg-red-600 text-white/90 p-2 rounded-md text-center hover:border-2 hover:border-amber-500";
-
-const scrollToSection = (id) => {
-  const lenis = getLenis();
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (!lenis) {
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
-    return;
-  }
-  lenis.scrollTo(el, {
-    offset: -80,
-    duration: 1.5,
-    easing: (t) => 1 - Math.pow(1 - t, 3),
-  });
-};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -93,58 +78,34 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
+          {commonRoutes.map((route,id)=> {
+            return (
+              <motion.div
+                key={route.label}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  delay: (0.4 * (id+1)),
+                  duration: 0.4,
+                }}
+              >
+                <Link
+                  to={route.to}
+                  onClick={() => setIsOpen(false)}
+                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
+                >
+                  {route.label}
+                </Link>
+              </motion.div>
+            )
+          })}
           {isAuthed ? (
             <>
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
-                  duration: 0.6,
-                }}
-              >
-                <Link
-                  to="/hotels"
-                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-                >
-                  Hotels
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
-                  duration: 0.6,
-                }}
-              >
-                <Link
-                  to="/route-planner"
-                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-                >
-                  Route Map
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
-                  duration: 0.6,
-                }}
-              >
-                <Link
-                  to="/fare-check"
-                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-                >
-                  Fare Check
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  delay: 2.5,
                   duration: 0.6,
                 }}
               >
@@ -160,7 +121,7 @@ const Navbar = () => {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: 0.1 * (scrollLinks.length + 2) + 0.8,
+                  delay: 2.75,
                   duration: 0.6,
                 }}
                 onClick={handleLogout}
@@ -171,57 +132,11 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              {scrollLinks.map((link, i) => (
-                <motion.a
-                  key={link.id}
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * i + 0.8, duration: 0.6 }}
-                  className={`font-sans text-lg font-medium transition-all hover:bg-red-600 hover:text-white/90 hover:border-2 hover:border-amber-500 py-2 px-3 rounded-md cursor-pointer relative group ${navTextClass} duration-300`}
-                  href={`#${link.id}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(link.id);
-                  }}
-                >
-                  {link.label}
-                </motion.a>
-              ))}
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
-                  duration: 0.6,
-                }}
-              >
-                <Link
-                  to="/route-planner"
-                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-                >
-                  Route Map
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
-                  duration: 0.6,
-                }}
-              >
-                <Link
-                  to="/fare-check"
-                  className={`font-sans text-lg ${routeBtnClass} font-medium transition-colors ${navTextClass}`}
-                >
-                  Fare Check
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: 0.1 * (scrollLinks.length + 1) + 0.8,
+                  delay: 2.5,
                   duration: 0.6,
                 }}
               >
@@ -255,68 +170,28 @@ const Navbar = () => {
             className="md:hidden bg-background/98 backdrop-blur-md border-t border-border overflow-hidden"
           >
             <div className="container mx-auto px-4 py-4 flex flex-col gap-3">
-              {scrollLinks.map((link, i) => (
-                <motion.a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(link.id);
-                    setIsOpen(false);
-                  }}
+              {commonRoutes.map((route, i) => (
+                <motion.div
+                  key={route.label}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors"
                 >
-                  {link.label}
-                </motion.a>
+                  <Link
+                    to={route.to}
+                    onClick={() => setIsOpen(false)}
+                    className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
+                  >
+                    {route.label}
+                  </Link>
+                </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: scrollLinks.length * 0.05 }}
-              >
-                <Link
-                  to="/hotels"
-                  onClick={() => setIsOpen(false)}
-                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
-                >
-                  Hotels
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: (scrollLinks.length + 1) * 0.05 }}
-              >
-                <Link
-                  to="/route-planner"
-                  onClick={() => setIsOpen(false)}
-                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
-                >
-                  Route Map
-                </Link>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: (scrollLinks.length + 2) * 0.05 }}
-              >
-                <Link
-                  to="/fare-check"
-                  onClick={() => setIsOpen(false)}
-                  className="font-sans text-base font-medium text-gray-900 py-2 hover:text-orange-600/60 transition-colors block"
-                >
-                  Fare Check
-                </Link>
-              </motion.div>
               {isAuthed ? (
                 <>
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 3) * 0.05 }}
+                    transition={{ delay: commonRoutes.length * 0.05 }}
                   >
                     <Link
                       to="/dashboard"
@@ -330,7 +205,7 @@ const Navbar = () => {
                     type="button"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 4) * 0.05 }}
+                    transition={{ delay: (commonRoutes.length + 1) * 0.05 }}
                     onClick={handleLogout}
                     className="font-sans text-base font-medium text-left text-gray-900 py-2 hover:text-orange-600/60 duration-300 transition-colors"
                   >
@@ -342,7 +217,7 @@ const Navbar = () => {
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 3) * 0.05 }}
+                    transition={{ delay: commonRoutes.length * 0.05 }}
                   >
                     <Link
                       to="/register"
@@ -355,7 +230,7 @@ const Navbar = () => {
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (scrollLinks.length + 4) * 0.05 }}
+                    transition={{ delay: (commonRoutes.length + 1) * 0.05 }}
                   >
                     <Link
                       to="/login"

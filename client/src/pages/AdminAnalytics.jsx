@@ -13,8 +13,34 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { MapContainer, TileLayer, CircleMarker, Polyline, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import toast from "react-hot-toast";
 import { adminAPI } from "../services/api/adminAPI";
+
+const DEFAULT_CENTER = [25.3176, 82.9739];
+
+const HOTSPOT_STATUSES = [
+  "monitoring",
+  "investigating",
+  "enforcement-requested",
+  "resolved",
+  "ignored",
+];
+
+const HOTSPOT_PRIORITIES = ["low", "medium", "high", "critical"];
+
+function hotspotKey(spot) {
+  return `${spot.routeKey}::${spot.transportType}`;
+}
+
+function statusBadgeClass(status) {
+  if (status === "resolved") return "bg-emerald-100 text-emerald-800";
+  if (status === "enforcement-requested") return "bg-rose-100 text-rose-800";
+  if (status === "investigating") return "bg-amber-100 text-amber-800";
+  if (status === "ignored") return "bg-slate-200 text-slate-700";
+  return "bg-blue-100 text-blue-800";
+}
 
 const AdminAnalytics = () => {
   const [userAnalytics, setUserAnalytics] = useState([]);
@@ -24,6 +50,8 @@ const AdminAnalytics = () => {
   const [fareHotspots, setFareHotspots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);
+  const [actionDrafts, setActionDrafts] = useState({});
+  const [savingActionKey, setSavingActionKey] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -46,7 +74,20 @@ const AdminAnalytics = () => {
         setHotelAnalytics(hotelRes.data.data.dailyData);
         setBookingAnalytics(bookingRes.data.data);
         setReportsAnalytics(reportsRes.data.data);
-        setFareHotspots(fareHotspotRes?.data?.data || []);
+        const hotspots = fareHotspotRes?.data?.data || [];
+        setFareHotspots(hotspots);
+        setActionDrafts(
+          Object.fromEntries(
+            hotspots.map((spot) => [
+              hotspotKey(spot),
+              {
+                status: spot.action?.status || spot.suggestedAction || "monitoring",
+                priority: spot.action?.priority || "medium",
+                notes: spot.action?.notes || "",
+              },
+            ])
+          )
+        );
         setLoading(false);
       } catch (error) {
         if (!cancelled) {
@@ -60,6 +101,79 @@ const AdminAnalytics = () => {
       cancelled = true;
     };
   }, [days]);
+
+  const geoHotspots = fareHotspots.filter(
+    (spot) => spot.fromCoordinates?.lat && spot.fromCoordinates?.lng
+  );
+
+  const hotspotMapCenter = geoHotspots.length
+    ? [
+        geoHotspots.reduce((sum, spot) => sum + Number(spot.fromCoordinates.lat), 0) /
+          geoHotspots.length,
+        geoHotspots.reduce((sum, spot) => sum + Number(spot.fromCoordinates.lng), 0) /
+          geoHotspots.length,
+      ]
+    : DEFAULT_CENTER;
+
+  const updateActionDraft = (spot, key, value) => {
+    const rowKey = hotspotKey(spot);
+    setActionDrafts((prev) => ({
+      ...prev,
+      [rowKey]: {
+        ...(prev[rowKey] || {
+          status: spot.action?.status || spot.suggestedAction || "monitoring",
+          priority: spot.action?.priority || "medium",
+          notes: spot.action?.notes || "",
+        }),
+        [key]: value,
+      },
+    }));
+  };
+
+  const saveHotspotAction = async (spot) => {
+    const rowKey = hotspotKey(spot);
+    const draft = actionDrafts[rowKey] || {};
+
+    try {
+      setSavingActionKey(rowKey);
+      await adminAPI.updateFareHotspotAction({
+        routeKey: spot.routeKey,
+        transportType: spot.transportType,
+        status: draft.status || "monitoring",
+        priority: draft.priority || "medium",
+        notes: draft.notes || "",
+        lastRiskSnapshot: {
+          checks: spot.checks,
+          highRiskCount: spot.highRiskCount,
+          mediumRiskCount: spot.mediumRiskCount,
+          reportedCount: spot.reportedCount,
+          avgOverchargePercent: spot.avgOverchargePercent,
+        },
+      });
+      toast.success("Hotspot action updated");
+
+      setFareHotspots((prev) =>
+        prev.map((item) =>
+          hotspotKey(item) === rowKey
+            ? {
+                ...item,
+                action: {
+                  ...(item.action || {}),
+                  status: draft.status || "monitoring",
+                  priority: draft.priority || "medium",
+                  notes: draft.notes || "",
+                  updatedAt: new Date().toISOString(),
+                },
+              }
+            : item
+        )
+      );
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update hotspot action");
+    } finally {
+      setSavingActionKey("");
+    }
+  };
 
   return (
     <div className="p-8 bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen">
@@ -216,48 +330,207 @@ const AdminAnalytics = () => {
             </div>
           </div>
 
-          <div className="bg-slate-700 rounded-lg p-6 ring-1 ring-slate-600">
-            <h3 className="text-white font-semibold mb-4">
-              Fare Overcharge Hotspots
-            </h3>
+          <div className="bg-slate-700 rounded-lg p-6 ring-1 ring-slate-600 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-white font-semibold">Fare Overcharge Hotspots</h3>
+              <p className="text-xs text-slate-300">
+                {fareHotspots.length} hotspots in last {days} days
+              </p>
+            </div>
+
             {!fareHotspots.length ? (
               <p className="text-slate-300 text-sm">
                 No medium/high-risk fare hotspots found in this window.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                  <thead>
-                    <tr className="text-slate-300 border-b border-slate-600">
-                      <th className="py-2 pr-3">Route</th>
-                      <th className="py-2 pr-3">Transport</th>
-                      <th className="py-2 pr-3">Checks</th>
-                      <th className="py-2 pr-3">High Risk</th>
-                      <th className="py-2 pr-3">Reported</th>
-                      <th className="py-2 pr-3">Avg Overcharge</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {fareHotspots.map((spot) => (
-                      <tr
-                        key={`${spot.routeKey}-${spot.transportType}`}
-                        className="border-b border-slate-600/70 text-slate-100"
-                      >
-                        <td className="py-2 pr-3">{spot.routeLabel}</td>
-                        <td className="py-2 pr-3 capitalize">
-                          {spot.transportType}
-                        </td>
-                        <td className="py-2 pr-3">{spot.checks}</td>
-                        <td className="py-2 pr-3">{spot.highRiskCount}</td>
-                        <td className="py-2 pr-3">{spot.reportedCount}</td>
-                        <td className="py-2 pr-3">
-                          {spot.avgOverchargePercent}%
-                        </td>
+              <>
+                <div className="rounded-lg overflow-hidden border border-slate-600">
+                  <div className="h-88 w-full">
+                    <MapContainer
+                      center={hotspotMapCenter}
+                      zoom={12}
+                      scrollWheelZoom={true}
+                      className="h-full w-full"
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      {geoHotspots.map((spot) => {
+                        const from = [spot.fromCoordinates.lat, spot.fromCoordinates.lng];
+                        const hasTo = Boolean(
+                          spot.toCoordinates?.lat && spot.toCoordinates?.lng
+                        );
+                        const to = hasTo
+                          ? [spot.toCoordinates.lat, spot.toCoordinates.lng]
+                          : null;
+
+                        return (
+                          <React.Fragment key={`map-${hotspotKey(spot)}`}>
+                            <CircleMarker
+                              center={from}
+                              radius={Math.max(6, Math.min(16, Number(spot.highRiskCount || 1) * 2))}
+                              pathOptions={{
+                                color: "#ef4444",
+                                fillColor: "#f97316",
+                                fillOpacity: 0.75,
+                              }}
+                            >
+                              <Popup>
+                                <p className="font-semibold">{spot.routeLabel}</p>
+                                <p>High-risk checks: {spot.highRiskCount}</p>
+                                <p>Avg overcharge: {spot.avgOverchargePercent}%</p>
+                                <p>Status: {spot.action?.status || "monitoring"}</p>
+                              </Popup>
+                            </CircleMarker>
+                            {hasTo ? (
+                              <Polyline
+                                positions={[from, to]}
+                                pathOptions={{
+                                  color: "#f97316",
+                                  weight: 3,
+                                  opacity: 0.65,
+                                  dashArray: "6 8",
+                                }}
+                              />
+                            ) : null}
+                          </React.Fragment>
+                        );
+                      })}
+                    </MapContainer>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead>
+                      <tr className="text-slate-300 border-b border-slate-600">
+                        <th className="py-2 pr-3">Route</th>
+                        <th className="py-2 pr-3">Checks</th>
+                        <th className="py-2 pr-3">High Risk</th>
+                        <th className="py-2 pr-3">Avg Overcharge</th>
+                        <th className="py-2 pr-3">Suggested</th>
+                        <th className="py-2 pr-3">Status</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {fareHotspots.map((spot) => (
+                        <tr
+                          key={`summary-${hotspotKey(spot)}`}
+                          className="border-b border-slate-600/70 text-slate-100"
+                        >
+                          <td className="py-2 pr-3">
+                            <p>{spot.routeLabel}</p>
+                            <p className="text-xs text-slate-300 capitalize">
+                              {spot.transportType}
+                            </p>
+                          </td>
+                          <td className="py-2 pr-3">{spot.checks}</td>
+                          <td className="py-2 pr-3">{spot.highRiskCount}</td>
+                          <td className="py-2 pr-3">{spot.avgOverchargePercent}%</td>
+                          <td className="py-2 pr-3 capitalize">{spot.suggestedAction}</td>
+                          <td className="py-2 pr-3">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${statusBadgeClass(
+                                spot.action?.status
+                              )}`}
+                            >
+                              {spot.action?.status || "monitoring"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="bg-slate-800/70 rounded-lg p-4 ring-1 ring-slate-600">
+                  <h4 className="text-white font-semibold mb-3">
+                    Action Workflow for Repeated Overcharge Routes
+                  </h4>
+                  <div className="space-y-3">
+                    {fareHotspots.map((spot) => {
+                      const rowKey = hotspotKey(spot);
+                      const draft = actionDrafts[rowKey] || {
+                        status: spot.action?.status || spot.suggestedAction || "monitoring",
+                        priority: spot.action?.priority || "medium",
+                        notes: spot.action?.notes || "",
+                      };
+                      const repeatedRisk =
+                        Number(spot.checks) >= 4 || Number(spot.highRiskCount) >= 2;
+
+                      return (
+                        <div
+                          key={`workflow-${rowKey}`}
+                          className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center border border-slate-600 rounded-lg p-3 text-slate-100"
+                        >
+                          <div className="md:col-span-4">
+                            <p className="font-medium text-sm">{spot.routeLabel}</p>
+                            <p className="text-xs text-slate-300">
+                              Severity {spot.severityScore} | {spot.highRiskCount} high-risk flags
+                            </p>
+                            {repeatedRisk ? (
+                              <p className="text-xs text-amber-300 mt-1">
+                                Repeated overcharge route requires admin action.
+                              </p>
+                            ) : null}
+                          </div>
+                          <div className="md:col-span-2">
+                            <select
+                              value={draft.status}
+                              onChange={(event) =>
+                                updateActionDraft(spot, "status", event.target.value)
+                              }
+                              className="w-full rounded bg-slate-700 border border-slate-600 px-2 py-2 text-xs capitalize"
+                            >
+                              {HOTSPOT_STATUSES.map((status) => (
+                                <option key={status} value={status} className="capitalize">
+                                  {status}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="md:col-span-2">
+                            <select
+                              value={draft.priority}
+                              onChange={(event) =>
+                                updateActionDraft(spot, "priority", event.target.value)
+                              }
+                              className="w-full rounded bg-slate-700 border border-slate-600 px-2 py-2 text-xs capitalize"
+                            >
+                              {HOTSPOT_PRIORITIES.map((priority) => (
+                                <option key={priority} value={priority} className="capitalize">
+                                  {priority}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="md:col-span-3">
+                            <input
+                              value={draft.notes}
+                              onChange={(event) =>
+                                updateActionDraft(spot, "notes", event.target.value)
+                              }
+                              placeholder="Add admin note"
+                              className="w-full rounded bg-slate-700 border border-slate-600 px-2 py-2 text-xs"
+                            />
+                          </div>
+                          <div className="md:col-span-1">
+                            <button
+                              type="button"
+                              onClick={() => saveHotspotAction(spot)}
+                              disabled={savingActionKey === rowKey}
+                              className="w-full rounded bg-orange-600 hover:bg-orange-700 px-2 py-2 text-xs font-semibold disabled:opacity-60"
+                            >
+                              {savingActionKey === rowKey ? "..." : "Save"}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
             )}
           </div>
 

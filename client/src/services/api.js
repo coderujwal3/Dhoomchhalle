@@ -113,4 +113,6 @@ export const fareCheckAPI = {
     evaluateFare: (data) => apiClient.post(`/fare-checks/evaluate`, data),
     reportFareCheck: (data) => apiClient.post(`/fare-checks/report`, data),
     getFareHotspots: (params) => apiClient.get(`/fare-checks/hotspots`, { params }),
+    getMyFareChecks: (params) => apiClient.get(`/fare-checks/me`, { params }),
+    upsertHotspotAction: (data) => apiClient.post(`/fare-checks/hotspots/action`, data),
 };

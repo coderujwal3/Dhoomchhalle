@@ -39,6 +39,8 @@ export const adminAPI = {
     apiClient.get(
       `/fare-checks/hotspots?days=${days}&limit=${limit}&minRisk=${minRisk}`
     ),
+  updateFareHotspotAction: (data) =>
+    apiClient.post(`/fare-checks/hotspots/action`, data),
 
   // Reviews
   getPendingReviews: (page = 1, limit = 20) =>

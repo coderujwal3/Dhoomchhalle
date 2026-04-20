@@ -245,14 +245,14 @@ npm run dev
 ## Website landing page
 <img width="1919" height="1019" alt="image" src="https://github.com/user-attachments/assets/64dbee39-b5a6-40bd-8546-4c5ebd34f9bf" />
 
-## User Profile QR Code - (Scan to view my profile)
-<img width="380" height="329" alt="image" src="https://github.com/user-attachments/assets/fada03bb-f03c-47cf-ad16-e80b5e762af3" />
+## User Profile QR Code
+<img width="533" height="519" alt="image" src="https://github.com/user-attachments/assets/a2bc7e0c-9068-4e5f-b4e9-9499e1cafa0a" />
 
 ## User Dashboard Look
-<img width="1919" height="1065" alt="image" src="https://github.com/user-attachments/assets/c4937e0c-8ebb-4ec5-bee1-1be1b071c83b" />
+<img width="1919" height="1054" alt="image" src="https://github.com/user-attachments/assets/9237e127-ea12-4ad4-9fc8-1e4d8c79ac1f" />
 
 ## User Profile Look
-<img width="1919" height="1053" alt="image" src="https://github.com/user-attachments/assets/3479e0b6-ccf5-4ea2-8946-740f9006bce1" />
+<img width="1919" height="1046" alt="image" src="https://github.com/user-attachments/assets/c6e5c0b0-af0d-41c9-979d-c7857509b0e9" />
 
 
 # Mobile App Dhoomchhalle

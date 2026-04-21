@@ -551,10 +551,12 @@ async function getUserFareCheckHistory({
   const safePage = Math.max(1, Number(page) || 1);
   const safeLimit = Math.max(1, Math.min(Number(limit) || 10, 100));
   const skip = (safePage - 1) * safeLimit;
+  const normalizedRiskLevel =
+    typeof riskLevel === "string" ? riskLevel.trim().toLowerCase() : "";
 
   const query = { userId };
-  if (["low", "medium", "high"].includes(riskLevel)) {
-    query.riskLevel = riskLevel;
+  if (["low", "medium", "high"].includes(normalizedRiskLevel)) {
+    query.riskLevel = { $eq: normalizedRiskLevel };
   }
 
   const [records, total] = await Promise.all([

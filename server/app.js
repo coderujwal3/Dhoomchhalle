@@ -28,8 +28,8 @@ app.use(express.json({ limit: "5mb" }))
 app.use(express.urlencoded({ extended: true, limit: "5mb" }))
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
-  // origin: "http://localhost:5173",
+  // origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  origin: "http://localhost:5173",
   credentials: true
 }));
 
@@ -59,6 +59,7 @@ const fareCheckRoutes = require('./modules/fareCheck/fareCheck.routes')
 const routeRoutes = require('./modules/route/route.routes')
 const transportRoutes = require('./modules/transport/transport.routes')
 const timingRoutes = require('./modules/timing/timing.routes')
+const chatbotRoutes = require('./modules/chatbot/chatbot.routes')
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
@@ -78,6 +79,8 @@ app.use("/api/v1", mapRoutes);
 app.use("/api/v1/routes", routeRoutes);
 app.use("/api/v1/transports", transportRoutes);
 app.use("/api/v1/timings", timingRoutes);
+app.use("/api/v1/chatbot", chatbotRoutes);
+app.use("/api/v1/chat", chatbotRoutes);
 
 // Backward compatibility for existing clients
 app.use("/api/auth", userRoutes);

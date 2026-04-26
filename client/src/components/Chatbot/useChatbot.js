@@ -9,7 +9,18 @@ const API_BASE_URL = (
 ).replace(/\/$/, "");
 
 function createId(prefix = "msg") {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const cryptoObj = globalThis.crypto;
+  if (cryptoObj?.getRandomValues) {
+    const bytes = new Uint8Array(6);
+    cryptoObj.getRandomValues(bytes);
+    const randomPart = Array.from(bytes, (b) =>
+      b.toString(16).padStart(2, "0")
+    ).join("");
+    return `${prefix}-${Date.now()}-${randomPart}`;
+  }
+
+  const fallback = Date.now().toString(36).slice(-8);
+  return `${prefix}-${Date.now()}-${fallback}`;
 }
 
 function getSessionId() {

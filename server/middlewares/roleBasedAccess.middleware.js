@@ -26,7 +26,7 @@ async function adminOnlyMiddleware(req, res, next) {
     try {
         const decoded_token = jwt.verify(token, process.env.JWT_SECRET_KEY);
         const user = await userModel.findById(decoded_token.userId).select("+role");
-        
+
         if (!user) {
             res.clearCookie("token", { httpOnly: true, sameSite: "lax", path: "/" });
             return res.status(401).json({
@@ -121,6 +121,30 @@ function authorizeRole(...allowedRoles) {
  */
 function authorize(requiredPermissions) {
     const rolePermissions = {
+        super_admin: [
+            'users.manage',
+            'users.delete',
+            'users.suspend',
+            'users.create',
+            'roles.assign',
+            'content.moderate',
+            'content.approve',
+            'content.reject',
+            'reports.view',
+            'reports.resolve',
+            'disputes.resolve',
+            'hotels.manage',
+            'hotels.delete',
+            'transport.manage',
+            'transport.delete',
+            'analytics.view',
+            'analytics.all',
+            'finance.view',
+            'finance.manage',
+            'settings.manage',
+            'audit.view',
+            'compliance.full'
+        ],
         admin: [
             'users.manage',
             'users.delete',
@@ -130,18 +154,55 @@ function authorize(requiredPermissions) {
             'content.reject',
             'reports.view',
             'reports.resolve',
+            'disputes.resolve',
+            'hotels.manage',
+            'hotels.delete',
+            'transport.manage',
+            'transport.delete',
             'analytics.view',
-            'settings.manage'
+            'finance.view',
+            'settings.manage',
+            'audit.view',
+            'compliance.full'
         ],
         verifier: [
             'content.moderate',
             'content.approve',
             'content.reject',
-            'reports.view'
+            'reports.view',
+            'analytics.view'
+        ],
+        compliance_officer: [
+            'reports.view',
+            'reports.resolve',
+            'disputes.resolve',
+            'users.suspend',
+            'analytics.view',
+            'compliance.investigate',
+            'audit.view'
+        ],
+        hotel_manager: [
+            'hotels.manage_own',
+            'bookings.view_own',
+            'reviews.respond',
+            'analytics.view_own',
+            'inventory.manage'
+        ],
+        transport_provider: [
+            'transport.manage_own',
+            'transport.pricing',
+            'bookings.view_own',
+            'analytics.view_own',
+            'scheduling.manage'
         ],
         traveller: [
             'bookings.view',
-            'reviews.write'
+            'bookings.create',
+            'reviews.write',
+            'reviews.own_manage',
+            'favorites.manage',
+            'profile.view_own',
+            'profile.edit_own'
         ]
     };
 
@@ -171,7 +232,7 @@ function authorize(requiredPermissions) {
             }
 
             const userPermissions = rolePermissions[user.role] || [];
-            const hasPermission = requiredPermissions.every(perm => 
+            const hasPermission = requiredPermissions.every(perm =>
                 userPermissions.includes(perm)
             );
 

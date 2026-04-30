@@ -6,6 +6,7 @@ import {
   CornerDownRightIcon,
   MapPinIcon,
   PhoneCallIcon,
+  NotepadText,
 } from "lucide-react";
 
 const HotelCard = ({ hotels = [] }) => {
@@ -123,8 +124,9 @@ const HotelCard = ({ hotels = [] }) => {
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-gray-900 hover:bg-black text-white text-sm font-medium transition-colors shadow-md"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-gray-900 hover:bg-black text-white text-sm font-medium transition-colors shadow-md"
                     >
+                      <NotepadText size={16} />
                       View Details
                     </motion.button>
                   </Link>
@@ -137,7 +139,7 @@ const HotelCard = ({ hotels = [] }) => {
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium transition-colors shadow-md shadow-orange-500/20"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium transition-colors shadow-md shadow-orange-500/20"
                     >
                       <MapPinIcon size={16} />
                       Location
@@ -151,7 +153,7 @@ const HotelCard = ({ hotels = [] }) => {
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-red-800 hover:bg-red-900 text-white text-sm font-medium transition-colors shadow-md shadow-red-800/20"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md bg-red-800 hover:bg-red-900 text-white text-sm font-medium transition-colors shadow-md shadow-red-800/20"
                     >
                       <PhoneCallIcon size={16} />
                       Contact

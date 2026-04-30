@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { motion as Motion } from "framer-motion";
+import React, { Suspense } from "react";
+import { motion } from "framer-motion";
 import {
   Code2,
   ExternalLink,
@@ -19,13 +19,6 @@ const socialIcons = {
   email: Mail,
 };
 
-const spring = {
-  type: "spring",
-  stiffness: 180,
-  damping: 24,
-  mass: 0.8,
-};
-
 const getInitials = (name = "") =>
   name
     .split(" ")
@@ -35,8 +28,6 @@ const getInitials = (name = "") =>
     .toUpperCase();
 
 const ContributorsCard = ({ contributor }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const initials = getInitials(contributor.name);
   const quickSocials = (contributor.socials || []).slice(0, 3);
   const detailSections = [
@@ -101,50 +92,30 @@ const ContributorsCard = ({ contributor }) => {
   );
 
   return (
-    <Motion.article
-      layout
-      transition={spring}
-      onHoverStart={() => setIsExpanded(true)}
-      onHoverEnd={() => setIsExpanded(false)}
-      onFocusCapture={() => setIsExpanded(true)}
-      onBlurCapture={() => setIsExpanded(false)}
-      animate={{
-        y: isExpanded ? -10 : 0,
-        opacity: isExpanded ? 1 : 0.9,
-      }}
-      className="group relative h-full"
-    >
-      <Motion.div
-        layout
-        transition={spring}
-        className={`relative z-10 overflow-hidden rounded-2xl border border-amber-100/20 bg-white/10 p-5 backdrop-blur-xl shadow-[0_16px_45px_rgba(0,0,0,0.35)] ${
-          isExpanded
-            ? "lg:aspect-auto lg:min-h-120"
-            : "lg:aspect-square"
-        }`}
+    <article className="group relative h-full mb-6 inline-block w-full break-inside-avoid">
+      <motion.div
+        whileHover={{ y: -8, rotateY: 2 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="relative z-10 overflow-hidden group rounded-2xl border border-amber-100/20 bg-white/10 p-5 backdrop-blur-xl shadow-[0_16px_45px_rgba(0,0,0,0.35)] hover:z-88888 transform transition-transform duration-300 ease-in-out"
       >
-        <Motion.div
+        <div
           className="pointer-events-none absolute inset-x-8 top-3 h-16 rounded-full bg-linear-to-r from-amber-400/20 via-yellow-100/30 to-orange-400/20 blur-xl"
-          animate={{ opacity: isExpanded ? 1 : 0.8, scale: isExpanded ? 1.04 : 1 }}
-          transition={spring}
+          style={{ opacity: 1 }}
         />
-        <Motion.div
+        <div
           className="pointer-events-none absolute inset-0 rounded-2xl bg-[linear-gradient(130deg,transparent_35%,rgba(255,255,255,0.22)_50%,transparent_65%)]"
-          animate={{ opacity: isExpanded ? 1 : 0 }}
-          transition={{ duration: 0.25 }}
+          style={{ opacity: 1 }}
         />
 
         <div className="relative">
           <div className="mb-4 flex items-center gap-3">
-            <div className="h-25 w-25 shrink-0 overflow-hidden rounded-xl border border-white/40 bg-white/20 shadow-lg">
+            <div className="h-25 w-25 shrink-0 overflow-hidden rounded-xl border border-white/40 bg-white/20 group-hover:scale-105  group-hover:z-44444 shadow-black group-hover:shadow-2xl delay-100 transition-transform duration-300 ease-in-out">
               {contributor.image ? (
-                <Motion.img
+                <img
                   src={contributor.image}
                   alt={contributor.name}
                   className="h-full w-full object-cover"
                   loading="lazy"
-                  animate={{ scale: isExpanded ? 1.03 : 1 }}
-                  transition={spring}
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-white">
@@ -177,7 +148,7 @@ const ContributorsCard = ({ contributor }) => {
                   rel={
                     social.type === "email" ? undefined : "noopener noreferrer"
                   }
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1.5 text-xs text-zinc-50 transition-colors duration-200 hover:bg-white/20"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/40 bg-white/10 px-3 py-1.5 text-xs text-zinc-50"
                   aria-label={`${contributor.name} ${social.label}`}
                 >
                   <Icon size={13} />
@@ -188,24 +159,11 @@ const ContributorsCard = ({ contributor }) => {
           </div>
         </div>
 
-        <div className="mt-4 border-t border-white/20 pt-4 lg:hidden">
+        <div className="mt-4 border-t border-white/20 pt-4">
           {renderDetails()}
         </div>
-
-        <Motion.div
-          initial={{opacity: 0}}
-          animate={{
-            height: isExpanded ? "auto" : 0,
-            opacity: isExpanded ? 1 : 0,
-            y: isExpanded ? 0 : 12,
-          }}
-          transition={spring}
-          className="hidden overflow-hidden border-t border-white/20 lg:block"
-        >
-          <div className="pt-4">{renderDetails()}</div>
-        </Motion.div>
-      </Motion.div>
-    </Motion.article>
+      </motion.div>
+    </article>
   );
 };
 

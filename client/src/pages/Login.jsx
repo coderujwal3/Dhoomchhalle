@@ -183,6 +183,13 @@ function Login() {
           >
             Create an account
           </Link>
+          {" "} || {" "}
+          <Link
+            to="/"
+            className="text-orange-300 hover:text-orange-200 underline"
+          >
+            Move to Homepage
+          </Link>
         </p>
       </div>
 

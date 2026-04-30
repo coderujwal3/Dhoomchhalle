@@ -1,6 +1,7 @@
-import React, { lazy, Suspense } from "react";
+import React, {Suspense, lazy} from "react";
 import ContributorsCard from "../components/common/ContributorsCard";
-const Hyperspeed = lazy(() => import("../components/common/ui/Hyperspeed"));
+// const Hyperspeed = lazy(() => import("../components/common/ui/Hyperspeed"));
+import LightPillar from "../components/common/ui/LightPillar";
 
 // Importing contributors image
 import MyImg from "../assets/MyPic.jpeg";
@@ -94,42 +95,19 @@ const Contributors = () => {
   return (
     <section className="min-h-screen relative overflow-hidden bg-linear-to-br from-neutral-950 via-zinc-900 to-neutral-800 px-4 py-20">
       <Suspense fallback={<div className="absolute inset-0" />}>
-        <Hyperspeed
-          effectOptions={{
-            distortion: "turbulentDistortion",
-            length: 400,
-            roadWidth: 25,
-            islandWidth: 2,
-            lanesPerRoad: 5,
-            fov: 150,
-            fovSpeedUp: 150,
-            speedUp: 2,
-            carLightsFade: 0.9,
-            totalSideLightSticks: 20,
-            lightPairsPerRoadWay: 40,
-            shoulderLinesWidthPercentage: 0.05,
-            brokenLinesWidthPercentage: 0.1,
-            brokenLinesLengthPercentage: 0.5,
-            lightStickWidth: [0.12, 0.5],
-            lightStickHeight: [1.3, 1.7],
-            movingAwaySpeed: [60, 80],
-            movingCloserSpeed: [-120, -160],
-            carLightsLength: [12, 80],
-            carLightsRadius: [0.05, 0.14],
-            carWidthPercentage: [0.3, 0.5],
-            carShiftX: [-0.8, 0.8],
-            carFloorSeparation: [0, 5],
-            colors: {
-              roadColor: 526344,
-              islandColor: 657930,
-              background: 0,
-              shoulderLines: 1250072,
-              brokenLines: 1250072,
-              leftCars: [14177983, 6770850, 12732332],
-              rightCars: [242627, 941733, 3294549],
-              sticks: 242627,
-            },
-          }}
+        <LightPillar
+          topColor="#5227FF"
+          bottomColor="#FF9FFC"
+          intensity={1}
+          rotationSpeed={0.4}
+          glowAmount={0.002}
+          pillarWidth={3}
+          pillarHeight={0.4}
+          noiseIntensity={0.5}
+          pillarRotation={25}
+          interactive={false}
+          mixBlendMode="screen"
+          quality="high"
         />
       </Suspense>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.2),transparent_45%)]" />
@@ -140,7 +118,7 @@ const Contributors = () => {
           <p className="text-center text-xs uppercase tracking-[0.25em] text-amber-200/80 mb-2">
             Team
           </p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-white text-center font-semibold leading-tight tracking-tight">
+          <h1 className="text-4xl sm:text-5xl text-white text-center font-semibold leading-tight tracking-tight">
             Meet Our Contributors
           </h1>
           <p className="mt-3 text-center text-zinc-100/80 text-sm sm:text-base">

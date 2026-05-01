@@ -133,6 +133,21 @@ erDiagram
 - Premium route planner
 - Affiliate booking
 
+## Permission Matrix
+                    Admin      Moderator  Compliance     Hotel   Transport
+User Mgmt             ✅        ⚠️            ❌         ❌       ❌
+Content Review        ✅        ✅            ❌         ❌       ❌
+Dispute/Reports       ✅        ❌            ✅         ❌       ❌
+Hotel Mgmt            ✅        ❌            ❌         ✅       ❌
+Transport Mgmt        ✅        ❌            ❌         ❌       ✅
+Finance/Analytics     ✅        ❌            ✅*        ✅*      ✅*
+Own Profile Edit      ✅        ✅            ✅         ✅       ✅
+Suspend Users         ✅        ❌            ✅         ❌       ❌
+Delete Users          ✅        ❌            ❌         ❌       ❌
+System Settings       ✅        ❌            ❌         ❌       ❌
+
+* = Limited to own data
+
 ## Folder Structure
 
 ### Client (`client/`)

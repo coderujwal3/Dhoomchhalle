@@ -99,7 +99,14 @@ async function updateReviewController(req, res) {
     try {
         const { reviewId } = req.params;
         const userId = req.user._id;
-        let updateData = req.body;
+        const body = req.body || {};
+        const updateData = {};
+
+        if (typeof body.rating !== "undefined") updateData.rating = body.rating;
+        if (typeof body.title === "string") updateData.title = body.title;
+        if (typeof body.comment === "string") updateData.comment = body.comment;
+        if (typeof body.visitDate !== "undefined") updateData.visitDate = body.visitDate;
+        if (Array.isArray(body.images)) updateData.images = body.images;
 
         // Check authorization - user can only update their own review
         const review = await reviewService.getReviewById(reviewId);
@@ -111,10 +118,6 @@ async function updateReviewController(req, res) {
         if (review.userId._id.toString() !== userId.toString()) {
             return res.status(403).json(responseFormatter(false, "Not authorized to update this review", null, 403));
         }
-
-        // Prevent updating userId and hotelId
-        delete updateData.userId;
-        delete updateData.hotelId;
 
         // Process images if provided
         if (updateData.images && Array.isArray(updateData.images)) {

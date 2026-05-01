@@ -14,7 +14,7 @@ const contributors = [
     specialization: "Full Stack Web Developer",
     bio: "Crafts fluid complete responsive webapps. Also making the website complete safe form hackers.",
     techStack: ["React", "Node.js", "Express", "MongoDB", "Kali/Parrot Linux"],
-    currentlyBuilding: "The web page you are seeing right now (Dhoomchhalle)",
+    profile: "https://dhoomchhalle.vercel.app/user/69c6caf11b289113c83129c2",
     socials: [
       {
         type: "github",
@@ -39,8 +39,7 @@ const contributors = [
     specialization: "Backend Developer",
     bio: "Designs resilient APIs and secure systems that keep products fast, stable, and production-ready from day one.",
     techStack: ["Node.js", "Express", "MongoDB", "Redis"],
-    currentlyBuilding:
-      "A modular service layer for analytics and performance insights.",
+    profile: "https://dhoomchhalle.vercel.app/user/69cd3129099696c31713d505",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
@@ -53,8 +52,7 @@ const contributors = [
     specialization: "Full Stack Engineer",
     bio: "Bridges design and architecture to ship complete features, from polished UI flows to robust deployment pipelines.",
     techStack: ["React", "Node.js", "PostgreSQL", "Docker"],
-    currentlyBuilding:
-      "Contributor tools for smoother collaboration and faster releases.",
+    profile: "https://dhoomchhalle.vercel.app/user/69c78b3bc279e3bb0bb345fe",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
@@ -67,8 +65,7 @@ const contributors = [
     specialization: "Full Stack Engineer",
     bio: "Bridges design and architecture to ship complete features, from polished UI flows to robust deployment pipelines.",
     techStack: ["React", "Node.js", "PostgreSQL", "Docker"],
-    currentlyBuilding:
-      "Contributor tools for smoother collaboration and faster releases.",
+    profile: "https://dhoomchhalle.vercel.app/user/69ddda5d0a0f444c0943cec8",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },
@@ -81,8 +78,8 @@ const contributors = [
     specialization: "Full Stack Engineer",
     bio: "Bridges design and architecture to ship complete features, from polished UI flows to robust deployment pipelines.",
     techStack: ["React", "Node.js", "PostgreSQL", "Docker"],
-    currentlyBuilding:
-      "Contributor tools for smoother collaboration and faster releases.",
+    // currentlyBuilding:
+    //   "Contributor tools for smoother collaboration and faster releases.",
     socials: [
       { type: "github", label: "GitHub", url: "https://github.com/" },
       { type: "linkedin", label: "LinkedIn", url: "https://linkedin.com/" },

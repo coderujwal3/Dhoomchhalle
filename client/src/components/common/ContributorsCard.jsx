@@ -66,17 +66,20 @@ const ContributorsCard = ({ contributor }) => {
     },
     {
       key: "building",
-      isVisible: Boolean(contributor.currentlyBuilding),
+      isVisible: Boolean(contributor.profile),
       content: (
-        <div className="mb-1 rounded-xl border border-amber-100/30 bg-black/15 p-3">
+        <a
+          className="w-full mb-1 rounded-xl border border-amber-100/30 bg-zinc-900/60 p-3 flex justify-center items-center cursor-pointer"
+          href={contributor.profile}
+          target="_blank"
+        >
           <p className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-amber-100">
             <Sparkles size={14} />
-            Currently Building
+            <p className="mt-1 text-sm text-zinc-100/90">
+              Visit Profile
+            </p>
           </p>
-          <p className="mt-1 text-sm text-zinc-100/90">
-            {contributor.currentlyBuilding}
-          </p>
-        </div>
+        </a>
       ),
     },
   ];

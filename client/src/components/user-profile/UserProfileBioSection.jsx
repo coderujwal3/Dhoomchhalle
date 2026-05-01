@@ -14,7 +14,7 @@ export default function UserProfileBioSection({ user, profile }) {
       <div className="space-y-4">
         <div>
           <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Bio</p>
-          <p className="text-sm text-gray-700">{bio}</p>
+          <p className="text-sm text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{bio}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

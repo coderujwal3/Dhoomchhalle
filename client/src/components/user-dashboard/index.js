@@ -3,6 +3,7 @@ export { default as DashboardHeader } from "./DashboardHeader";
 export { default as DashboardProfilePane } from "./DashboardProfilePane";
 export { default as DashboardSummaryCard } from "./DashboardSummaryCard";
 export { default as DashboardTabButton } from "./DashboardTabButton";
+export { default as DashboardNavigate } from "./DashboardNavigate";
 
 export { DashboardSavedHotelsTab } from "./DashboardSavedHotelsTab";
 export { DashboardFareChecksTab } from "./DashboardFareChecksTab";

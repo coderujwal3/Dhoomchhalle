@@ -1,13 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Star, Trash2, Edit2 } from "lucide-react";
-import { getMyReviews, deleteReview } from "../../../services/review.service";
+import {
+  getMyReviews,
+  deleteReview,
+  updateReview,
+  createReview,
+} from "../../../services/review.service";
+import { ReviewForm } from "../../reviews/ReviewForm";
 
 export function ReviewsTab() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const fetchReviews = useCallback(async () => {
     try {
@@ -39,82 +48,167 @@ export function ReviewsTab() {
     }
   };
 
+  const handleEditReview = (review) => {
+    setEditingReview(review);
+    setShowForm(true);
+  };
+
+  const handleFormCancel = () => {
+    setShowForm(false);
+    setEditingReview(null);
+  };
+
+  const handleFormSubmit = async (formData) => {
+    try {
+      setSubmitting(true);
+
+      if (editingReview) {
+        // Update existing review
+        await updateReview(editingReview._id, formData);
+        toast.success("Review updated successfully");
+      } else {
+        // Create new review
+        await createReview(formData);
+        toast.success("Review submitted successfully");
+      }
+
+      // Refresh reviews
+      await fetchReviews();
+      handleFormCancel();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error(error.message || "Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8">Loading reviews...</div>;
   }
 
-  if (!reviews || reviews.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-600">You haven't written any reviews yet.</p>
-        <p className="text-sm text-gray-500 mt-2">
-          Share your travel experiences by writing a review!
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      {reviews.map((review) => (
-        <div key={review._id} className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h3 className="font-bold text-lg">{review.title}</h3>
-              <p className="text-sm text-gray-600">{review.hotelId?.name}</p>
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => toast.info("Edit feature coming soon!")}
-                className="p-2 hover:bg-blue-50 text-blue-600 rounded"
-              >
-                <Edit2 size={18} />
-              </button>
-              <button
-                onClick={() => handleDeleteReview(review._id)}
-                className="p-2 hover:bg-red-50 text-red-600 rounded"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          </div>
+      {/* Show form if needed */}
+      {showForm && (
+        <ReviewForm
+          initialData={editingReview}
+          onSubmit={handleFormSubmit}
+          onCancel={handleFormCancel}
+          loading={submitting}
+        />
+      )}
 
-          <div className="flex items-center gap-4 mb-3">
-            <div className="flex items-center gap-1">
-              {[...Array(review.rating)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={16}
-                  className="text-yellow-500"
-                  fill="currentColor"
-                />
-              ))}
-            </div>
-            <span className="text-sm text-gray-600">
-              {new Date(review.visitDate).toLocaleDateString()}
-            </span>
-            <span className="text-sm text-gray-600">
-              {review.helpful} helpful
-            </span>
-          </div>
+      {/* Show "Write a Review" button if not showing form */}
+      {!showForm && (
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition"
+        >
+          ✍️ Write a Review
+        </button>
+      )}
 
-          <p className="text-gray-700 mb-3">{review.comment}</p>
-
-          {review.images && review.images.length > 0 && (
-            <div className="flex gap-2 flex-wrap">
-              {review.images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`Review ${idx}`}
-                  className="w-20 h-20 object-cover rounded"
-                />
-              ))}
-            </div>
-          )}
+      {/* Reviews List */}
+      {!reviews || reviews.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600">You haven't written any reviews yet.</p>
+          <p className="text-sm text-gray-500 mt-2">
+            Share your travel experiences by writing a review!
+          </p>
         </div>
-      ))}
+      ) : (
+        <div className="space-y-6">
+          {reviews.map((review) => (
+            <div key={review._id} className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg">{review.title}</h3>
+                  <p className="text-sm text-gray-600">
+                    {review.hotelId?.name}
+                  </p>
+                  {review.status && (
+                    <p
+                      className={`text-xs font-semibold mt-1 ${
+                        review.status === "approved"
+                          ? "text-green-600"
+                          : review.status === "rejected"
+                            ? "text-red-600"
+                            : "text-yellow-600"
+                      }`}
+                    >
+                      Status:{" "}
+                      {review.status.charAt(0).toUpperCase() +
+                        review.status.slice(1)}
+                    </p>
+                  )}
+                  {review.status === "rejected" && review.rejectionReason && (
+                    <p className="text-xs text-red-600 mt-1">
+                      Reason: {review.rejectionReason}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditReview(review)}
+                    disabled={review.status !== "pending"}
+                    title={
+                      review.status !== "pending"
+                        ? "Can only edit pending reviews"
+                        : "Edit review"
+                    }
+                    className="p-2 hover:bg-blue-50 text-blue-600 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteReview(review._id)}
+                    className="p-2 hover:bg-red-50 text-red-600 rounded"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
 
+              <div className="flex items-center gap-4 mb-3">
+                <div className="flex items-center gap-1">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      className="text-yellow-500"
+                      fill="currentColor"
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-600">
+                  {new Date(review.visitDate).toLocaleDateString()}
+                </span>
+                <span className="text-sm text-gray-600">
+                  {review.helpful} helpful
+                </span>
+              </div>
+
+              <p className="text-gray-700 mb-3">{review.comment}</p>
+
+              {review.images && review.images.length > 0 && (
+                <div className="flex gap-2 flex-wrap">
+                  {review.images.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      alt={`Review ${idx}`}
+                      className="w-20 h-20 object-cover rounded"
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
       {pagination && pagination.pages > 1 && (
         <div className="flex justify-center gap-2 mt-6">
           <button

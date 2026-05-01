@@ -28,9 +28,9 @@ import GuestOnlyRoute from "../components/auth/GuestOnlyRoute";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import ScrollToTop from "../utils/ScrollToTop";
 import adminRoutes from "./adminRoutes";
+import verifierRoutes from "./verifierRoutes";
 
 const AppRoutes = () => {
-
   return (
     <BrowserRouter>
       {/* On opening any next page, the view section move to top of the page, because vercel creates an SPA issue
@@ -55,7 +55,7 @@ const AppRoutes = () => {
             <Route path="/timings" element={<Timings />} />
             <Route path="/fare-check" element={<FareCheck />} />
             <Route path="/contributors" element={<Contributors />} />
-            
+
             <Route path="/hotels/:id" element={<HotelDetails />} />
             <Route path="/hotel/:hotel_id" element={<HotelDetails />} />
 
@@ -69,7 +69,6 @@ const AppRoutes = () => {
                 </ProtectedRoute>
               }
             />
-
           </Route>
 
           {/* Auth Routes */}
@@ -110,6 +109,9 @@ const AppRoutes = () => {
 
           {/* Admin Routes */}
           {adminRoutes}
+
+          {/* Verifier Routes */}
+          {verifierRoutes}
 
           <Route path="*" element={<NotFound />} />
         </Routes>

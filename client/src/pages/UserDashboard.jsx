@@ -24,6 +24,7 @@ import {
   DashboardSummaryCard,
   DashboardTabButton,
   DashboardTransportTab,
+  DashboardNavigate,
 } from "../components/user-dashboard";
 
 function UserDashboard() {
@@ -31,7 +32,18 @@ function UserDashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
+
+  const handleNavigateToRoleDashboard = () => {
+    setNavigating(true);
+    if (user?.role === "admin") {
+      navigate("/admin", { replace: true });
+    } else if (user?.role === "verifier") {
+      navigate("/verifier", { replace: true });
+    }
+    setNavigating(false);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -53,16 +65,6 @@ function UserDashboard() {
       cancelled = true;
     };
   }, []);
-
-  useEffect(() => {
-    if (user?.role === "admin") {
-      navigate("/admin", { replace: true });
-    }
-  }, [user?.role, navigate]);
-
-  if (user?.role === "admin") {
-    return null;
-  }
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -156,7 +158,9 @@ function UserDashboard() {
               </div>
 
               <div className="p-6">
-                {activeTab === "profile" && <DashboardProfilePane user={user} />}
+                {activeTab === "profile" && (
+                  <DashboardProfilePane user={user} />
+                )}
 
                 {activeTab === "hotels" && <DashboardSavedHotelsTab />}
                 {activeTab === "reviews" && <DashboardReviewsTab />}
@@ -171,9 +175,19 @@ function UserDashboard() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="overflow-hidden"
+              className="overflow-hidden flex flex-col gap-3"
             >
-              <DashboardActions loggingOut={loggingOut} onLogout={handleLogout} />
+              <DashboardActions
+                loggingOut={loggingOut}
+                onLogout={handleLogout}
+              />
+              {user?.role !== "traveller" && (
+                <DashboardNavigate
+                  user={user}
+                  Navigating={navigating}
+                  onNavigate={handleNavigateToRoleDashboard}
+                />
+              )}
             </motion.div>
           </div>
         )}

@@ -16,7 +16,7 @@ export default function UserProfileFeedbackSection({ profile }) {
       <div className="space-y-3">
         {feedbackItems.map((item, idx) => (
           <div key={idx} className="rounded-lg border border-orange-100 p-3">
-            <p className="text-sm text-gray-700">{item}</p>
+            <p className="text-sm text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{item}</p>
           </div>
         ))}
       </div>

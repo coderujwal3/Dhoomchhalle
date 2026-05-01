@@ -13,8 +13,15 @@ export default function UserProfileBioSection({ user, profile }) {
 
       <div className="space-y-4">
         <div>
-          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Bio</p>
-          <p className="text-sm text-gray-700" style={{ whiteSpace: 'pre-wrap' }}>{bio}</p>
+          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
+            Bio
+          </p>
+          <p
+            className="text-sm text-gray-700"
+            style={{ whiteSpace: "pre-wrap" }}
+          >
+            {bio}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -29,7 +36,9 @@ export default function UserProfileBioSection({ user, profile }) {
           />
           <InfoField
             label="Email notifications"
-            value={profile?.preferences?.emailNotifications ? "Enabled" : "Disabled"}
+            value={
+              profile?.preferences?.emailNotifications ? "Enabled" : "Disabled"
+            }
           />
         </div>
       </div>
@@ -40,7 +49,9 @@ export default function UserProfileBioSection({ user, profile }) {
 function InfoField({ label, value }) {
   return (
     <div className="rounded-lg border border-orange-100 px-3 py-2">
-      <p className="text-[11px] uppercase tracking-wide text-gray-500">{label}</p>
+      <p className="text-[11px] uppercase tracking-wide text-gray-500">
+        {label}
+      </p>
       <p className="text-sm text-gray-800">{value}</p>
     </div>
   );

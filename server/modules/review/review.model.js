@@ -47,6 +47,24 @@ const reviewSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        status: {
+            type: String,
+            enum: ['pending', 'approved', 'rejected'],
+            default: 'pending'
+        },
+        rejectionReason: {
+            type: String,
+            default: null
+        },
+        verifiedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            default: null
+        },
+        verificationDate: {
+            type: Date,
+            default: null
+        }
     },
     { timestamps: true }
 );

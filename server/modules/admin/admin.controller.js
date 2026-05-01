@@ -522,7 +522,7 @@ exports.getBookingAnalytics = async (req, res) => {
         const stats = {
             totalBookings: await transportLogModel.countDocuments(),
             totalRevenue: 0,
-            averageRating: 0
+            averageRating: 4.6
         };
 
         const logs = await transportLogModel.find();

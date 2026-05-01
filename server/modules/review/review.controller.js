@@ -99,7 +99,7 @@ async function updateReviewController(req, res) {
     try {
         const { reviewId } = req.params;
         const userId = req.user._id;
-        const updateData = req.body;
+        let updateData = req.body;
 
         // Check authorization - user can only update their own review
         const review = await reviewService.getReviewById(reviewId);
@@ -115,6 +115,18 @@ async function updateReviewController(req, res) {
         // Prevent updating userId and hotelId
         delete updateData.userId;
         delete updateData.hotelId;
+
+        // Process images if provided
+        if (updateData.images && Array.isArray(updateData.images)) {
+            updateData.images = updateData.images.filter(img => {
+                if (!img) return false;
+                // Validate if it's a valid URL or base64 string
+                if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) {
+                    return true;
+                }
+                return false;
+            });
+        }
 
         const updatedReview = await reviewService.updateReview(reviewId, updateData);
 

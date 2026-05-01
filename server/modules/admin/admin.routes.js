@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authSystemUserMiddleware } = require('../../middlewares/auth.middleware');
+const { authorizeRole } = require('../../middlewares/roleBasedAccess.middleware');
 const { uploadHotelPhotosMiddleware, handleUploadError } = require('../../middlewares/upload.middleware');
 const adminController = require('./admin.controller');
 
@@ -24,9 +25,9 @@ router.get('/analytics/bookings', authSystemUserMiddleware, adminController.getB
 router.get('/analytics/reports', authSystemUserMiddleware, adminController.getReportsAnalytics);
 
 // Content Moderation
-router.get('/reviews/pending', authSystemUserMiddleware, adminController.getPendingReviews);
-router.post('/reviews/:reviewId/approve', authSystemUserMiddleware, adminController.approveReview);
-router.post('/reviews/:reviewId/reject', authSystemUserMiddleware, adminController.rejectReview);
+router.get('/reviews/pending', authorizeRole('admin', 'verifier'), adminController.getPendingReviews);
+router.post('/reviews/:reviewId/approve', authorizeRole('admin', 'verifier'), adminController.approveReview);
+router.post('/reviews/:reviewId/reject', authorizeRole('admin', 'verifier'), adminController.rejectReview);
 
 // Reports Management
 router.get('/reports', authSystemUserMiddleware, adminController.getAllReports);

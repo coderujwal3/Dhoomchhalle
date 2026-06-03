@@ -35,7 +35,7 @@
     "react-leaflet-cluster": "^4.1.3",
     "react-ogl": "^0.15.1",
     "react-qr-code": "^2.0.18",
-    "react-router-dom": "^7.13.1",
+    "react-router-dom": "^7.16.0",
     "react-spinners": "^0.17.0",
     "recharts": "^2.12.0",
     "tailwindcss": "^4.1.18",

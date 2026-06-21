@@ -6,7 +6,7 @@ const loginActivityModel = require('./loginActivity.model');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const tokenBlacklistModel = require('../user/tokenBlacklist.model');
-const emailService = require('../../services/email.service');
+const emailService = require('../../services/email.service').default;
 const { generateOTP, hashOTP, verifyOTP } = require('../../utils/otp.utils');
 const { generateAccessToken, generateRefreshToken } = require('../../utils/token.utils');
 
@@ -67,7 +67,7 @@ async function issueOTPForUser(user, purpose) {
         purpose,
     });
 
-    await otpModel.deleteMany({ userId: {$eq: user._id}, purpose });
+    await otpModel.deleteMany({ userId: { $eq: user._id }, purpose });
 
     const plainOTP = generateOTP();
     const hashedOTP = await hashOTP(plainOTP);
@@ -82,7 +82,7 @@ async function issueOTPForUser(user, purpose) {
     const emailSent = await emailService.sendOTPEmail(user.email, user.name, plainOTP);
 
     if (!emailSent) {
-        await otpModel.deleteMany({ userId: {$eq: user._id}, purpose });
+        await otpModel.deleteMany({ userId: { $eq: user._id }, purpose });
         throw new Error("OTP_EMAIL_FAILED");
     }
 
@@ -406,7 +406,7 @@ async function verifyOTPController(req, res) {
 
         // Find OTP record - check if expired
         const otpRecord = await otpModel.findOne({
-            userId: {$eq: user._id},
+            userId: { $eq: user._id },
             purpose,
             expiresAt: { $gt: new Date() },
         });

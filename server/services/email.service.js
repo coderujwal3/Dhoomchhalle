@@ -1,6 +1,20 @@
-const nodemailer = require('nodemailer');
+import { createTransport } from 'nodemailer';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 let transporter = null;
 let warnedEmailConfig = false;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const assetsDir = path.join(__dirname, '../assets');
+const logoPath = path.join(assetsDir, 'DhoomLogo(1).png');
+const logoExists = fs.existsSync(logoPath);
+const logoAttachment = logoExists ? {
+    filename: path.basename(logoPath),
+    path: logoPath,
+    cid: 'dhoomchhalle-logo',
+} : null;
 
 function getTransporter() {
     if (transporter) return transporter;
@@ -12,7 +26,7 @@ function getTransporter() {
         return null;
     }
 
-    transporter = nodemailer.createTransport({
+    transporter = createTransport({
         host: "smtp.gmail.com",
         port: 587,
         secure: false,
@@ -30,7 +44,7 @@ function getTransporter() {
 }
 
 // Function to send email
-const sendEmail = async (to, subject, text, html) => {
+const sendEmail = async (to, subject, text, html, attachments = []) => {
     try {
         const emailTransporter = getTransporter();
         if (!emailTransporter) return false;
@@ -41,6 +55,7 @@ const sendEmail = async (to, subject, text, html) => {
             subject, // Subject line
             text, // plain text body
             html, // html body
+            attachments,
         });
         return true;
     } catch (error) {
@@ -53,7 +68,7 @@ async function sendRegistrationEmail(userEmail, name) {
     const subject = 'Welcome to Dhoomchalle';
     const tagline = "Your trusted traveler companion";
     const text = `Hello ${name},\n\nThank you for registering at Dhoomchalle, ${tagline}.\nWe are excited to have you on board!\n\nBest regards,\nDhoomchalle Team`;
-    const html = `<p>Hello ${name},</p><p>Thank you for registering at Dhoomchalle, <br/><strong>${tagline}</strong>.</p><p>We are excited to have you on board!</p><p>Best regards,<br>Dhoomchalle Team</p>`;
+    const html = `<p>Hello ${name},</p><p>Thank you for registering at Dhoomchalle, <br/><strong>${tagline}</strong>.</p><p>We are excited to have you on board!</p><p>Best regards,<br>Dhoomchhalle Team</p>`;
 
     return sendEmail(userEmail, subject, text, html);
 }
@@ -61,9 +76,10 @@ async function sendRegistrationEmail(userEmail, name) {
 async function sendPasswordResetEmail(userEmail, name, resetLink) {
     const subject = "Reset your Dhoomchhalle password";
     const text = `Hello ${name},\n\nWe received a request to reset your password.\nUse this link to reset it:\n${resetLink}\n\nThis link will expire in 15 minutes.\nIf you did not request this, please ignore this message.`;
-    const html = `<p>Hello ${name},</p><p>We received a request to reset your password.</p><p><a href="${resetLink}" target="_blank" rel="noopener noreferrer">Reset Password</a></p><p>This link will expire in <strong>15 minutes</strong>.</p><p>If you did not request this, please ignore this message.</p>`;
+    const html = `<p>Hello ${name},</p><p><img src="cid:dhoomchhalle-logo" height="300" width="300" style="object-fit: contain;" /></p><p>We received a request to reset your password.</p><p><button style="padding: 8px 12px; font-weight: bold; border: none; border-radius:8px; background-color:#FFB8B8"><a href="${resetLink}" style="color:black; text-decoration:none; font-size:20px" target="_blank" rel="noopener noreferrer">Reset Password</a></button></p><p>This link will expire in <strong>15 minutes</strong>.</p><p>If you did not request this, please ignore this message.</p>`;
+    const attachments = logoAttachment ? [logoAttachment] : [];
 
-    return sendEmail(userEmail, subject, text, html);
+    return sendEmail(userEmail, subject, text, html, attachments);
 }
 
 async function sendOTPEmail(userEmail, name, otp) {
@@ -74,4 +90,4 @@ async function sendOTPEmail(userEmail, name, otp) {
     return sendEmail(userEmail, subject, text, html);
 }
 
-module.exports = { sendRegistrationEmail, sendPasswordResetEmail, sendOTPEmail }
+export default { sendRegistrationEmail, sendPasswordResetEmail, sendOTPEmail }

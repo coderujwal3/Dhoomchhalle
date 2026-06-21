@@ -133,7 +133,7 @@ erDiagram
 - Premium route planner
 - Affiliate booking
 
-## Permission Matrix
+## users IAM Permission Matrix
 
 |                    | Admin |     Moderator|  Compliance |    Hotel|   Transport|
 |--------------------|-------|--------------|-------------|---------|------------|
@@ -296,4 +296,3 @@ npm run android    -     (for android - you can run using expo command - expo st
 npm run ios        -     (for ios - you can run using expo command - expo start --ios)
 npm run tablet     -     (for tablet - you can run using expo command - expo start --tablet)
 ```
-

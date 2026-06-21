@@ -1,7 +1,12 @@
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function ProfilePhotoModal({ isOpen, onClose, profile, userName }) {
+export default function ProfilePhotoModal({
+  isOpen,
+  onClose,
+  profile,
+  userName,
+}) {
   const avatar = profile?.avatar || profile?.avatarUrl;
 
   return (
